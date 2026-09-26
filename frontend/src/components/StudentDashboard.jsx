@@ -119,9 +119,9 @@ export default function StudentDashboard({ user, onNavigate }) {
     setNewItemForm(prev => ({ ...prev, image_url: '' }))
   }
 
-  const studentId = user?.id || 'demo-student'
-  const studentName = user?.email?.split('@')[0] || 'Rahul K (S7 CSE)'
-  const studentDept = user?.user_metadata?.department || 'Computer Science and Engineering'
+  const studentId = user?.id || (user?.email ? user.email : 'student')
+  const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Student')
+  const studentDept = user?.user_metadata?.department || 'Engineering Department'
 
   const loadPortfolio = async () => {
     try {

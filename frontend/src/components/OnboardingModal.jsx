@@ -95,7 +95,7 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
-              placeholder="e.g. Rahul M or Prof. Haridasan"
+              placeholder="Enter your full name"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none transition"
             />
           </div>
@@ -197,7 +197,7 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
               {loading ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Saving Profile to Supabase...</span>
+                  <span>Saving Profile...</span>
                 </>
               ) : (
                 <>

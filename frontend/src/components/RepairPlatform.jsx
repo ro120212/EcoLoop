@@ -32,8 +32,8 @@ const DEPARTMENT_LABS = {
 }
 
 export default function RepairPlatform({ user }) {
-  const studentId = user?.id || (user?.email ? user.email : 'demo-student')
-  const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : '')
+  const studentId = user?.id || (user?.email ? user.email : 'student')
+  const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Student')
 
   const [deviceName, setDeviceName] = useState('')
   const [symptom, setSymptom] = useState('')
@@ -196,30 +196,6 @@ export default function RepairPlatform({ user }) {
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
                   required
                 ></textarea>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeviceName('Logitech Optical Mouse')
-                    setSymptom('Left click button registers double-click intermittently')
-                  }}
-                  className="text-[11px] text-orange-600 hover:underline"
-                >
-                  Example: Mouse Double-Click
-                </button>
-                <span className="text-slate-300">•</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeviceName('HP Laptop Charger')
-                    setSymptom('Only charges when cable is bent at a specific angle near the barrel plug')
-                  }}
-                  className="text-[11px] text-orange-600 hover:underline"
-                >
-                  Example: Frayed Charger
-                </button>
               </div>
 
               <button

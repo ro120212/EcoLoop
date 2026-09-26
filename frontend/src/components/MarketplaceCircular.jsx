@@ -118,8 +118,8 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
     setPostForm(prev => ({ ...prev, image_url: '' }))
   }
 
-  const studentId = user?.id || 'demo-student'
-  const studentName = user?.email?.split('@')[0] || 'Rahul K (S7 CSE)'
+  const studentId = user?.id || (user?.email ? user.email : 'campus-member')
+  const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Campus Member')
 
   const loadItems = async () => {
     try {

@@ -41,27 +41,6 @@ export default function AIWasteClassifier({ onNavigateModule }) {
     }
   }
 
-  // Pre-load demo image for instant testing
-  const loadDemoImage = async (type) => {
-    const canvas = document.createElement('canvas')
-    canvas.width = 400
-    canvas.height = 300
-    const ctx = canvas.getContext('2d')
-    ctx.fillStyle = type === 'circuit' ? '#0f172a' : '#1e293b'
-    ctx.fillRect(0, 0, 400, 300)
-    ctx.fillStyle = '#10b981'
-    ctx.font = 'bold 18px sans-serif'
-    ctx.fillText(type === 'circuit' ? 'PCB Motherboard Sample' : 'Swollen Lithium Battery Sample', 30, 150)
-    
-    canvas.toBlob((blob) => {
-      const file = new File([blob], `${type}-sample.jpg`, { type: 'image/jpeg' })
-      setSelectedFile(file)
-      setPreviewUrl(URL.createObjectURL(file))
-      setResult(null)
-      setError('')
-    }, 'image/jpeg')
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -79,21 +58,6 @@ export default function AIWasteClassifier({ onNavigateModule }) {
           <p className="text-xs text-slate-500 mt-1">
             Identify e-waste materials, component specifications, toxicity hazards, and recovery routes instantly with automated AI vision.
           </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => loadDemoImage('circuit')}
-            className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 transition"
-          >
-            🧪 Sample PCB
-          </button>
-          <button
-            onClick={() => loadDemoImage('battery')}
-            className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 transition"
-          >
-            🧪 Sample Battery
-          </button>
         </div>
       </div>
 

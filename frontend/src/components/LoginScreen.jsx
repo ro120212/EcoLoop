@@ -2,21 +2,16 @@ import React, { useState } from 'react'
 import { 
   User, 
   Lock, 
-  Mail, 
   Eye, 
   EyeOff, 
   Building2, 
-  Sparkles, 
-  ShieldCheck, 
-  GraduationCap, 
-  Wrench, 
   ArrowRight,
   AlertCircle,
   RefreshCw,
   CheckCircle2,
   Key
 } from 'lucide-react'
-import { authService, PRESET_ACCOUNTS } from '../services/authService'
+import { authService } from '../services/authService'
 import logoImg from '../assets/logo.png'
 
 export default function LoginScreen({ onLoginSuccess }) {
@@ -49,16 +44,6 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [regDepartment, setRegDepartment] = useState('Computer Science and Engineering')
   const [regStaffPasscode, setRegStaffPasscode] = useState('')
   const [regSuccessMsg, setRegSuccessMsg] = useState('')
-
-  // Auto-fill preset credentials
-  const handleAutoFill = (roleKey) => {
-    const acc = PRESET_ACCOUNTS[roleKey]
-    if (acc) {
-      setIdentifier(acc.username)
-      setPassword(acc.password)
-      setErrorMsg('')
-    }
-  }
 
   // Handle Login
   const handleLoginSubmit = async (e) => {
@@ -342,7 +327,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                       {regRole === 'lab_staff' ? 'Faculty Staff Verification Passcode *' : 'Administrator Security Passcode *'}
                     </label>
                     <span className="text-[10px] font-mono text-amber-700 font-bold bg-amber-100/80 px-2 py-0.5 rounded-md">
-                      Demo: {regRole === 'lab_staff' ? 'NSSCE-LAB-2026' : 'NSSCE-ADMIN-2026'}
+                      Verification Key Required
                     </span>
                   </div>
                   <input
@@ -383,67 +368,6 @@ export default function LoginScreen({ onLoginSuccess }) {
                 ? '← Already have an account? Sign in' 
                 : "New user? Register campus account"}
             </button>
-          </div>
-
-          {/* 3 PRESET CAMPUS ACCOUNTS REFERENCE & 1-CLICK AUTOFILL */}
-          <div className="pt-2 border-t border-slate-100 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                Configured Campus Accounts
-              </span>
-              <span className="text-[10px] text-slate-400">Click to fill</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {/* Student Account */}
-              <button
-                type="button"
-                onClick={() => handleAutoFill('student')}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-left transition group"
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <GraduationCap className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-800">Student</span>
-                </div>
-                <div className="text-[11px] font-mono text-slate-500">
-                  <div>user: <strong className="text-slate-700">student</strong></div>
-                  <div>pass: <strong className="text-slate-700">student@123</strong></div>
-                </div>
-              </button>
-
-              {/* Faculty Account */}
-              <button
-                type="button"
-                onClick={() => handleAutoFill('faculty')}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-left transition group"
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Wrench className="w-3.5 h-3.5 text-blue-600" />
-                  <span className="text-xs font-bold text-slate-800 group-hover:text-blue-800">Faculty</span>
-                </div>
-                <div className="text-[11px] font-mono text-slate-500">
-                  <div>user: <strong className="text-slate-700">faculty</strong></div>
-                  <div>pass: <strong className="text-slate-700">faculty@123</strong></div>
-                </div>
-              </button>
-
-              {/* Admin Account */}
-              <button
-                type="button"
-                onClick={() => handleAutoFill('admin')}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-left transition group"
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
-                  <span className="text-xs font-bold text-slate-800 group-hover:text-purple-800">Admin</span>
-                </div>
-                <div className="text-[11px] font-mono text-slate-500">
-                  <div>user: <strong className="text-slate-700">admin</strong></div>
-                  <div>pass: <strong className="text-slate-700">admin@123</strong></div>
-                </div>
-              </button>
-            </div>
           </div>
         </div>
       </div>

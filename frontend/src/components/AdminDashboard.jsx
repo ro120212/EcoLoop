@@ -519,7 +519,7 @@ export default function AdminDashboard({ onNavigateToMarketplace }) {
 
               {/* Quantitative Environmental Outcomes */}
               <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-1 pt-2">
-                3. Certified Quantitative Ecological Outcomes
+                3. Quantitative Ecological Outcomes
               </h3>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
