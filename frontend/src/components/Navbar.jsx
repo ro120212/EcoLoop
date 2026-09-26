@@ -15,81 +15,74 @@ import {
   Package
 } from 'lucide-react'
 
+import logoImg from '../assets/logo.png'
+
 export default function Navbar({ 
   currentRole, 
-  setCurrentRole, 
   activeView, 
   setActiveView, 
   user, 
-  onOpenAuth, 
   onOpenSettings, 
   onLogout 
 }) {
+  const getRoleBadge = (role) => {
+    if (role === 'admin') {
+      return { label: '🛡️ System Administrator', bg: 'bg-purple-900/60 text-purple-200 border-purple-700/50' }
+    }
+    if (role === 'lab_staff') {
+      return { label: '🔬 Faculty / Lab In-Charge', bg: 'bg-blue-900/60 text-blue-200 border-blue-700/50' }
+    }
+    return { label: '🎓 Student Account', bg: 'bg-emerald-900/60 text-emerald-200 border-emerald-700/50' }
+  }
+
+  const roleInfo = getRoleBadge(currentRole)
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-      {/* Top Banner with 5 Departments & Status */}
+      {/* Top Banner with Institution & Authenticated User Status */}
       <div className="bg-emerald-950 text-emerald-100 text-xs py-1.5 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Building2 className="w-3.5 h-3.5 text-emerald-300" />
             <span className="font-semibold text-white">NSS College of Engineering, Palakkad</span>
-            <span className="hidden lg:inline text-emerald-300">• CSE • Mechanical • Civil • EEE • IC Circular Campus Platform</span>
+            <span className="hidden lg:inline text-emerald-300">• 5 Branches: CSE • Mechanical • Civil • EEE • IC</span>
           </div>
 
-          {/* 1-Click Instant Persona / Role Switcher for Evaluation */}
-          <div className="flex items-center gap-1.5 bg-emerald-900/80 p-0.5 rounded-lg border border-emerald-700/60 text-[11px]">
-            <span className="px-1.5 text-emerald-300 font-bold hidden sm:inline">Role View:</span>
-            <button
-              onClick={() => {
-                setCurrentRole('student')
-                setActiveView('student_hub')
-              }}
-              className={`px-2 py-0.5 rounded-md font-bold transition ${
-                currentRole === 'student' ? 'bg-white text-emerald-950 shadow-xs' : 'text-emerald-200 hover:text-white'
-              }`}
-            >
-              🎓 Student
-            </button>
-            <button
-              onClick={() => {
-                setCurrentRole('lab_staff')
-                setActiveView('lab_staff_hub')
-              }}
-              className={`px-2 py-0.5 rounded-md font-bold transition ${
-                currentRole === 'lab_staff' ? 'bg-white text-emerald-950 shadow-xs' : 'text-emerald-200 hover:text-white'
-              }`}
-            >
-              🔬 Lab Staff
-            </button>
-            <button
-              onClick={() => {
-                setCurrentRole('admin')
-                setActiveView('admin_hub')
-              }}
-              className={`px-2 py-0.5 rounded-md font-bold transition ${
-                currentRole === 'admin' ? 'bg-white text-emerald-950 shadow-xs' : 'text-emerald-200 hover:text-white'
-              }`}
-            >
-              🛡️ Admin
-            </button>
-          </div>
+          {/* Authenticated Identity Pill */}
+          {user && (
+            <div className="flex items-center gap-2 text-[11px]">
+              <span className={`px-2 py-0.5 rounded-md font-bold border ${roleInfo.bg}`}>
+                {roleInfo.label}
+              </span>
+              <span className="text-emerald-300 hidden sm:inline">
+                {user.user_metadata?.department || 'Engineering Faculty / Student'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveView(currentRole === 'student' ? 'student_hub' : currentRole === 'lab_staff' ? 'lab_staff_hub' : 'admin_hub')}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white">
-            <Recycle className="w-6 h-6" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
+        <div 
+          className="flex items-center gap-3 cursor-pointer select-none" 
+          onClick={() => setActiveView(currentRole === 'student' ? 'student_hub' : currentRole === 'lab_staff' ? 'lab_staff_hub' : 'admin_hub')}
+        >
+          <div className="w-11 h-11 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center p-1 overflow-hidden">
+            <img 
+              src={logoImg} 
+              alt="EcoLoop Logo" 
+              className="w-full h-full object-contain" 
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold tracking-tight text-slate-900">EcoLoop</span>
+              <span className="text-xl font-black tracking-tight text-slate-900">EcoLoop</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                 Circular Campus
               </span>
             </div>
-            <p className="text-xs text-slate-500">Peer-to-Peer E-Waste Reuse & Component Exchange</p>
+            <p className="text-xs text-slate-500">Peer-to-Peer E-Waste Reuse &amp; Component Exchange</p>
           </div>
         </div>
 
@@ -116,30 +109,25 @@ export default function Navbar({
             <span className="hidden md:inline">API Settings</span>
           </button>
 
-          {user ? (
+          {user && (
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
               <div className="hidden sm:block text-right">
-                <p className="text-xs font-semibold text-slate-900 leading-tight">{user.email?.split('@')[0] || 'User'}</p>
-                <span className="text-[10px] capitalize px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-mono">
-                  {currentRole}
+                <p className="text-xs font-semibold text-slate-900 leading-tight">
+                  {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
+                </p>
+                <span className="text-[10px] capitalize px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono">
+                  {currentRole.replace('_', ' ')}
                 </span>
               </div>
               <button
                 onClick={onLogout}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                title="Sign out"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-bold transition shadow-xs"
+                title="Sign out of Supabase"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign Out</span>
               </button>
             </div>
-          ) : (
-            <button
-              onClick={onOpenAuth}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Campus Sign In</span>
-            </button>
           )}
         </div>
       </div>
@@ -198,7 +186,16 @@ export default function Navbar({
                 }`}
               >
                 <BarChart3 className="w-4 h-4 text-indigo-600" />
-                <span>🔬 Lab Hardware Operations Hub</span>
+                <span>🔬 Department Operations &amp; Audits</span>
+              </button>
+              <button
+                onClick={() => setActiveView('repair')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                  activeView === 'repair' ? 'bg-white text-orange-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Wrench className="w-4 h-4 text-orange-600" />
+                <span>Repair Triage &amp; Helpdesk</span>
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
@@ -207,7 +204,16 @@ export default function Navbar({
                 }`}
               >
                 <Package className="w-4 h-4 text-blue-600" />
-                <span>Release Surplus Hardware to Students</span>
+                <span>Release Hardware to Students</span>
+              </button>
+              <button
+                onClick={() => setActiveView('ai_scanner')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                  activeView === 'ai_scanner' ? 'bg-white text-purple-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-purple-600" />
+                <span>AI Component Scanner</span>
               </button>
             </>
           )}
@@ -222,7 +228,7 @@ export default function Navbar({
                 }`}
               >
                 <ShieldCheck className="w-4 h-4 text-slate-700" />
-                <span>🛡️ Campus Sustainability & NAAC Report</span>
+                <span>🛡️ Sustainability &amp; NAAC Report</span>
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
@@ -232,6 +238,24 @@ export default function Navbar({
               >
                 <ShoppingBag className="w-4 h-4 text-blue-600" />
                 <span>Monitor Circular Pipeline</span>
+              </button>
+              <button
+                onClick={() => setActiveView('ai_scanner')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                  activeView === 'ai_scanner' ? 'bg-white text-purple-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-purple-600" />
+                <span>AI Component Scanner</span>
+              </button>
+              <button
+                onClick={() => setActiveView('repair')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                  activeView === 'repair' ? 'bg-white text-orange-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Wrench className="w-4 h-4 text-orange-600" />
+                <span>Repair Before Replace</span>
               </button>
             </>
           )}
