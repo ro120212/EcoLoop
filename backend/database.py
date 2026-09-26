@@ -156,6 +156,20 @@ class DatabaseManager:
             if "item_title" not in existing_impact_cols:
                 cursor.execute("ALTER TABLE impact_logs ADD COLUMN item_title TEXT")
 
+            # Auto-migrate repair_tickets columns if table already existed without them
+            cursor.execute("PRAGMA table_info(repair_tickets)")
+            existing_ticket_cols = [c[1] for c in cursor.fetchall()]
+            for col, col_type in [
+                ("department", "TEXT DEFAULT 'Computer Science and Engineering'"),
+                ("lab_name", "TEXT DEFAULT 'Main Department Lab'"),
+                ("faculty_decision", "TEXT"),
+                ("faculty_notes", "TEXT"),
+                ("resolved_by", "TEXT"),
+                ("resolved_at", "TIMESTAMP")
+            ]:
+                if col not in existing_ticket_cols:
+                    cursor.execute(f"ALTER TABLE repair_tickets ADD COLUMN {col} {col_type}")
+
             conn.commit()
 
     def seed_initial_data(self):
@@ -612,27 +626,145 @@ class DatabaseManager:
                 "departments": DEPARTMENTS
             }
 
-    # --- Repair Platform Tickets ---
-    def get_repair_tickets(self) -> List[Dict[str, Any]]:
+    # --- Department Workshop Helpdesk Tickets ---
+    def get_repair_tickets(self, department: Optional[str] = None) -> List[Dict[str, Any]]:
+        if self.supabase:
+            try:
+                q = self.supabase.table("repair_tickets").select("*")
+                if department and department != "All":
+                    q = q.eq("department", department)
+                res = q.order("created_at", desc=True).execute()
+                if res.data and len(res.data) > 0:
+                    return res.data
+            except Exception:
+                pass
+
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM repair_tickets ORDER BY created_at DESC")
+            query = "SELECT * FROM repair_tickets"
+            params = []
+            if department and department != "All":
+                query += " WHERE department = ?"
+                params.append(department)
+            query += " ORDER BY created_at DESC"
+            cursor.execute(query, params)
             return [dict(row) for row in cursor.fetchall()]
 
     def create_repair_ticket(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data["id"] = data.get("id") or str(uuid.uuid4())
+        data["status"] = data.get("status") or "pending_lab_review"
+        dept = data.get("department") or "Computer Science and Engineering"
+        lab = data.get("lab_name") or f"{dept.split(' ')[0]} Systems Lab"
+
+        if self.supabase:
+            try:
+                self.supabase.table("repair_tickets").insert({
+                    "id": data["id"],
+                    "user_id": data.get("user_id", "student-user"),
+                    "user_name": data.get("user_name", "Campus Student"),
+                    "department": dept,
+                    "lab_name": lab,
+                    "device_name": data.get("device_name", ""),
+                    "symptom": data.get("symptom", ""),
+                    "ai_diagnosis": data.get("ai_diagnosis", ""),
+                    "ai_steps": data.get("ai_steps", ""),
+                    "difficulty": data.get("difficulty", "Medium"),
+                    "tools_needed": data.get("tools_needed", "Basic toolkit"),
+                    "status": data["status"],
+                    "technician_name": data.get("technician_name", f"{dept.split(' ')[0]} Lab Staff")
+                }).execute()
+            except Exception as e:
+                print(f"Notice: Supabase repair ticket insert sync: {e}")
+
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO repair_tickets (id, user_id, user_name, device_name, symptom, ai_diagnosis, ai_steps, difficulty, tools_needed, status, technician_name)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO repair_tickets (
+                    id, user_id, user_name, department, lab_name, device_name, symptom,
+                    ai_diagnosis, ai_steps, difficulty, tools_needed, status, technician_name
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 data["id"], data.get("user_id", "student-user"), data.get("user_name", "Campus Student"),
-                data.get("device_name", ""), data.get("symptom", ""), data.get("ai_diagnosis", ""),
-                data.get("ai_steps", ""), data.get("difficulty", "Medium"), data.get("tools_needed", "Basic toolkit"),
-                data.get("status", "diagnosed"), data.get("technician_name", "Campus Repair Club")
+                dept, lab, data.get("device_name", ""), data.get("symptom", ""),
+                data.get("ai_diagnosis", ""), data.get("ai_steps", ""),
+                data.get("difficulty", "Medium"), data.get("tools_needed", "Basic toolkit"),
+                data["status"], data.get("technician_name", f"{dept.split(' ')[0]} Lab Staff")
             ))
             conn.commit()
         return data
+
+    def resolve_repair_ticket(self, ticket_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Faculty Triage Outcomes:
+        1. 'repaired_returned' (Fixed and returned to student)
+        2. 'unrepairable_parts_advised' (Advised to split and give for parts on Marketplace)
+        3. 'lab_cannibalized' (Lab adopted and retained for departmental spares)
+        """
+        decision = data.get("faculty_decision", "repaired_returned")
+        notes = data.get("faculty_notes", "Inspected by Faculty In-Charge")
+        resolved_by = data.get("resolved_by", "Prof. Faculty In-Charge")
+        now_iso = datetime.datetime.utcnow().isoformat()
+
+        with self.get_sqlite() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE repair_tickets
+                SET status = ?,
+                    faculty_decision = ?,
+                    faculty_notes = ?,
+                    resolved_by = ?,
+                    resolved_at = ?
+                WHERE id = ?
+            """, (decision, decision, notes, resolved_by, now_iso, ticket_id))
+
+            cursor.execute("SELECT * FROM repair_tickets WHERE id = ?", (ticket_id,))
+            row = cursor.fetchone()
+            ticket = dict(row) if row else {}
+
+            # Option 3: Lab Adopted -> Retained for Department Cannibalization
+            if decision == "lab_cannibalized":
+                cursor.execute("""
+                    INSERT INTO dept_inventory (id, department, item_name, category, total_qty, working_qty, repairable_qty, scrap_qty, recommended_action, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """, (
+                    str(uuid.uuid4()), ticket.get("department", "Computer Science and Engineering"),
+                    f"Spares from {ticket.get('device_name', 'Student Device')}",
+                    "Salvaged Electronic Components", 1, 0, 0, 1,
+                    f"Adopted by department lab for cannibalization: {notes}"
+                ))
+
+            # Option 1: Repaired & Returned -> Log extended lifespan carbon credit
+            if decision == "repaired_returned":
+                co2 = 8.5
+                trees = round(co2 / 21.77, 1)
+                try:
+                    cursor.execute("""
+                        INSERT INTO impact_logs (id, user_id, user_name, item_title, item_summary, co2_saved_kg, trees_equivalent)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (str(uuid.uuid4()), ticket.get("user_id"), ticket.get("user_name"), ticket.get("device_name", "Repaired Device"), f"Repair in {ticket.get('department')}", co2, trees))
+                except Exception as log_err:
+                    print(f"Notice: impact log entry skipped: {log_err}")
+
+            conn.commit()
+
+        # Sync to Supabase
+        if self.supabase:
+            try:
+                self.supabase.table("repair_tickets").update({
+                    "status": decision,
+                    "faculty_decision": decision,
+                    "faculty_notes": notes,
+                    "resolved_by": resolved_by,
+                    "resolved_at": now_iso
+                }).eq("id", ticket_id).execute()
+            except Exception as e:
+                print(f"Notice: Supabase ticket resolve sync: {e}")
+
+        return {
+            "status": "success",
+            "ticket_id": ticket_id,
+            "faculty_decision": decision,
+            "message": f"Ticket resolved as: {decision.replace('_', ' ').title()}"
+        }
 
 db = DatabaseManager()

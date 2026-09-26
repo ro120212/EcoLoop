@@ -163,12 +163,16 @@ async def diagnose_repair(req: RepairDiagnoseReq):
     return diagnosis
 
 @app.get("/api/repair/tickets")
-def get_repair_tickets():
-    return db.get_repair_tickets()
+def get_repair_tickets(department: Optional[str] = None):
+    return db.get_repair_tickets(department=department)
 
 @app.post("/api/repair/tickets")
 def create_repair_ticket(ticket: Dict[str, Any]):
     return db.create_repair_ticket(ticket)
+
+@app.post("/api/repair/tickets/{ticket_id}/resolve")
+def resolve_repair_ticket(ticket_id: str, data: Dict[str, Any]):
+    return db.resolve_repair_ticket(ticket_id, data)
 
 # --- Lab Audits & Triage across CSE, Mech, Civil, EEE, IC ---
 @app.get("/api/audits")

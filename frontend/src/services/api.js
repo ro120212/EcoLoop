@@ -96,9 +96,11 @@ export const api = {
     })
     return res.json()
   },
-  async getRepairTickets() {
+  async getRepairTickets(department) {
     try {
-      const res = await fetch('/api/repair/tickets')
+      const params = new URLSearchParams()
+      if (department && department !== 'All') params.append('department', department)
+      const res = await fetch(`/api/repair/tickets?${params.toString()}`)
       if (!res.ok) return []
       return await res.json()
     } catch {
@@ -112,6 +114,18 @@ export const api = {
       body: JSON.stringify(data),
     })
     return res.json()
+  },
+  async resolveRepairTicket(ticketId, data) {
+    const res = await fetch(`/api/repair/tickets/${ticketId}/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    const body = await res.json().catch(() => null)
+    if (!res.ok) {
+      throw new Error(body?.detail || body?.message || 'Failed to resolve ticket.')
+    }
+    return body
   },
 
   // Lab Audits & Triage across CSE, Mech, Civil, EEE, IC

@@ -15,6 +15,22 @@ import {
 } from 'lucide-react'
 import { api } from '../services/api'
 
+const DEPARTMENTS = [
+  'Computer Science and Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Electrical and Electronics Engineering',
+  'Instrumentation and Control Engineering'
+]
+
+const DEPARTMENT_LABS = {
+  'Computer Science and Engineering': ['Hardware & Systems Lab', 'IoT & Embedded Lab', 'Networking Lab'],
+  'Mechanical Engineering': ['Central Workshop', 'Fab Lab & Mechatronics', 'CAD/CAM Lab'],
+  'Civil Engineering': ['Surveying Lab', 'Geotechnical Testing Lab', 'Strength of Materials Lab'],
+  'Electrical and Electronics Engineering': ['Power Electronics Lab', 'Electrical Machines Lab', 'Circuits & Measurements Lab'],
+  'Instrumentation and Control Engineering': ['Sensors & Transducers Lab', 'Process Control Lab', 'Industrial Instrumentation Lab']
+}
+
 export default function RepairPlatform() {
   const [deviceName, setDeviceName] = useState('')
   const [symptom, setSymptom] = useState('')
@@ -24,20 +40,23 @@ export default function RepairPlatform() {
   const [tickets, setTickets] = useState([])
   const [loadingTickets, setLoadingTickets] = useState(true)
   const [showTicketModal, setShowTicketModal] = useState(false)
+  const [selectedFilterDept, setSelectedFilterDept] = useState('All')
 
   // Ticket form
   const [ticketForm, setTicketForm] = useState({
     user_name: '',
     device_name: '',
     symptom: '',
-    technician_name: 'Campus Makerspace Club'
+    department: 'Computer Science and Engineering',
+    lab_name: 'Hardware & Systems Lab',
+    technician_name: 'CSE Faculty / Lab In-Charge'
   })
   const [submittingTicket, setSubmittingTicket] = useState(false)
 
-  const loadTickets = async () => {
+  const loadTickets = async (dept = selectedFilterDept) => {
     try {
       setLoadingTickets(true)
-      const data = await api.getRepairTickets()
+      const data = await api.getRepairTickets(dept)
       setTickets(data)
     } catch (err) {
       console.error('Failed to load repair tickets:', err)
@@ -47,8 +66,8 @@ export default function RepairPlatform() {
   }
 
   useEffect(() => {
-    loadTickets()
-  }, [])
+    loadTickets(selectedFilterDept)
+  }, [selectedFilterDept])
 
   const handleDiagnose = async (e) => {
     e.preventDefault()
@@ -80,9 +99,11 @@ export default function RepairPlatform() {
         user_name: '',
         device_name: '',
         symptom: '',
-        technician_name: 'Campus Makerspace Club'
+        department: 'Computer Science and Engineering',
+        lab_name: 'Hardware & Systems Lab',
+        technician_name: 'CSE Faculty / Lab In-Charge'
       })
-      await loadTickets()
+      await loadTickets(selectedFilterDept)
     } catch (err) {
       alert('Error saving ticket: ' + err.message)
     } finally {
@@ -305,13 +326,15 @@ export default function RepairPlatform() {
                       user_name: 'Student Fixer',
                       device_name: diagnosis.device,
                       symptom: symptom,
-                      technician_name: 'Campus Makerspace Club'
+                      department: 'Computer Science and Engineering',
+                      lab_name: 'Hardware & Systems Lab',
+                      technician_name: 'CSE Faculty / Lab In-Charge'
                     })
                     setShowTicketModal(true)
                   }}
                   className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs shadow-sm transition"
                 >
-                  Create Community Fix Ticket
+                  Create Helpdesk Ticket
                 </button>
               </div>
             </div>
@@ -329,32 +352,112 @@ export default function RepairPlatform() {
         </div>
       </div>
 
-      {/* Community Tickets */}
+      {/* Community / Department Tickets */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Campus Repair Tickets & Hobbyist Directory</h3>
-            <p className="text-xs text-slate-500">Student electronics repairs handled through department makerspaces</p>
+            <h3 className="text-sm font-bold text-slate-900">Department Workshop Helpdesk & Repair Tickets</h3>
+            <p className="text-xs text-slate-500">Student electronics and equipment repair tickets triaged by NSSCE department faculty and lab staff</p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {['All', ...DEPARTMENTS].map(d => (
+              <button
+                key={d}
+                onClick={() => setSelectedFilterDept(d)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                  selectedFilterDept === d
+                    ? 'bg-orange-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {d === 'All' ? 'All Departments' : d.split(' ')[0]}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tickets.map(t => (
-            <div key={t.id} className="p-4 rounded-xl border border-slate-200 space-y-2 bg-slate-50/50">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-900">{t.device_name}</span>
-                <span className="px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 text-[10px] capitalize">
-                  {t.status}
-                </span>
-              </div>
-              <p className="text-xs text-slate-600"><strong>Problem:</strong> {t.symptom}</p>
-              <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1 border-t border-slate-200">
-                <span>Requested by: <strong>{t.user_name}</strong></span>
-                <span>Assigned: <strong>{t.technician_name}</strong></span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {loadingTickets ? (
+          <div className="p-8 text-center text-xs text-slate-400">Loading department repair tickets...</div>
+        ) : tickets.length === 0 ? (
+          <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-xl">
+            No repair tickets found for this department filter. Click &quot;Post Repair Help Request&quot; above to submit one!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tickets.map(t => {
+              const statusBadge = () => {
+                switch (t.status) {
+                  case 'pending_lab_review':
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 text-[10px]">⏳ Awaiting Faculty Assessment</span>
+                  case 'repaired_returned':
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 text-[10px]">✅ Repaired & Returned (+8.5kg CO₂e)</span>
+                  case 'unrepairable_parts_advised':
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-purple-100 text-purple-800 text-[10px]">🧩 Advised for Marketplace Parts</span>
+                  case 'lab_cannibalized':
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-indigo-100 text-indigo-800 text-[10px]">🏢 Lab Adopted (Dept Spares)</span>
+                  default:
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 text-[10px] capitalize">{t.status}</span>
+                }
+              }
+
+              return (
+                <div key={t.id} className="p-4 rounded-xl border border-slate-200 space-y-3 bg-slate-50/60 shadow-xs">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">
+                          {t.department ? t.department.split(' ')[0] : 'General'}
+                        </span>
+                        {t.lab_name && (
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                            {t.lab_name}
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="font-bold text-slate-900 text-sm">{t.device_name}</h4>
+                    </div>
+                    {statusBadge()}
+                  </div>
+
+                  <p className="text-xs text-slate-600 bg-white p-2.5 rounded-lg border border-slate-100">
+                    <strong className="text-slate-800">Problem Reported:</strong> {t.symptom}
+                  </p>
+
+                  {/* Faculty Decision Callout if resolved */}
+                  {t.faculty_decision && (
+                    <div className={`p-3 rounded-lg border text-xs space-y-1 ${
+                      t.faculty_decision === 'repaired_returned' ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' :
+                      t.faculty_decision === 'unrepairable_parts_advised' ? 'bg-purple-50/80 border-purple-200 text-purple-950' :
+                      'bg-indigo-50/80 border-indigo-200 text-indigo-950'
+                    }`}>
+                      <div className="font-bold flex items-center justify-between text-[11px]">
+                        <span>
+                          {t.faculty_decision === 'repaired_returned' && '✅ Repaired & Returned to Student'}
+                          {t.faculty_decision === 'unrepairable_parts_advised' && '🧩 Unrepairable -> Advised to Disassemble for Parts'}
+                          {t.faculty_decision === 'lab_cannibalized' && '🏢 Lab Adopted -> Retained for Department Cannibalization'}
+                        </span>
+                        {t.resolved_by && <span className="font-normal opacity-80">By {t.resolved_by}</span>}
+                      </div>
+                      {t.faculty_notes && (
+                        <p className="text-[11px] leading-relaxed opacity-90">{t.faculty_notes}</p>
+                      )}
+                      {t.faculty_decision === 'unrepairable_parts_advised' && (
+                        <p className="text-[10px] text-purple-700 font-semibold pt-1">
+                          💡 You can disassemble this device and list the working parts (screens, chassis, motors) on the Circular Marketplace!
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1 border-t border-slate-200">
+                    <span>Requested by: <strong className="text-slate-700">{t.user_name}</strong></span>
+                    <span>Workshop: <strong className="text-slate-700">{t.technician_name}</strong></span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Post Ticket Modal */}
@@ -362,16 +465,19 @@ export default function RepairPlatform() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h2 className="text-base font-bold text-slate-900">Post Campus Repair Ticket</h2>
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Post Department Helpdesk Ticket</h2>
+                <p className="text-xs text-slate-500">Route your broken equipment to college lab staff & technicians</p>
+              </div>
               <button onClick={() => setShowTicketModal(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
             </div>
 
             <form onSubmit={handleCreateTicket} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Your Name & Department *</label>
+                <label className="block font-semibold text-slate-700 mb-1">Your Name & Roll No. *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Arun S (S5 ECE)"
+                  placeholder="e.g. Arun S (S5 CSE, Roll 22)"
                   value={ticketForm.user_name}
                   onChange={(e) => setTicketForm({...ticketForm, user_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -380,10 +486,45 @@ export default function RepairPlatform() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Device Name *</label>
+                <label className="block font-semibold text-slate-700 mb-1">Target Department Workshop *</label>
+                <select
+                  value={ticketForm.department}
+                  onChange={(e) => {
+                    const dept = e.target.value
+                    const labs = DEPARTMENT_LABS[dept] || ['General Workshop']
+                    setTicketForm({
+                      ...ticketForm,
+                      department: dept,
+                      lab_name: labs[0],
+                      technician_name: `${dept.split(' ')[0]} Faculty / Lab In-Charge`
+                    })
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                >
+                  {DEPARTMENTS.map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Specific Lab / Workshop Helpdesk *</label>
+                <select
+                  value={ticketForm.lab_name}
+                  onChange={(e) => setTicketForm({...ticketForm, lab_name: e.target.value})}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                >
+                  {(DEPARTMENT_LABS[ticketForm.department] || ['General Workshop']).map(l => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Device Name & Model *</label>
                 <input
                   type="text"
-                  placeholder="e.g. HP Pavilion Laptop"
+                  placeholder="e.g. HP Pavilion 15 / Arduino Mega / DSO Oscilloscope"
                   value={ticketForm.device_name}
                   onChange={(e) => setTicketForm({...ticketForm, device_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -392,28 +533,15 @@ export default function RepairPlatform() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Problem Description *</label>
+                <label className="block font-semibold text-slate-700 mb-1">Problem Description / Symptoms *</label>
                 <textarea
                   rows="2"
-                  placeholder="Describe what happens when you turn it on..."
+                  placeholder="Describe what happens (e.g. power LED blinks twice then dies, burning smell, screen backlight off)..."
                   value={ticketForm.symptom}
                   onChange={(e) => setTicketForm({...ticketForm, symptom: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
                   required
                 ></textarea>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Campus Workshop / Fixer Group</label>
-                <select
-                  value={ticketForm.technician_name}
-                  onChange={(e) => setTicketForm({...ticketForm, technician_name: e.target.value})}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                >
-                  <option value="Campus Makerspace Club">Campus Makerspace Club (Central Workshop)</option>
-                  <option value="ECE Hardware & IoT Club">ECE Hardware & IoT Club</option>
-                  <option value="CSE Open Source Lab">CSE Open Source Lab</option>
-                </select>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">
@@ -429,7 +557,7 @@ export default function RepairPlatform() {
                   disabled={submittingTicket}
                   className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-md shadow-orange-600/30 transition disabled:opacity-50"
                 >
-                  {submittingTicket ? 'Posting...' : 'Submit Ticket'}
+                  {submittingTicket ? 'Submitting...' : 'Submit to Helpdesk'}
                 </button>
               </div>
             </form>
