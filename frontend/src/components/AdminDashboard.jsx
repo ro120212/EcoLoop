@@ -43,7 +43,7 @@ const DEPARTMENTS = [
   'Instrumentation and Control Engineering'
 ]
 
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#06b6d4']
+const COLORS = ['#3ECF8E', '#2ebb7b', '#249a65', '#60A5FA', '#818CF8']
 
 export default function AdminDashboard({ onNavigateToMarketplace }) {
   const [stats, setStats] = useState(null)
@@ -147,47 +147,47 @@ export default function AdminDashboard({ onNavigateToMarketplace }) {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+        <div className="bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
             <Leaf className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Campus Carbon Offset</span>
-            <p className="text-2xl font-black text-slate-900">{totalCo2} <span className="text-sm font-normal text-slate-500">kg CO₂e</span></p>
-            <span className="text-[10px] text-emerald-600 font-semibold">≈ {treesEq} Trees Grown for 10 Yrs</span>
+            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-mono">Campus Carbon Offset</span>
+            <p className="text-2xl font-bold text-[#EDEDED]">{totalCo2} <span className="text-sm font-normal text-zinc-400">kg CO₂e</span></p>
+            <span className="text-[10px] text-[#3ECF8E] font-mono">≈ {treesEq} Trees Grown for 10 Yrs</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+        <div className="bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
             <Recycle className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Diverted from Landfill</span>
-            <p className="text-2xl font-black text-slate-900">{totalCompleted} <span className="text-sm font-normal text-slate-500">Units</span></p>
-            <span className="text-[10px] text-blue-600 font-semibold">100% Retained On-Campus</span>
+            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-mono">Diverted from Landfill</span>
+            <p className="text-2xl font-bold text-[#EDEDED]">{totalCompleted} <span className="text-sm font-normal text-zinc-400">Units</span></p>
+            <span className="text-[10px] text-[#3ECF8E] font-mono">100% Retained On-Campus</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0">
+        <div className="bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
             <TrendingUp className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Student Project Savings</span>
-            <p className="text-2xl font-black text-slate-900">₹{estimatedSavings.toLocaleString()} <span className="text-sm font-normal text-slate-500">INR</span></p>
-            <span className="text-[10px] text-purple-600 font-semibold">Zero-Cost Spare Access</span>
+            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-mono">Student Project Savings</span>
+            <p className="text-2xl font-bold text-[#EDEDED]">₹{estimatedSavings.toLocaleString()} <span className="text-sm font-normal text-zinc-400">INR</span></p>
+            <span className="text-[10px] text-[#3ECF8E] font-mono">Zero-Cost Spare Access</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+        <div className="bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[#232323] border border-[#2e2e2e] text-amber-400 flex items-center justify-center flex-shrink-0">
             <Building2 className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Participating Depts</span>
-            <p className="text-2xl font-black text-slate-900">5 <span className="text-sm font-normal text-slate-500">Branches</span></p>
-            <span className="text-[10px] text-amber-600 font-semibold">CSE • Mech • Civil • EEE • IC</span>
+            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-mono">Participating Depts</span>
+            <p className="text-2xl font-bold text-[#EDEDED]">5 <span className="text-sm font-normal text-zinc-400">Branches</span></p>
+            <span className="text-[10px] text-amber-300 font-mono">CSE • Mech • Civil • EEE • IC</span>
           </div>
         </div>
       </div>
@@ -233,11 +233,11 @@ export default function AdminDashboard({ onNavigateToMarketplace }) {
         {/* Right: Circular Material Streams Pie Chart */}
         <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-purple-600" />
+            <h2 className="text-base font-bold text-[#EDEDED] flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-[#3ECF8E]" />
               <span>Campus Circular Streams</span>
             </h2>
-            <p className="text-xs text-slate-500">Component categories re-circulated</p>
+            <p className="text-xs text-zinc-400">Component categories re-circulated</p>
           </div>
 
           <div className="h-56 w-full">
@@ -257,7 +257,7 @@ export default function AdminDashboard({ onNavigateToMarketplace }) {
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: '#141414', borderRadius: '12px', border: '1px solid #2e2e2e', color: '#EDEDED', fontSize: '12px' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -268,9 +268,9 @@ export default function AdminDashboard({ onNavigateToMarketplace }) {
               <div key={idx} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
-                  <span className="text-slate-600 font-medium truncate max-w-[170px]">{item.name}</span>
+                  <span className="text-zinc-400 font-medium truncate max-w-[170px]">{item.name}</span>
                 </div>
-                <span className="font-bold text-slate-800">{item.value}%</span>
+                <span className="font-bold text-[#EDEDED] font-mono">{item.value}%</span>
               </div>
             ))}
           </div>
@@ -278,12 +278,12 @@ export default function AdminDashboard({ onNavigateToMarketplace }) {
       </div>
 
       {/* Live Campus Marketplace Pipeline Monitor */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+      <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2e2e2e] pb-4">
           <div>
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-blue-600" />
-              <span>Peer-to-Peer & Lab Circular Exchange Pipeline</span>
+            <h2 className="text-base font-bold text-[#EDEDED] flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#3ECF8E]" />
+              <span>Peer-to-Peer &amp; Lab Circular Exchange Pipeline</span>
             </h2>
             <p className="text-xs text-slate-500">
               Real-time audit of claims, buyer meeting points, and secure PIN handoffs

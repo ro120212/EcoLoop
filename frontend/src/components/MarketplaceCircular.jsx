@@ -239,22 +239,22 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
               <ShoppingBag className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Campus Circular Marketplace & Component Exchange</h1>
+            <h1 className="text-xl font-bold text-[#EDEDED]">Campus Circular Marketplace &amp; Component Exchange</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-zinc-400 mt-1">
             Exchange e-waste, surplus lab systems, and project materials across CSE, Mechanical, Civil, EEE, and IC.
           </p>
         </div>
 
         <button
           onClick={() => setShowPostModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto"
+          className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Post Item / Split Parts</span>
@@ -271,10 +271,10 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 <button
                   key={d}
                   onClick={() => setSelectedDept(d)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                     selectedDept === d
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                      ? 'bg-[#3ECF8E] text-[#121212] shadow-sm'
+                      : 'bg-[#1c1c1c] border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#232323]'
                   }`}
                 >
                   {label}
@@ -283,22 +283,34 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
             })}
           </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs">
+          <div className="flex items-center gap-1.5 bg-[#181818] border border-[#2e2e2e] p-1 rounded-xl text-xs">
             <button
               onClick={() => setPriceFilter('all')}
-              className={`px-2.5 py-1 rounded-lg font-semibold ${priceFilter === 'all' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600'}`}
+              className={`px-2.5 py-1 rounded-lg font-semibold transition cursor-pointer ${
+                priceFilter === 'all' 
+                  ? 'bg-[#232323] shadow-sm text-[#EDEDED] border border-[#2e2e2e]' 
+                  : 'text-zinc-400 hover:text-[#EDEDED]'
+              }`}
             >
               All Items
             </button>
             <button
               onClick={() => setPriceFilter('free')}
-              className={`px-2.5 py-1 rounded-lg font-semibold ${priceFilter === 'free' ? 'bg-emerald-600 text-white' : 'text-slate-600'}`}
+              className={`px-2.5 py-1 rounded-lg font-semibold transition cursor-pointer ${
+                priceFilter === 'free' 
+                  ? 'bg-[#3ECF8E] text-[#121212]' 
+                  : 'text-zinc-400 hover:text-[#EDEDED]'
+              }`}
             >
               🎁 Free Gifts
             </button>
             <button
               onClick={() => setPriceFilter('priced')}
-              className={`px-2.5 py-1 rounded-lg font-semibold ${priceFilter === 'priced' ? 'bg-blue-600 text-white' : 'text-slate-600'}`}
+              className={`px-2.5 py-1 rounded-lg font-semibold transition cursor-pointer ${
+                priceFilter === 'priced' 
+                  ? 'bg-[#3ECF8E] text-[#121212]' 
+                  : 'text-zinc-400 hover:text-[#EDEDED]'
+              }`}
             >
               💰 Student Price
             </button>
@@ -307,12 +319,13 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
         {/* Search */}
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-3 text-zinc-500" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+            placeholder="Search electronics, lab surplus, microcontrollers, cables, or parts..."
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] placeholder-zinc-500 text-xs focus:outline-none focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] shadow-sm"
           />
         </div>
       </div>
@@ -410,7 +423,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                         setClaimingSuccess(null)
                         setClaimingError('')
                       }}
-                      className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition shadow-sm"
+                      className="w-full py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs transition shadow-sm cursor-pointer"
                     >
                       Claim / Buy for Project
                     </button>
@@ -546,7 +559,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   <button
                     type="submit"
                     disabled={claimingLoading}
-                    className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md shadow-blue-600/30 transition disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 cursor-pointer"
                   >
                     {claimingLoading ? 'Reserving...' : 'Confirm & Get Handoff PIN'}
                   </button>
@@ -742,7 +755,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 <button
                   type="submit"
                   disabled={postingLoading}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md shadow-blue-600/30 transition disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 cursor-pointer"
                 >
                   {postingLoading ? 'Publishing...' : 'Publish to Campus'}
                 </button>

@@ -118,7 +118,7 @@ export default function Navbar({
             <>
               <button
                 onClick={() => setActiveView('student_hub')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'student_hub' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
@@ -128,7 +128,7 @@ export default function Navbar({
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'marketplace' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
@@ -139,24 +139,24 @@ export default function Navbar({
               </button>
               <button
                 onClick={() => setActiveView('ai_scanner')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'ai_scanner' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-purple-400'}`} />
+                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>AI Component Scanner</span>
               </button>
               <button
                 onClick={() => setActiveView('repair')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'repair' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-amber-400'}`} />
+                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>Repair Before Replace</span>
               </button>
             </>
@@ -167,29 +167,29 @@ export default function Navbar({
             <>
               <button
                 onClick={() => setActiveView('lab_staff_hub')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'lab_staff_hub' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <BarChart3 className={`w-3.5 h-3.5 ${activeView === 'lab_staff_hub' ? 'text-[#121212]' : 'text-blue-400'}`} />
+                <BarChart3 className={`w-3.5 h-3.5 ${activeView === 'lab_staff_hub' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>🔬 Department Operations &amp; Audits</span>
               </button>
               <button
                 onClick={() => setActiveView('repair')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'repair' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-amber-400'}`} />
+                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>Repair Triage &amp; Helpdesk</span>
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'marketplace' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
@@ -200,13 +200,13 @@ export default function Navbar({
               </button>
               <button
                 onClick={() => setActiveView('ai_scanner')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'ai_scanner' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-purple-400'}`} />
+                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>AI Component Scanner</span>
               </button>
             </>
@@ -217,18 +217,18 @@ export default function Navbar({
             <>
               <button
                 onClick={() => setActiveView('admin_hub')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'admin_hub' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <ShieldCheck className={`w-3.5 h-3.5 ${activeView === 'admin_hub' ? 'text-[#121212]' : 'text-purple-400'}`} />
+                <ShieldCheck className={`w-3.5 h-3.5 ${activeView === 'admin_hub' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>🛡️ Sustainability &amp; NAAC Report</span>
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'marketplace' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
@@ -239,24 +239,24 @@ export default function Navbar({
               </button>
               <button
                 onClick={() => setActiveView('ai_scanner')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'ai_scanner' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-purple-400'}`} />
+                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>AI Component Scanner</span>
               </button>
               <button
                 onClick={() => setActiveView('repair')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeView === 'repair' 
                     ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                     : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
                 }`}
               >
-                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-amber-400'}`} />
+                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
                 <span>Repair Before Replace</span>
               </button>
             </>

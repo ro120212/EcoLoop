@@ -2,10 +2,7 @@ import React, { useState } from 'react'
 import { 
   Sparkles, 
   UploadCloud, 
-  Camera, 
   CheckCircle2, 
-  AlertTriangle, 
-  Leaf, 
   ArrowRight, 
   RefreshCw 
 } from 'lucide-react'
@@ -44,18 +41,18 @@ export default function AIWasteClassifier({ onNavigateModule }) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Smart AI Waste & Component Classifier</h1>
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+            <h1 className="text-xl font-bold text-[#EDEDED]">Smart AI Waste &amp; Component Classifier</h1>
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 font-mono">
               AI Vision Classifier
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-zinc-400 mt-1">
             Identify e-waste materials, component specifications, toxicity hazards, and recovery routes instantly with automated AI vision.
           </p>
         </div>
@@ -64,33 +61,33 @@ export default function AIWasteClassifier({ onNavigateModule }) {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* AI Camera & Vision Scanner */}
         <div className="space-y-4">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-600" />
+          <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4">
+            <h3 className="text-sm font-bold text-[#EDEDED] flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#3ECF8E]" />
               <span>Scan or Upload E-Waste Item</span>
             </h3>
 
-            <div className="border-2 border-dashed border-slate-200 hover:border-purple-400 rounded-2xl p-6 text-center transition bg-slate-50/50">
+            <div className="border-2 border-dashed border-[#2e2e2e] hover:border-[#3ECF8E]/50 rounded-2xl p-6 text-center transition bg-[#141414]">
               {previewUrl ? (
                 <div className="space-y-3">
                   <img 
                     src={previewUrl} 
                     alt="Waste preview" 
-                    className="max-h-56 mx-auto rounded-xl object-contain shadow-sm border border-slate-200" 
+                    className="max-h-56 mx-auto rounded-xl object-contain shadow-sm border border-[#2e2e2e]" 
                   />
-                  <label className="inline-block cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                  <label className="inline-block cursor-pointer px-3 py-1.5 rounded-xl bg-[#232323] border border-[#2e2e2e] text-xs font-semibold text-zinc-300 hover:bg-[#282828] hover:text-[#EDEDED]">
                     Change Photo
                     <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                   </label>
                 </div>
               ) : (
                 <label className="cursor-pointer block space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mx-auto">
+                  <div className="w-12 h-12 rounded-2xl bg-[#232323] text-[#3ECF8E] border border-[#2e2e2e] flex items-center justify-center mx-auto shadow-sm">
                     <UploadCloud className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-purple-700">Click to upload photo or take picture</span>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Supports JPG, PNG, WEBP of cables, batteries, boards, or peripherals</p>
+                    <span className="text-xs font-semibold text-[#3ECF8E]">Click to upload photo or take picture</span>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">Supports JPG, PNG, WEBP of cables, batteries, boards, or peripherals</p>
                   </div>
                   <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                 </label>
@@ -101,11 +98,11 @@ export default function AIWasteClassifier({ onNavigateModule }) {
               <button
                 onClick={handleClassify}
                 disabled={loading}
-                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs shadow-md shadow-purple-600/30 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-lg shadow-[#3ECF8E]/20 transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#121212]" />
                     <span>Analyzing image...</span>
                   </>
                 ) : (
@@ -118,7 +115,7 @@ export default function AIWasteClassifier({ onNavigateModule }) {
             )}
 
             {error && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
                 {error}
               </div>
             )}
@@ -126,52 +123,48 @@ export default function AIWasteClassifier({ onNavigateModule }) {
 
           {/* AI Analysis Result */}
           {result && (
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 text-xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4 text-xs">
+              <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-mono">
                     Automated Multimodal AI Analysis
                   </span>
-                  <h3 className="text-base font-bold text-slate-900 mt-0.5">{result.item_name}</h3>
+                  <h3 className="text-base font-bold text-[#EDEDED] mt-0.5">{result.item_name}</h3>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {result.cached && (
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 font-mono">
                       ⚡ Instant Cache Hit
                     </span>
                   )}
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                    result.category === 'E-Waste' ? 'bg-purple-100 text-purple-800' :
-                    result.category === 'Metal' ? 'bg-blue-100 text-blue-800' :
-                    'bg-emerald-100 text-emerald-800'
-                  }`}>
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#232323] text-zinc-300 border border-[#2e2e2e]">
                     {result.category}
                   </span>
                 </div>
               </div>
 
               {/* Hazard Meter */}
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <div className="p-3.5 rounded-xl bg-[#141414] border border-[#2e2e2e] space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-700">Toxicity & Handling Hazard:</span>
-                  <span className={`font-bold px-2 py-0.5 rounded text-[11px] ${
-                    result.hazard_level === 'High' ? 'bg-rose-100 text-rose-700' :
-                    result.hazard_level === 'Medium' ? 'bg-amber-100 text-amber-700' :
-                    'bg-emerald-100 text-emerald-700'
+                  <span className="font-semibold text-zinc-300">Toxicity &amp; Handling Hazard:</span>
+                  <span className={`font-bold px-2 py-0.5 rounded text-[11px] font-mono border ${
+                    result.hazard_level === 'High' ? 'bg-rose-500/10 text-rose-300 border-rose-500/30' :
+                    result.hazard_level === 'Medium' ? 'bg-amber-500/10 text-amber-300 border-amber-500/30' :
+                    'bg-[#3ECF8E]/10 text-[#3ECF8E] border-[#3ECF8E]/30'
                   }`}>
                     {result.hazard_level} Hazard
                   </span>
                 </div>
-                <p className="text-slate-600 text-[11px]">{result.hazard_reason}</p>
+                <p className="text-zinc-400 text-[11px]">{result.hazard_reason}</p>
               </div>
 
               {/* Materials */}
               <div>
-                <span className="font-bold text-slate-700 block mb-1.5">Materials Detected:</span>
+                <span className="font-semibold text-zinc-300 block mb-1.5">Materials Detected:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {result.materials_detected?.map((m, i) => (
-                    <span key={i} className="font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 text-[11px]">
+                    <span key={i} className="font-medium px-2 py-0.5 rounded-md bg-[#232323] text-zinc-300 border border-[#2e2e2e] text-[11px] font-mono">
                       {m}
                     </span>
                   ))}
@@ -179,15 +172,15 @@ export default function AIWasteClassifier({ onNavigateModule }) {
               </div>
 
               {/* Advice */}
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
+              <div className="p-3.5 rounded-xl bg-[#3ECF8E]/10 border border-[#3ECF8E]/25 text-[#EDEDED] space-y-1">
                 <div className="flex items-center justify-between">
-                  <strong className="font-bold flex items-center gap-1.5 text-emerald-950">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <strong className="font-semibold flex items-center gap-1.5 text-[#3ECF8E]">
+                    <CheckCircle2 className="w-4 h-4" />
                     Recommended Route: {result.recommended_action}
                   </strong>
-                  <span className="font-semibold text-emerald-700">Est. {result.carbon_savings_if_diverted_kg} kg CO₂</span>
+                  <span className="font-mono text-xs text-[#3ECF8E]">Est. {result.carbon_savings_if_diverted_kg} kg CO₂</span>
                 </div>
-                <p className="text-emerald-800 text-[11px] leading-relaxed">
+                <p className="text-zinc-300 text-[11px] leading-relaxed">
                   {result.campus_disposal_advice}
                 </p>
               </div>
@@ -195,14 +188,14 @@ export default function AIWasteClassifier({ onNavigateModule }) {
               <div className="pt-2 flex flex-wrap gap-2">
                 <button
                   onClick={() => onNavigateModule('marketplace')}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>List on Circular Marketplace</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => onNavigateModule('repair')}
-                  className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition"
+                  className="px-4 py-2 rounded-xl bg-[#232323] border border-[#2e2e2e] hover:bg-[#282828] text-[#EDEDED] font-semibold text-xs transition cursor-pointer"
                 >
                   Diagnose in Repair Clinic
                 </button>

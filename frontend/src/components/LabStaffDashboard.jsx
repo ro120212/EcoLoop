@@ -157,15 +157,15 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
   return (
     <div className="space-y-6 pb-12">
       {/* Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
               <Building className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Lab Staff Operations & Hardware Triage Hub</h1>
+            <h1 className="text-xl font-bold text-[#EDEDED]">Lab Staff Operations &amp; Hardware Triage Hub</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-zinc-400 mt-1">
             Department equipment inventory management, hardware surveys, and direct student surplus allocation.
           </p>
         </div>
@@ -173,16 +173,16 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowReleaseModal(true)}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer"
           >
             <Share2 className="w-3.5 h-3.5" />
             <span>Release Surplus to Students</span>
           </button>
           <button
             onClick={() => setShowSurveyModal(true)}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-[#232323] hover:bg-[#282828] border border-[#2e2e2e] text-[#EDEDED] font-semibold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5 text-[#3ECF8E]" />
             <span>Record Lab Survey</span>
           </button>
         </div>
@@ -190,16 +190,16 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
 
       {/* Department Selector */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-bold text-slate-700">Active Department:</span>
+        <span className="text-xs font-semibold text-zinc-400">Active Department:</span>
         <div className="flex flex-wrap gap-1.5">
           {DEPARTMENTS.map(d => (
             <button
               key={d}
               onClick={() => setSelectedDept(d)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 selectedDept === d
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  ? 'bg-[#3ECF8E] text-[#121212] shadow-sm'
+                  : 'bg-[#1c1c1c] border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#232323]'
               }`}
             >
               {d.split(' ')[0]}
@@ -209,19 +209,19 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-3 flex-wrap">
+      <div className="flex items-center gap-2 border-b border-[#2e2e2e] pb-3 flex-wrap">
         <button
           onClick={() => setActiveTab('tickets')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
             activeTab === 'tickets'
-              ? 'bg-orange-600 text-white shadow-xs'
-              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+              ? 'bg-[#3ECF8E] text-[#121212] shadow-xs'
+              : 'bg-[#1c1c1c] border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#232323]'
           }`}
         >
           <Wrench className="w-3.5 h-3.5" />
           <span>Department Workshop Helpdesk</span>
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-            activeTab === 'tickets' ? 'bg-orange-700 text-white' : 'bg-slate-100 text-slate-700'
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+            activeTab === 'tickets' ? 'bg-[#121212] text-[#3ECF8E]' : 'bg-[#232323] text-zinc-400'
           }`}>
             {repairTickets.length}
           </span>
@@ -232,16 +232,16 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
 
         <button
           onClick={() => setActiveTab('inventory')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
             activeTab === 'inventory'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+              ? 'bg-[#3ECF8E] text-[#121212] shadow-xs'
+              : 'bg-[#1c1c1c] border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#232323]'
           }`}
         >
           <Package className="w-3.5 h-3.5" />
-          <span>Equipment Batches & Cannibalization</span>
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-            activeTab === 'inventory' ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-700'
+          <span>Equipment Batches &amp; Cannibalization</span>
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+            activeTab === 'inventory' ? 'bg-[#121212] text-[#3ECF8E]' : 'bg-[#232323] text-zinc-400'
           }`}>
             {inventory.length}
           </span>
@@ -249,16 +249,16 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
 
         <button
           onClick={() => setActiveTab('surveys')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
             activeTab === 'surveys'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+              ? 'bg-[#3ECF8E] text-[#121212] shadow-xs'
+              : 'bg-[#1c1c1c] border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#232323]'
           }`}
         >
           <BarChart3 className="w-3.5 h-3.5" />
           <span>Lab Hardware Health Surveys</span>
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-            activeTab === 'surveys' ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-700'
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+            activeTab === 'surveys' ? 'bg-[#121212] text-[#3ECF8E]' : 'bg-[#232323] text-zinc-400'
           }`}>
             {audits.length}
           </span>

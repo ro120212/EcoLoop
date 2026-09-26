@@ -120,18 +120,18 @@ export default function RepairPlatform({ user }) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
               <Wrench className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Repair Before Replace Platform</h1>
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">
+            <h1 className="text-xl font-bold text-[#EDEDED]">Repair Before Replace Platform</h1>
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 font-mono">
               AI Diagnostics
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-zinc-400 mt-1">
             Extend device lifespan instead of generating e-waste. Get AI-guided troubleshooting instructions or submit to department workshops.
           </p>
         </div>
@@ -144,7 +144,7 @@ export default function RepairPlatform({ user }) {
             }))
             setShowTicketModal(true)
           }}
-          className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto"
+          className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Post Repair Help Request</span>
@@ -154,46 +154,48 @@ export default function RepairPlatform({ user }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Diagnostic Form */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-orange-600" />
+          <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4">
+            <h3 className="text-sm font-bold text-[#EDEDED] flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#3ECF8E]" />
               <span>AI Fault Diagnostic Assistant</span>
             </h3>
 
             <form onSubmit={handleDiagnose} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Faulty Device Name *</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Faulty Device Name *</label>
                 <input
                   type="text"
                   value={deviceName}
                   onChange={(e) => setDeviceName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  placeholder="e.g. Logitech MX Master Mouse"
+                  className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] placeholder-zinc-500 focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Category</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none cursor-pointer"
                 >
-                  <option value="Peripherals & Input">Peripherals & Input (Keyboard, Mouse)</option>
-                  <option value="Laptops & Computers">Laptops & Desktops</option>
-                  <option value="Power Supplies & Adapters">Power Supplies & Adapters</option>
-                  <option value="Displays & Monitors">Displays & Monitors</option>
-                  <option value="Audio & Microphones">Audio, Headphones & Microphones</option>
+                  <option value="Peripherals & Input">Peripherals &amp; Input (Keyboard, Mouse)</option>
+                  <option value="Laptops & Computers">Laptops &amp; Desktops</option>
+                  <option value="Power Supplies & Adapters">Power Supplies &amp; Adapters</option>
+                  <option value="Displays & Monitors">Displays &amp; Monitors</option>
+                  <option value="Audio & Microphones">Audio, Headphones &amp; Microphones</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Describe Symptoms / Malfunction *</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Describe Symptoms / Malfunction *</label>
                 <textarea
                   rows="3"
                   value={symptom}
                   onChange={(e) => setSymptom(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  placeholder="e.g. Left button double-clicks erratically on single press"
+                  className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] placeholder-zinc-500 focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
                   required
                 ></textarea>
               </div>
@@ -201,17 +203,17 @@ export default function RepairPlatform({ user }) {
               <button
                 type="submit"
                 disabled={diagnosing}
-                className="w-full py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs shadow-md shadow-orange-600/30 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-md shadow-[#3ECF8E]/20 transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {diagnosing ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#121212]" />
                     <span>Analyzing Diagnostics...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    <span>Diagnose & Generate Repair Guide</span>
+                    <span>Diagnose &amp; Generate Repair Guide</span>
                   </>
                 )}
               </button>
@@ -290,25 +292,25 @@ export default function RepairPlatform({ user }) {
 
               {/* Step by step */}
               <div className="space-y-2">
-                <h4 className="font-bold text-slate-800">Step-by-Step Diagnostic & Fix:</h4>
+                <h4 className="font-bold text-zinc-200">Step-by-Step Diagnostic &amp; Fix:</h4>
                 <div className="space-y-2">
                   {diagnosis.step_by_step_troubleshooting?.map((step) => (
-                    <div key={step.step} className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-0.5">
-                      <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                        <span className="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px]">
+                    <div key={step.step} className="p-3 rounded-xl bg-[#141414] border border-[#2e2e2e] space-y-0.5">
+                      <div className="font-bold text-[#EDEDED] flex items-center gap-1.5">
+                        <span className="w-5 h-5 rounded-full bg-[#3ECF8E] text-[#121212] font-bold flex items-center justify-center text-[10px] shrink-0 font-mono">
                           {step.step}
                         </span>
                         <span>{step.title}</span>
                       </div>
-                      <p className="text-slate-600 pl-6 leading-relaxed">{step.description}</p>
+                      <p className="text-zinc-400 pl-6 leading-relaxed text-xs">{step.description}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500 font-medium">
-                  Verdict: <strong className="text-emerald-700">{diagnosis.verdict}</strong>
+                <span className="text-[11px] text-zinc-400 font-medium">
+                  Verdict: <strong className="text-[#3ECF8E]">{diagnosis.verdict}</strong>
                 </span>
 
                 <button
@@ -323,19 +325,19 @@ export default function RepairPlatform({ user }) {
                     })
                     setShowTicketModal(true)
                   }}
-                  className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs shadow-sm transition"
+                  className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition cursor-pointer"
                 >
                   Create Helpdesk Ticket
                 </button>
               </div>
             </div>
           ) : (
-            <div className="h-full bg-white p-12 text-center rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center">
+            <div className="h-full bg-[#1c1c1c] p-12 text-center rounded-2xl border border-[#2e2e2e] shadow-sm flex flex-col items-center justify-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#232323] text-[#3ECF8E] border border-[#2e2e2e] flex items-center justify-center shadow-sm">
                 <Wrench className="w-6 h-6" />
               </div>
-              <h3 className="text-sm font-bold text-slate-800">Ready for diagnostics</h3>
-              <p className="text-xs text-slate-500 max-w-sm">
+              <h3 className="text-sm font-bold text-[#EDEDED]">Ready for diagnostics</h3>
+              <p className="text-xs text-zinc-400 max-w-sm">
                 Enter your device and symptom on the left. The AI diagnostic engine will generate a safety-checked, step-by-step DIY troubleshooting protocol.
               </p>
             </div>
@@ -344,21 +346,21 @@ export default function RepairPlatform({ user }) {
       </div>
 
       {/* Student's Own Tickets */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">My Repair Helpdesk Tickets</h3>
-            <p className="text-xs text-slate-500">Track the inspection and triage progress of your submitted hardware repair requests</p>
+            <h3 className="text-sm font-bold text-[#EDEDED]">My Repair Helpdesk Tickets</h3>
+            <p className="text-xs text-zinc-400">Track the inspection and triage progress of your submitted hardware repair requests</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {['All', ...DEPARTMENTS].map(d => (
               <button
                 key={d}
                 onClick={() => setSelectedFilterDept(d)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
                   selectedFilterDept === d
-                    ? 'bg-orange-600 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-[#3ECF8E] text-[#121212] shadow-xs'
+                    : 'bg-[#232323] text-zinc-400 hover:text-[#EDEDED] border border-[#2e2e2e]'
                 }`}
               >
                 {d === 'All' ? 'All Departments' : d.split(' ')[0]}
@@ -543,7 +545,7 @@ export default function RepairPlatform({ user }) {
                 <button
                   type="submit"
                   disabled={submittingTicket}
-                  className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-md shadow-orange-600/30 transition disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 cursor-pointer"
                 >
                   {submittingTicket ? 'Submitting...' : 'Submit to Helpdesk'}
                 </button>
