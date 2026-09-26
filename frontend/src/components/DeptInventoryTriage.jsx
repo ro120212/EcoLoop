@@ -237,7 +237,6 @@ export default function DeptInventoryTriage() {
                 <label className="block font-semibold text-slate-700 mb-1">Equipment Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Dell KB216 USB Keyboards"
                   value={formData.item_name}
                   onChange={(e) => setFormData({...formData, item_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-cyan-500 focus:outline-none"

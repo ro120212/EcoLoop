@@ -30,7 +30,7 @@ export default function StatsOverview({ stats, onSelectModule }) {
             Close the Loop on Campus E-Waste.
           </h1>
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Welcome to <span className="text-emerald-400 font-semibold">EcoLoop</span>, the smart platform uniting students, faculty, and college labs to collect, repair, redistribute, and responsibly recycle electronics with Google Gemini AI.
+            Welcome to <span className="text-emerald-400 font-semibold">EcoLoop</span>, the smart platform uniting students, faculty, and college labs to collect, repair, redistribute, and responsibly recycle electronics with intelligent automated AI diagnostics.
           </p>
 
           <div className="pt-2 flex flex-wrap gap-3">
@@ -142,7 +142,7 @@ export default function StatsOverview({ stats, onSelectModule }) {
             className="group bg-gradient-to-br from-purple-50/50 to-white p-6 rounded-2xl border border-purple-200 hover:border-purple-500 hover:shadow-lg transition cursor-pointer flex flex-col justify-between relative"
           >
             <span className="absolute top-4 right-4 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
-              Gemini Vision
+              Vision AI
             </span>
             <div>
               <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-3 group-hover:scale-110 transition">
@@ -150,7 +150,7 @@ export default function StatsOverview({ stats, onSelectModule }) {
               </div>
               <h3 className="text-base font-bold text-slate-900 group-hover:text-purple-700 transition">2. AI Scanner & Guide</h3>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                Upload or capture an image of any waste. Gemini 2.5 Flash detects materials, assesses toxicity hazard, and links you to the nearest campus drop-bin.
+                Upload or capture an image of any waste. Automated AI vision detects materials, assesses toxicity hazard, and links you to the nearest campus drop-bin.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-purple-100 flex items-center text-xs font-semibold text-purple-700 group-hover:translate-x-1 transition">
@@ -193,7 +193,7 @@ export default function StatsOverview({ stats, onSelectModule }) {
               </div>
               <h3 className="text-base font-bold text-slate-900 group-hover:text-orange-700 transition">4. Repair Before Replace</h3>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                Describe faulty gadget symptoms. Gemini AI creates a safe, step-by-step DIY troubleshooting checklist, required tools, and campus technician contacts.
+                Describe faulty gadget symptoms. The AI diagnostic assistant creates a safe, step-by-step DIY troubleshooting checklist, required tools, and campus technician contacts.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center text-xs font-semibold text-orange-600 group-hover:translate-x-1 transition">

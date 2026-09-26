@@ -283,7 +283,6 @@ export default function CampusLabAudit() {
                   <label className="block font-semibold text-slate-700 mb-1">Auditor Name / Faculty *</label>
                   <input
                     type="text"
-                    placeholder="e.g. Prof. Haridasan"
                     value={formData.auditor_name}
                     onChange={(e) => setFormData({...formData, auditor_name: e.target.value})}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
@@ -310,7 +309,6 @@ export default function CampusLabAudit() {
                 <label className="block font-semibold text-slate-700 mb-1">Lab / Facility Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Advanced Networking Lab (Room 302)"
                   value={formData.lab_name}
                   onChange={(e) => setFormData({...formData, lab_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none"

@@ -161,7 +161,6 @@ export default function ReuseMarketplace() {
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search marketplace items by title or keywords..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 shadow-sm"
@@ -293,7 +292,6 @@ export default function ReuseMarketplace() {
                 <label className="block font-semibold text-slate-700 mb-1">Item Title *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Drafter + Set Squares Engineering Kit"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:outline-none"
@@ -346,7 +344,6 @@ export default function ReuseMarketplace() {
                 <label className="block font-semibold text-slate-700 mb-1">Description</label>
                 <textarea
                   rows="2"
-                  placeholder="Mention condition, accessories included, and history."
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:outline-none"
@@ -357,7 +354,6 @@ export default function ReuseMarketplace() {
                 <label className="block font-semibold text-slate-700 mb-1">Your Contact Info (Campus Email / Phone / Room) *</label>
                 <input
                   type="text"
-                  placeholder="e.g. vineeth.ece@nssce.ac.in | Room 102 Men's Hostel"
                   value={formData.contact_info}
                   onChange={(e) => setFormData({...formData, contact_info: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:outline-none"
@@ -369,7 +365,6 @@ export default function ReuseMarketplace() {
                 <label className="block font-semibold text-slate-700 mb-1">Image URL (Optional)</label>
                 <input
                   type="url"
-                  placeholder="https://images.unsplash.com/..."
                   value={formData.image_url}
                   onChange={(e) => setFormData({...formData, image_url: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:outline-none"

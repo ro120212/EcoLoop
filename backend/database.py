@@ -627,14 +627,16 @@ class DatabaseManager:
             }
 
     # --- Department Workshop Helpdesk Tickets ---
-    def get_repair_tickets(self, department: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_repair_tickets(self, department: Optional[str] = None, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         if self.supabase:
             try:
                 q = self.supabase.table("repair_tickets").select("*")
                 if department and department != "All":
                     q = q.eq("department", department)
+                if user_id:
+                    q = q.eq("user_id", user_id)
                 res = q.order("created_at", desc=True).execute()
-                if res.data and len(res.data) > 0:
+                if res.data is not None:
                     return res.data
             except Exception:
                 pass
@@ -642,10 +644,16 @@ class DatabaseManager:
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
             query = "SELECT * FROM repair_tickets"
+            conditions = []
             params = []
             if department and department != "All":
-                query += " WHERE department = ?"
+                conditions.append("department = ?")
                 params.append(department)
+            if user_id:
+                conditions.append("user_id = ?")
+                params.append(user_id)
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
             query += " ORDER BY created_at DESC"
             cursor.execute(query, params)
             return [dict(row) for row in cursor.fetchall()]

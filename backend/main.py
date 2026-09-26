@@ -163,8 +163,8 @@ async def diagnose_repair(req: RepairDiagnoseReq):
     return diagnosis
 
 @app.get("/api/repair/tickets")
-def get_repair_tickets(department: Optional[str] = None):
-    return db.get_repair_tickets(department=department)
+def get_repair_tickets(department: Optional[str] = None, user_id: Optional[str] = None):
+    return db.get_repair_tickets(department=department, user_id=user_id)
 
 @app.post("/api/repair/tickets")
 def create_repair_ticket(ticket: Dict[str, Any]):

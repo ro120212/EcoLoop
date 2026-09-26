@@ -72,7 +72,7 @@ export const api = {
     return res.json()
   },
 
-  // AI Classification (Gemini 2.5 Flash Vision for Circular Economy)
+  // AI Classification (Vision for Circular Economy)
   async classifyWaste(imageFile) {
     const formData = new FormData()
     formData.append('file', imageFile)
@@ -96,10 +96,11 @@ export const api = {
     })
     return res.json()
   },
-  async getRepairTickets(department) {
+  async getRepairTickets(department, userId) {
     try {
       const params = new URLSearchParams()
       if (department && department !== 'All') params.append('department', department)
+      if (userId) params.append('user_id', userId)
       const res = await fetch(`/api/repair/tickets?${params.toString()}`)
       if (!res.ok) return []
       return await res.json()

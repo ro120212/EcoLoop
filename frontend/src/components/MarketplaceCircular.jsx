@@ -246,7 +246,6 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by keyword, RAM, stepper motors, sensors, drafters, or donor..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
@@ -444,7 +443,6 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Outside Mechanical Central Workshop at 4 PM"
                     value={meetingPointInput}
                     onChange={(e) => setMeetingPointInput(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -500,7 +498,6 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 <label className="block font-semibold text-slate-700 mb-1">Item Title *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Core i5 Desktop Tower / Stepper Motors / RTD Sensors"
                   value={postForm.title}
                   onChange={(e) => setPostForm({...postForm, title: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -569,7 +566,6 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 <label className="block font-semibold text-slate-700 mb-1">Description & Known Defect/Status</label>
                 <textarea
                   rows="2"
-                  placeholder="e.g. Case has scratches, but internal coils and switches are in good working order."
                   value={postForm.description}
                   onChange={(e) => setPostForm({...postForm, description: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200"
@@ -588,7 +584,6 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="e.g. 450W SMPS / 8GB RAM / Stepper Motor"
                     value={newSubPart}
                     onChange={(e) => setNewSubPart(e.target.value)}
                     className="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 text-xs"

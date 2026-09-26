@@ -162,7 +162,6 @@ export default function EcoImpactCalculator() {
                 type="text"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
-                placeholder="Your Name / Dept / Lab Team"
                 className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>

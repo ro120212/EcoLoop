@@ -31,7 +31,10 @@ const DEPARTMENT_LABS = {
   'Instrumentation and Control Engineering': ['Sensors & Transducers Lab', 'Process Control Lab', 'Industrial Instrumentation Lab']
 }
 
-export default function RepairPlatform() {
+export default function RepairPlatform({ user }) {
+  const studentId = user?.id || (user?.email ? user.email : 'demo-student')
+  const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : '')
+
   const [deviceName, setDeviceName] = useState('')
   const [symptom, setSymptom] = useState('')
   const [category, setCategory] = useState('Peripherals & Input')
@@ -44,7 +47,7 @@ export default function RepairPlatform() {
 
   // Ticket form
   const [ticketForm, setTicketForm] = useState({
-    user_name: '',
+    user_name: studentName,
     device_name: '',
     symptom: '',
     department: 'Computer Science and Engineering',
@@ -56,7 +59,8 @@ export default function RepairPlatform() {
   const loadTickets = async (dept = selectedFilterDept) => {
     try {
       setLoadingTickets(true)
-      const data = await api.getRepairTickets(dept)
+      // Only fetch tickets belonging to this logged in student
+      const data = await api.getRepairTickets(dept, studentId)
       setTickets(data)
     } catch (err) {
       console.error('Failed to load repair tickets:', err)
@@ -67,7 +71,7 @@ export default function RepairPlatform() {
 
   useEffect(() => {
     loadTickets(selectedFilterDept)
-  }, [selectedFilterDept])
+  }, [selectedFilterDept, studentId])
 
   const handleDiagnose = async (e) => {
     e.preventDefault()
@@ -89,6 +93,8 @@ export default function RepairPlatform() {
       setSubmittingTicket(true)
       await api.createRepairTicket({
         ...ticketForm,
+        user_id: studentId,
+        user_name: ticketForm.user_name || studentName || 'Student',
         ai_diagnosis: diagnosis?.likely_root_causes?.join('; ') || '',
         ai_steps: diagnosis?.step_by_step_troubleshooting?.map(s => `${s.step}. ${s.title}: ${s.description}`).join('\n') || '',
         difficulty: diagnosis?.difficulty_level || 'Medium',
@@ -96,7 +102,7 @@ export default function RepairPlatform() {
       })
       setShowTicketModal(false)
       setTicketForm({
-        user_name: '',
+        user_name: studentName,
         device_name: '',
         symptom: '',
         department: 'Computer Science and Engineering',
@@ -122,16 +128,22 @@ export default function RepairPlatform() {
             </div>
             <h1 className="text-xl font-bold text-slate-900">Repair Before Replace Platform</h1>
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">
-              Gemini AI Diagnostic
+              AI Diagnostics
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Extend device lifespan instead of generating e-waste. Get AI-guided troubleshooting instructions or find campus student technicians.
+            Extend device lifespan instead of generating e-waste. Get AI-guided troubleshooting instructions or submit to department workshops.
           </p>
         </div>
 
         <button
-          onClick={() => setShowTicketModal(true)}
+          onClick={() => {
+            setTicketForm(prev => ({
+              ...prev,
+              user_name: studentName || prev.user_name
+            }))
+            setShowTicketModal(true)
+          }}
           className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
@@ -153,7 +165,6 @@ export default function RepairPlatform() {
                 <label className="block font-semibold text-slate-700 mb-1">Faulty Device Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Dell Inspiron 15 / Logitech G102 Mouse / Samsung LCD"
                   value={deviceName}
                   onChange={(e) => setDeviceName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -180,7 +191,6 @@ export default function RepairPlatform() {
                 <label className="block font-semibold text-slate-700 mb-1">Describe Symptoms / Malfunction *</label>
                 <textarea
                   rows="3"
-                  placeholder="e.g. Left click registers twice or skips, scroll wheel jumps backwards when scrolling down."
                   value={symptom}
                   onChange={(e) => setSymptom(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -220,7 +230,7 @@ export default function RepairPlatform() {
                 {diagnosing ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Analyzing with Gemini AI...</span>
+                    <span>Analyzing Diagnostics...</span>
                   </>
                 ) : (
                   <>
@@ -345,19 +355,19 @@ export default function RepairPlatform() {
               </div>
               <h3 className="text-sm font-bold text-slate-800">Ready for diagnostics</h3>
               <p className="text-xs text-slate-500 max-w-sm">
-                Enter your device and symptom on the left. The Google Gemini API will generate a safety-checked, step-by-step DIY troubleshooting protocol.
+                Enter your device and symptom on the left. The AI diagnostic engine will generate a safety-checked, step-by-step DIY troubleshooting protocol.
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Community / Department Tickets */}
+      {/* Student's Own Tickets */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Department Workshop Helpdesk & Repair Tickets</h3>
-            <p className="text-xs text-slate-500">Student electronics and equipment repair tickets triaged by NSSCE department faculty and lab staff</p>
+            <h3 className="text-sm font-bold text-slate-900">My Repair Helpdesk Tickets</h3>
+            <p className="text-xs text-slate-500">Track the inspection and triage progress of your submitted hardware repair requests</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {['All', ...DEPARTMENTS].map(d => (
@@ -377,10 +387,10 @@ export default function RepairPlatform() {
         </div>
 
         {loadingTickets ? (
-          <div className="p-8 text-center text-xs text-slate-400">Loading department repair tickets...</div>
+          <div className="p-8 text-center text-xs text-slate-400">Loading your repair tickets...</div>
         ) : tickets.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-xl">
-            No repair tickets found for this department filter. Click &quot;Post Repair Help Request&quot; above to submit one!
+            You have not submitted any repair tickets yet. Click &quot;Post Repair Help Request&quot; above to submit hardware for faculty inspection!
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -477,7 +487,6 @@ export default function RepairPlatform() {
                 <label className="block font-semibold text-slate-700 mb-1">Your Name & Roll No. *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Arun S (S5 CSE, Roll 22)"
                   value={ticketForm.user_name}
                   onChange={(e) => setTicketForm({...ticketForm, user_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -524,7 +533,6 @@ export default function RepairPlatform() {
                 <label className="block font-semibold text-slate-700 mb-1">Device Name & Model *</label>
                 <input
                   type="text"
-                  placeholder="e.g. HP Pavilion 15 / Arduino Mega / DSO Oscilloscope"
                   value={ticketForm.device_name}
                   onChange={(e) => setTicketForm({...ticketForm, device_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -536,7 +544,6 @@ export default function RepairPlatform() {
                 <label className="block font-semibold text-slate-700 mb-1">Problem Description / Symptoms *</label>
                 <textarea
                   rows="2"
-                  placeholder="Describe what happens (e.g. power LED blinks twice then dies, burning smell, screen backlight off)..."
                   value={ticketForm.symptom}
                   onChange={(e) => setTicketForm({...ticketForm, symptom: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"

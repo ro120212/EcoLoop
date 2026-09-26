@@ -40,28 +40,28 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
   const [triageForm, setTriageForm] = useState({
     faculty_decision: 'repaired_returned',
     faculty_notes: '',
-    resolved_by: 'Prof. Faculty In-Charge',
-    lab_name: 'Main Hardware Lab'
+    resolved_by: '',
+    lab_name: ''
   })
   const [resolvingTicket, setResolvingTicket] = useState(false)
 
   // Survey Form
   const [surveyForm, setSurveyForm] = useState({
-    auditor_name: 'Prof. Faculty In-Charge',
+    auditor_name: '',
     department: selectedDept,
-    lab_name: 'Main Hardware Lab',
-    total_systems: 30,
-    functional_count: 24,
-    repairable_count: 4,
-    scrap_count: 2,
-    surplus_for_students: 3,
-    notes: 'Surplus monitors and cables ready for student release.'
+    lab_name: '',
+    total_systems: 0,
+    functional_count: 0,
+    repairable_count: 0,
+    scrap_count: 0,
+    surplus_for_students: 0,
+    notes: ''
   })
 
   // Quick Release Form
   const [releaseForm, setReleaseForm] = useState({
-    title: 'Surplus USB Keyboards & Mouse Set (Pack of 4)',
-    description: 'Cleaned and tested from CSE Lab upgrade. Fully functional for student projects.',
+    title: '',
+    description: '',
     category: 'Peripherals',
     price_type: 'free',
     price: 0
@@ -348,7 +348,7 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
                         <div className="p-2.5 rounded-xl bg-cyan-50/80 border border-cyan-100 text-[11px] text-cyan-900 flex items-start gap-2">
                           <Sparkles className="w-3.5 h-3.5 text-cyan-600 mt-0.5 shrink-0" />
                           <div>
-                            <strong className="block font-semibold">Gemini AI Diagnostic Summary:</strong>
+                            <strong className="block font-semibold">AI Diagnostic Summary:</strong>
                             <p className="text-cyan-800 line-clamp-2">{ticket.ai_diagnosis}</p>
                           </div>
                         </div>
@@ -859,7 +859,6 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
                 </label>
                 <textarea
                   rows="2"
-                  placeholder="e.g. Diagnosed shorted diode in 12V buck regulator. Replaced from spare bin; tested under load. / Advised student to salvage RAM and display panel."
                   value={triageForm.faculty_notes}
                   onChange={(e) => setTriageForm({ ...triageForm, faculty_notes: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"

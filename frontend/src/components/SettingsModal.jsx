@@ -38,11 +38,11 @@ export default function SettingsModal({ onClose }) {
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
         </div>
 
-        {/* Gemini API Key Section */}
+        {/* AI API Key Section */}
         <form onSubmit={handleSave} className="space-y-3 text-xs">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="font-semibold text-slate-700">Google Gemini API Key</label>
+              <label className="font-semibold text-slate-700">AI Diagnostic API Key</label>
               <a 
                 href="https://aistudio.google.com/app/apikey" 
                 target="_blank" 
@@ -55,13 +55,12 @@ export default function SettingsModal({ onClose }) {
             </div>
             <input
               type="password"
-              placeholder="AIzaSy..."
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
             />
             <p className="text-[11px] text-slate-400 mt-1">
-              Powers the <strong>AI Waste Classifier (Gemini 2.5 Flash Vision)</strong> and the <strong>Repair Troubleshooting Assistant</strong>.
+              Powers the <strong>AI Waste Classifier</strong> and the <strong>Repair Troubleshooting Assistant</strong>.
             </p>
           </div>
 
@@ -79,7 +78,7 @@ export default function SettingsModal({ onClose }) {
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>{saving ? 'Saving...' : 'Save Gemini Key'}</span>
+                  <span>{saving ? 'Saving...' : 'Save API Key'}</span>
                 </>
               )}
             </button>

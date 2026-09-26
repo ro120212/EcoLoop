@@ -150,7 +150,6 @@ export default function PartsReusePortal() {
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search parts by title, specs (e.g. DDR4, SATA, 450W), or location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
@@ -246,7 +245,6 @@ export default function PartsReusePortal() {
                 <label className="block font-semibold text-slate-700 mb-1">Your Name & Roll No / Department *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Anand K (S7 CSE, Roll 24)"
                   value={claimerName}
                   onChange={(e) => setClaimerName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -297,7 +295,6 @@ export default function PartsReusePortal() {
                 <label className="block font-semibold text-slate-700 mb-1">Part Title *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Corsair Vengeance 8GB DDR3 1600MHz"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -337,7 +334,6 @@ export default function PartsReusePortal() {
                 <label className="block font-semibold text-slate-700 mb-1">Technical Specs</label>
                 <input
                   type="text"
-                  placeholder="e.g. DDR3 DIMM, 1.5V, CL11, tested with 0 errors"
                   value={formData.specs}
                   onChange={(e) => setFormData({...formData, specs: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"

@@ -110,7 +110,7 @@ export default function Navbar({
           <button
             onClick={onOpenSettings}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-medium text-slate-700 transition shadow-sm"
-            title="Configure Gemini API Key & Supabase"
+            title="Configure AI API Key & Supabase"
           >
             <Key className="w-3.5 h-3.5 text-purple-600" />
             <span className="hidden md:inline">API Settings</span>
@@ -174,7 +174,7 @@ export default function Navbar({
                 }`}
               >
                 <Sparkles className="w-4 h-4 text-purple-600" />
-                <span>AI Component Scanner (Gemini)</span>
+                <span>AI Component Scanner</span>
               </button>
               <button
                 onClick={() => setActiveView('repair')}

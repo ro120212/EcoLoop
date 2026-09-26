@@ -91,11 +91,11 @@ export default function AIWasteClassifier({ onNavigateModule }) {
             </div>
             <h1 className="text-xl font-bold text-slate-900">Smart AI Waste Classifier & Campus Disposal Guide</h1>
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
-              Gemini 2.5 Flash
+              AI Vision Classifier
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Identify waste materials instantly with Google Gemini Vision, assess toxicity hazard, and find certified campus drop-off points.
+            Identify waste materials instantly with automated AI vision, assess toxicity hazard, and find certified campus drop-off points.
           </p>
         </div>
 
@@ -160,12 +160,12 @@ export default function AIWasteClassifier({ onNavigateModule }) {
                 {loading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Analyzing with Gemini 2.5 Flash...</span>
+                    <span>Analyzing image...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    <span>Classify with Gemini AI</span>
+                    <span>Classify Waste &amp; Materials</span>
                   </>
                 )}
               </button>
@@ -184,7 +184,7 @@ export default function AIWasteClassifier({ onNavigateModule }) {
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Gemini Multimodal Analysis
+                    Automated Multimodal AI Analysis
                   </span>
                   <h3 className="text-base font-bold text-slate-900 mt-0.5">{result.item_name}</h3>
                 </div>

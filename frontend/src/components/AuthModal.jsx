@@ -117,7 +117,6 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
               <input
                 type="email"
-                placeholder="name@nssce.ac.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
@@ -132,7 +131,6 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               <Lock className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
               <input
                 type="password"
-                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"

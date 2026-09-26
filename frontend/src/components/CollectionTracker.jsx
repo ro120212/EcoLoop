@@ -142,7 +142,6 @@ export default function CollectionTracker() {
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by Tracking Code (e.g. ECL-2026), item type, or lab location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
@@ -312,7 +311,6 @@ export default function CollectionTracker() {
                   <label className="block font-semibold text-slate-700 mb-1">Brand & Model Name</label>
                   <input
                     type="text"
-                    placeholder="e.g. Dell KB216 / TVS Gold"
                     value={formData.brand_model}
                     onChange={(e) => setFormData({...formData, brand_model: e.target.value})}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
@@ -378,7 +376,6 @@ export default function CollectionTracker() {
                 <label className="block font-semibold text-slate-700 mb-1">Contact Phone (Student / Lab Staff)</label>
                 <input
                   type="text"
-                  placeholder="e.g. 9447123456"
                   value={formData.contact_phone}
                   onChange={(e) => setFormData({...formData, contact_phone: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
@@ -389,7 +386,6 @@ export default function CollectionTracker() {
                 <label className="block font-semibold text-slate-700 mb-1">Additional Notes / Defect Details</label>
                 <textarea
                   rows="2"
-                  placeholder="e.g. USB cable severed, rest of the membrane circuit is intact."
                   value={formData.notes}
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"

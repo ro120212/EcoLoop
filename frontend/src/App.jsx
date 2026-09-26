@@ -107,7 +107,7 @@ export default function App() {
           />
         )}
 
-        {/* AI WASTE / COMPONENT VISION SCANNER (GEMINI 2.5 FLASH) */}
+        {/* AI WASTE / COMPONENT VISION SCANNER */}
         {activeView === 'ai_scanner' && (
           <AIWasteClassifier 
             onNavigateModule={setActiveView} 
@@ -116,7 +116,7 @@ export default function App() {
 
         {/* REPAIR BEFORE REPLACE PLATFORM */}
         {activeView === 'repair' && (
-          <RepairPlatform />
+          <RepairPlatform user={user} />
         )}
 
         {/* CARBON IMPACT & CERTIFICATE CALCULATOR */}
@@ -140,7 +140,7 @@ export default function App() {
             <span>•</span>
             <span>Zero Landfill Mission</span>
             <span>•</span>
-            <span>Google Gemini 2.5 Flash</span>
+            <span>AI Intelligent Diagnostics</span>
           </div>
         </div>
       </footer>

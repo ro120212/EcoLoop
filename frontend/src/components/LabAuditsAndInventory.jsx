@@ -380,7 +380,6 @@ export default function LabAuditsAndInventory() {
                   <label className="block font-semibold text-slate-700 mb-1">Auditor Name / Faculty *</label>
                   <input
                     type="text"
-                    placeholder="Prof. Haridasan"
                     value={auditForm.auditor_name}
                     onChange={(e) => setAuditForm({...auditForm, auditor_name: e.target.value})}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
@@ -406,7 +405,6 @@ export default function LabAuditsAndInventory() {
                 <label className="block font-semibold text-slate-700 mb-1">Lab Name *</label>
                 <input
                   type="text"
-                  placeholder="Advanced Computing Lab"
                   value={auditForm.lab_name}
                   onChange={(e) => setAuditForm({...auditForm, lab_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
@@ -515,7 +513,6 @@ export default function LabAuditsAndInventory() {
                 <label className="block font-semibold text-slate-700 mb-1">Equipment Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Dell USB Keyboards"
                   value={invForm.item_name}
                   onChange={(e) => setInvForm({...invForm, item_name: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200"

@@ -533,7 +533,6 @@ export default function StudentDashboard({ user, onNavigate }) {
                           <input
                             type="text"
                             maxLength="4"
-                            placeholder="e.g. 7492"
                             value={pinInputs[item.id] || ''}
                             onChange={(e) => setPinInputs({ ...pinInputs, [item.id]: e.target.value })}
                             className="w-32 px-3 py-2 text-center font-mono font-bold tracking-widest text-base rounded-xl border border-amber-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
@@ -694,7 +693,7 @@ export default function StudentDashboard({ user, onNavigate }) {
                 <Sparkles className="w-5 h-5" />
               </div>
               <h4 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition">AI E-Waste Scanner</h4>
-              <p className="text-xs text-slate-500 mt-1">Snap a photo. Gemini 2.5 Flash detects salvageable components and 1-click lists it for reuse.</p>
+              <p className="text-xs text-slate-500 mt-1">Snap a photo. Automated AI vision detects salvageable components and 1-click lists it for reuse.</p>
             </div>
             <span className="text-xs font-semibold text-purple-600 mt-3 flex items-center gap-1">
               Scan with AI <ArrowRight className="w-3 h-3" />
@@ -710,7 +709,7 @@ export default function StudentDashboard({ user, onNavigate }) {
                 <Wrench className="w-5 h-5" />
               </div>
               <h4 className="text-sm font-bold text-slate-900 group-hover:text-orange-700 transition">Repair Before Replace</h4>
-              <p className="text-xs text-slate-500 mt-1">Get Gemini diagnostic checklists to fix faulty electronics before giving up on them.</p>
+              <p className="text-xs text-slate-500 mt-1">Get intelligent diagnostic checklists to fix faulty electronics before giving up on them.</p>
             </div>
             <span className="text-xs font-semibold text-orange-600 mt-3 flex items-center gap-1">
               Troubleshoot Fault <ArrowRight className="w-3 h-3" />
@@ -763,7 +762,6 @@ export default function StudentDashboard({ user, onNavigate }) {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Arduino Uno Board or SMPS 450W Power Supply"
                   value={newItemForm.title}
                   onChange={(e) => setNewItemForm({ ...newItemForm, title: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
@@ -832,7 +830,6 @@ export default function StudentDashboard({ user, onNavigate }) {
                       <input
                         type="number"
                         min="1"
-                        placeholder="₹ Price"
                         value={newItemForm.price}
                         onChange={(e) => setNewItemForm({ ...newItemForm, price: e.target.value })}
                         className="w-1/2 px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold"
@@ -846,7 +843,6 @@ export default function StudentDashboard({ user, onNavigate }) {
                 <label className="font-bold text-slate-700">Splittable Components (Comma separated)</label>
                 <input
                   type="text"
-                  placeholder="e.g. Arduino Board, Sensor Shield, Ribbon Wires"
                   value={newItemForm.sub_component_input}
                   onChange={(e) => setNewItemForm({ ...newItemForm, sub_component_input: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
@@ -858,7 +854,6 @@ export default function StudentDashboard({ user, onNavigate }) {
                 <label className="font-bold text-slate-700">Description & Working Notes</label>
                 <textarea
                   rows={2}
-                  placeholder="Mention any quirks, working state, or project details..."
                   value={newItemForm.description}
                   onChange={(e) => setNewItemForm({ ...newItemForm, description: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
