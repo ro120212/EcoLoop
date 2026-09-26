@@ -7,8 +7,6 @@ import AdminDashboard from './components/AdminDashboard'
 import MarketplaceCircular from './components/MarketplaceCircular'
 import AIWasteClassifier from './components/AIWasteClassifier'
 import RepairPlatform from './components/RepairPlatform'
-import EcoImpactCalculator from './components/EcoImpactCalculator'
-import SettingsModal from './components/SettingsModal'
 import { api } from './services/api'
 import { supabase } from './services/supabaseClient'
 import { getUserRole, authService } from './services/authService'
@@ -21,7 +19,6 @@ export default function App() {
   const [activeView, setActiveView] = useState('student_hub')
   const [stats, setStats] = useState(null)
   const [loadingSession, setLoadingSession] = useState(true)
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
 
   // Fetch global metrics
   const fetchStats = async () => {
@@ -109,7 +106,6 @@ export default function App() {
         activeView={activeView}
         setActiveView={setActiveView}
         user={user}
-        onOpenSettings={() => setShowSettingsModal(true)}
         onLogout={handleLogout}
       />
 
@@ -160,11 +156,6 @@ export default function App() {
         {activeView === 'repair' && (
           <RepairPlatform user={user} />
         )}
-
-        {/* CARBON IMPACT & CERTIFICATE CALCULATOR */}
-        {activeView === 'calculator' && (
-          <EcoImpactCalculator />
-        )}
       </main>
 
       {/* Campus Circular Economy Footer */}
@@ -188,11 +179,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* Settings Modal */}
-      {showSettingsModal && (
-        <SettingsModal onClose={() => setShowSettingsModal(false)} />
-      )}
     </div>
   )
 }

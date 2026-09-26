@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { 
   Sparkles, 
   UploadCloud, 
@@ -7,11 +7,7 @@ import {
   AlertTriangle, 
   Leaf, 
   ArrowRight, 
-  RefreshCw, 
-  MapPin,
-  Skull,
-  BookOpen,
-  ShieldAlert
+  RefreshCw 
 } from 'lucide-react'
 import { api } from '../services/api'
 
@@ -21,20 +17,6 @@ export default function AIWasteClassifier({ onNavigateModule }) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
-  const [activeGuideTab, setActiveGuideTab] = useState('bins') // 'bins', 'hazards', 'data'
-  const [guideData, setGuideData] = useState(null)
-
-  useEffect(() => {
-    async function loadGuide() {
-      try {
-        const data = await api.getAwarenessGuide()
-        setGuideData(data)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    loadGuide()
-  }, [])
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0]
@@ -89,13 +71,13 @@ export default function AIWasteClassifier({ onNavigateModule }) {
             <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Smart AI Waste Classifier & Campus Disposal Guide</h1>
+            <h1 className="text-xl font-bold text-slate-900">Smart AI Waste & Component Classifier</h1>
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
               AI Vision Classifier
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Identify waste materials instantly with automated AI vision, assess toxicity hazard, and find certified campus drop-off points.
+            Identify e-waste materials, component specifications, toxicity hazards, and recovery routes instantly with automated AI vision.
           </p>
         </div>
 
@@ -115,13 +97,13 @@ export default function AIWasteClassifier({ onNavigateModule }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: AI Camera & Vision Scanner */}
-        <div className="lg:col-span-7 space-y-4">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* AI Camera & Vision Scanner */}
+        <div className="space-y-4">
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-600" />
-              <span>Step 1: Scan / Upload Item</span>
+              <span>Scan or Upload E-Waste Item</span>
             </h3>
 
             <div className="border-2 border-dashed border-slate-200 hover:border-purple-400 rounded-2xl p-6 text-center transition bg-slate-50/50">
@@ -263,102 +245,6 @@ export default function AIWasteClassifier({ onNavigateModule }) {
               </div>
             </div>
           )}
-        </div>
-
-        {/* Right: Integrated Campus Disposal Guide & Bin Locator */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-amber-600" />
-                <span>Step 2: Campus Disposal Guide</span>
-              </h3>
-            </div>
-
-            {/* Sub-tabs */}
-            <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl text-xs">
-              <button
-                onClick={() => setActiveGuideTab('bins')}
-                className={`flex-1 py-1 rounded-lg font-semibold transition ${
-                  activeGuideTab === 'bins' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600'
-                }`}
-              >
-                📍 Campus Drop Bins
-              </button>
-              <button
-                onClick={() => setActiveGuideTab('hazards')}
-                className={`flex-1 py-1 rounded-lg font-semibold transition ${
-                  activeGuideTab === 'hazards' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600'
-                }`}
-              >
-                ⚠️ Toxic Hazards
-              </button>
-              <button
-                onClick={() => setActiveGuideTab('data')}
-                className={`flex-1 py-1 rounded-lg font-semibold transition ${
-                  activeGuideTab === 'data' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600'
-                }`}
-              >
-                🔒 Data Rules
-              </button>
-            </div>
-
-            {/* Tab: Bins */}
-            {activeGuideTab === 'bins' && (
-              <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1 text-xs">
-                <p className="text-[11px] text-slate-500">
-                  Drop-off bins stationed across NSS College of Engineering:
-                </p>
-                {guideData?.campus_bins?.map((bin, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 hover:bg-slate-100/70 transition space-y-1">
-                    <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>{bin.location}</span>
-                    </div>
-                    <p className="text-slate-600 text-[11px] pl-5">
-                      <strong className="text-slate-700">Accepted:</strong> {bin.types}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Tab: Hazards */}
-            {activeGuideTab === 'hazards' && (
-              <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1 text-xs">
-                {guideData?.hazardous_materials?.map((item, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                        <Skull className="w-3.5 h-3.5 text-rose-600" />
-                        {item.material}
-                      </span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-rose-50 text-rose-700">
-                        Hazard
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-600"><strong>Source:</strong> {item.found_in}</p>
-                    <p className="text-[11px] text-emerald-800 bg-emerald-50/80 p-1.5 rounded-lg border border-emerald-100">
-                      <strong>Safe Handling:</strong> {item.safe_handling}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Tab: Data */}
-            {activeGuideTab === 'data' && (
-              <div className="space-y-2 text-xs">
-                <span className="font-bold text-slate-800 block mb-1">Before Disposal:</span>
-                {guideData?.data_sanitization_rules?.map((rule, idx) => (
-                  <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2 text-slate-700 text-[11px]">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span>{rule}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

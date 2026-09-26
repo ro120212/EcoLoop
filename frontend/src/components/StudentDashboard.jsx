@@ -5,7 +5,6 @@ import {
   ShoppingBag, 
   Sparkles, 
   Wrench, 
-  Award, 
   ArrowRight, 
   CheckCircle2, 
   Clock, 
@@ -667,7 +666,7 @@ export default function StudentDashboard({ user, onNavigate }) {
           <span className="text-xs text-slate-500">Fast access to active modules</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div 
             onClick={() => onNavigate('marketplace')}
             className="group bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-500 hover:shadow-md transition cursor-pointer flex flex-col justify-between"
@@ -713,22 +712,6 @@ export default function StudentDashboard({ user, onNavigate }) {
             </div>
             <span className="text-xs font-semibold text-orange-600 mt-3 flex items-center gap-1">
               Troubleshoot Fault <ArrowRight className="w-3 h-3" />
-            </span>
-          </div>
-
-          <div 
-            onClick={() => onNavigate('calculator')}
-            className="group bg-white p-5 rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-md transition cursor-pointer flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                <Award className="w-5 h-5" />
-              </div>
-              <h4 className="text-sm font-bold text-slate-900 group-hover:text-teal-700 transition">Green Certificate</h4>
-              <p className="text-xs text-slate-500 mt-1">Calculate your total avoided carbon footprint and print your verified campus certificate.</p>
-            </div>
-            <span className="text-xs font-semibold text-teal-600 mt-3 flex items-center gap-1">
-              View Certificate <ArrowRight className="w-3 h-3" />
             </span>
           </div>
         </div>

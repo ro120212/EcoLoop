@@ -5,9 +5,7 @@ import {
   ShoppingBag, 
   Wrench, 
   BarChart3, 
-  Calculator,
   ShieldCheck, 
-  Key, 
   User, 
   LogOut,
   Building2,
@@ -22,7 +20,6 @@ export default function Navbar({
   activeView, 
   setActiveView, 
   user, 
-  onOpenSettings, 
   onLogout 
 }) {
   const getRoleBadge = (role) => {
@@ -88,27 +85,6 @@ export default function Navbar({
 
         {/* Global Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => setActiveView('calculator')}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5 ${
-              activeView === 'calculator' 
-                ? 'bg-teal-50 border-teal-300 text-teal-800' 
-                : 'border-slate-200 text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <Calculator className="w-3.5 h-3.5 text-teal-600" />
-            <span className="hidden md:inline">Carbon Certificate</span>
-          </button>
-
-          <button
-            onClick={onOpenSettings}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-medium text-slate-700 transition shadow-sm"
-            title="Configure AI API Key & Supabase"
-          >
-            <Key className="w-3.5 h-3.5 text-purple-600" />
-            <span className="hidden md:inline">API Settings</span>
-          </button>
-
           {user && (
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
               <div className="hidden sm:block text-right">
@@ -132,45 +108,57 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* Role-Tailored Tabs */}
-      <nav className="border-t border-slate-100 bg-slate-50/70 overflow-x-auto no-scrollbar">
-        <div className="max-w-7xl mx-auto px-4 flex space-x-1 py-1.5 min-w-max">
+      {/* Pill-Shaped Floating Navigation Platform */}
+      <div className="w-full flex justify-center py-2.5 px-4 bg-slate-100/60 border-t border-slate-200/60">
+        <nav 
+          role="navigation" 
+          aria-label="Module Navigation"
+          className="inline-flex items-center gap-1 p-1.5 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 shadow-md shadow-slate-200/50 max-w-full overflow-x-auto no-scrollbar"
+        >
           {/* STUDENT TABS */}
           {currentRole === 'student' && (
             <>
               <button
                 onClick={() => setActiveView('student_hub')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'student_hub' ? 'bg-white text-emerald-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'student_hub' 
+                    ? 'bg-emerald-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <span>🎓 My Circular Dashboard & PINs</span>
+                <span>🎓 Student Dashboard &amp; PINs</span>
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'marketplace' ? 'bg-white text-blue-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'marketplace' 
+                    ? 'bg-emerald-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <ShoppingBag className="w-4 h-4 text-blue-600" />
-                <span>Browse Marketplace & Split Parts</span>
+                <ShoppingBag className={`w-3.5 h-3.5 ${activeView === 'marketplace' ? 'text-white' : 'text-blue-600'}`} />
+                <span>Browse Marketplace &amp; Split Parts</span>
               </button>
               <button
                 onClick={() => setActiveView('ai_scanner')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'ai_scanner' ? 'bg-white text-purple-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'ai_scanner' 
+                    ? 'bg-emerald-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-purple-600" />
+                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-white' : 'text-purple-600'}`} />
                 <span>AI Component Scanner</span>
               </button>
               <button
                 onClick={() => setActiveView('repair')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'repair' ? 'bg-white text-orange-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'repair' 
+                    ? 'bg-emerald-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Wrench className="w-4 h-4 text-orange-600" />
+                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-white' : 'text-orange-600'}`} />
                 <span>Repair Before Replace</span>
               </button>
             </>
@@ -181,38 +169,46 @@ export default function Navbar({
             <>
               <button
                 onClick={() => setActiveView('lab_staff_hub')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'lab_staff_hub' ? 'bg-white text-indigo-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'lab_staff_hub' 
+                    ? 'bg-blue-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <BarChart3 className="w-4 h-4 text-indigo-600" />
+                <BarChart3 className={`w-3.5 h-3.5 ${activeView === 'lab_staff_hub' ? 'text-white' : 'text-indigo-600'}`} />
                 <span>🔬 Department Operations &amp; Audits</span>
               </button>
               <button
                 onClick={() => setActiveView('repair')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'repair' ? 'bg-white text-orange-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'repair' 
+                    ? 'bg-blue-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Wrench className="w-4 h-4 text-orange-600" />
+                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-white' : 'text-orange-600'}`} />
                 <span>Repair Triage &amp; Helpdesk</span>
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'marketplace' ? 'bg-white text-blue-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'marketplace' 
+                    ? 'bg-blue-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Package className="w-4 h-4 text-blue-600" />
+                <Package className={`w-3.5 h-3.5 ${activeView === 'marketplace' ? 'text-white' : 'text-blue-600'}`} />
                 <span>Release Hardware to Students</span>
               </button>
               <button
                 onClick={() => setActiveView('ai_scanner')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'ai_scanner' ? 'bg-white text-purple-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'ai_scanner' 
+                    ? 'bg-blue-600 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-purple-600" />
+                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-white' : 'text-purple-600'}`} />
                 <span>AI Component Scanner</span>
               </button>
             </>
@@ -223,44 +219,52 @@ export default function Navbar({
             <>
               <button
                 onClick={() => setActiveView('admin_hub')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'admin_hub' ? 'bg-white text-slate-950 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'admin_hub' 
+                    ? 'bg-slate-900 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <ShieldCheck className="w-4 h-4 text-slate-700" />
+                <ShieldCheck className={`w-3.5 h-3.5 ${activeView === 'admin_hub' ? 'text-white' : 'text-slate-700'}`} />
                 <span>🛡️ Sustainability &amp; NAAC Report</span>
               </button>
               <button
                 onClick={() => setActiveView('marketplace')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'marketplace' ? 'bg-white text-blue-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'marketplace' 
+                    ? 'bg-slate-900 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <ShoppingBag className="w-4 h-4 text-blue-600" />
+                <ShoppingBag className={`w-3.5 h-3.5 ${activeView === 'marketplace' ? 'text-white' : 'text-blue-600'}`} />
                 <span>Monitor Circular Pipeline</span>
               </button>
               <button
                 onClick={() => setActiveView('ai_scanner')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'ai_scanner' ? 'bg-white text-purple-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'ai_scanner' 
+                    ? 'bg-slate-900 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-purple-600" />
+                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-white' : 'text-purple-600'}`} />
                 <span>AI Component Scanner</span>
               </button>
               <button
                 onClick={() => setActiveView('repair')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                  activeView === 'repair' ? 'bg-white text-orange-900 shadow-sm border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeView === 'repair' 
+                    ? 'bg-slate-900 text-white shadow-sm font-bold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Wrench className="w-4 h-4 text-orange-600" />
+                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-white' : 'text-orange-600'}`} />
                 <span>Repair Before Replace</span>
               </button>
             </>
           )}
-        </div>
-      </nav>
+        </nav>
+      </div>
     </header>
   )
 }
