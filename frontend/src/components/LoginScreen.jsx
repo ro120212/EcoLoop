@@ -13,7 +13,8 @@ import {
   ArrowRight,
   AlertCircle,
   RefreshCw,
-  CheckCircle2
+  CheckCircle2,
+  Key
 } from 'lucide-react'
 import { authService, PRESET_ACCOUNTS } from '../services/authService'
 import logoImg from '../assets/logo.png'
@@ -34,6 +35,7 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [regPassword, setRegPassword] = useState('')
   const [regRole, setRegRole] = useState('student')
   const [regDepartment, setRegDepartment] = useState('Computer Science and Engineering')
+  const [regStaffPasscode, setRegStaffPasscode] = useState('')
   const [regSuccessMsg, setRegSuccessMsg] = useState('')
 
   // Auto-fill preset credentials
@@ -74,6 +76,11 @@ export default function LoginScreen({ onLoginSuccess }) {
       return
     }
 
+    if (regRole !== 'student' && !regStaffPasscode.trim()) {
+      setErrorMsg(`Department staff verification passcode is required for ${regRole === 'lab_staff' ? 'Faculty / Lab Staff' : 'Administrator'} accounts.`)
+      return
+    }
+
     setLoading(true)
     setErrorMsg('')
     setRegSuccessMsg('')
@@ -83,12 +90,14 @@ export default function LoginScreen({ onLoginSuccess }) {
         password: regPassword,
         role: regRole,
         fullName: regFullName.trim(),
-        department: regDepartment
+        department: regDepartment,
+        staffPasscode: regStaffPasscode
       })
       setRegSuccessMsg('Registration successful! You can now log in using your campus credentials.')
       setIsRegistering(false)
       setIdentifier(regEmail.trim())
       setPassword(regPassword)
+      setRegStaffPasscode('')
     } catch (err) {
       setErrorMsg(err.message || 'Registration failed. Please check inputs.')
     } finally {
@@ -265,6 +274,31 @@ export default function LoginScreen({ onLoginSuccess }) {
                   </select>
                 </div>
               </div>
+
+              {/* Department Verification Passcode for Faculty and Admin accounts */}
+              {regRole !== 'student' && (
+                <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                      <Key className="w-3.5 h-3.5 text-amber-700" />
+                      {regRole === 'lab_staff' ? 'Faculty Staff Verification Passcode *' : 'Administrator Security Passcode *'}
+                    </label>
+                    <span className="text-[10px] font-mono text-amber-700 font-bold bg-amber-100/80 px-2 py-0.5 rounded-md">
+                      Demo: {regRole === 'lab_staff' ? 'NSSCE-LAB-2026' : 'NSSCE-ADMIN-2026'}
+                    </span>
+                  </div>
+                  <input
+                    type="password"
+                    value={regStaffPasscode}
+                    onChange={(e) => setRegStaffPasscode(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-xs font-mono tracking-wider focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-amber-800 leading-tight">
+                    🔒 Restricted: Prevents students from self-assigning faculty or lab triage privileges.
+                  </p>
+                </div>
+              )}
 
               <button
                 type="submit"

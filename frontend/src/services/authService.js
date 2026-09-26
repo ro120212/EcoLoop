@@ -49,6 +49,11 @@ export const getUserRole = (user) => {
   return 'student'
 }
 
+export const STAFF_PASSCODES = {
+  lab_staff: 'NSSCE-LAB-2026',
+  admin: 'NSSCE-ADMIN-2026'
+}
+
 export const authService = {
   async signIn(usernameOrEmail, password) {
     const email = mapUsernameToEmail(usernameOrEmail)
@@ -124,7 +129,18 @@ export const authService = {
     throw new Error(error?.message || 'Invalid username or password')
   },
 
-  async signUp({ email, password, role, fullName, department }) {
+  async signUp({ email, password, role, fullName, department, staffPasscode }) {
+    // Security verification: Block students from registering with faculty/admin privileges
+    if (role === 'lab_staff') {
+      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.lab_staff) {
+        throw new Error('Invalid Faculty / Lab Staff Passcode. Contact your Department Lab In-Charge.')
+      }
+    } else if (role === 'admin') {
+      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.admin) {
+        throw new Error('Invalid Administrator Passcode. Authorization denied.')
+      }
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
