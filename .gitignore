@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Production Build Artifacts
+dist/
+frontend/dist/
+build/
+
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+
+# Local Environment Variables & Secrets
+.env
+backend/.env
+*.env.local
+
+# Local SQLite databases (Supabase is the production database)
+backend/ecoloop_local.db
+*.sqlite3
+*.db
+
+# IDE & OS Metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
