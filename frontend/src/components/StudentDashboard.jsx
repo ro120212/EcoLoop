@@ -20,7 +20,10 @@ import {
   Check,
   AlertCircle,
   HelpCircle,
-  Tag
+  Tag,
+  Camera,
+  UploadCloud,
+  X
 } from 'lucide-react'
 import { api } from '../services/api'
 
@@ -54,9 +57,67 @@ export default function StudentDashboard({ user, onNavigate }) {
     condition: 'Functional/Tested',
     price_type: 'free',
     price: 0,
+    image_url: '',
     sub_component_input: 'Main Unit, Connection Cables',
     carbon_saved_kg: 6.5
   })
+  const [imagePreview, setImagePreview] = useState('')
+  const [imageUploading, setImageUploading] = useState(false)
+
+  const handleImageFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      setImageUploading(true)
+      const reader = new FileReader()
+      reader.onload = (uploadEvent) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          const MAX_WIDTH = 800
+          const MAX_HEIGHT = 800
+          let width = img.width
+          let height = img.height
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width
+              width = MAX_WIDTH
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height
+              height = MAX_HEIGHT
+            }
+          }
+
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, width, height)
+          const compressed = canvas.toDataURL('image/jpeg', 0.82)
+          setImagePreview(compressed)
+          setNewItemForm(prev => ({ ...prev, image_url: compressed }))
+          setImageUploading(false)
+        }
+        img.onerror = () => {
+          setImagePreview(uploadEvent.target.result)
+          setNewItemForm(prev => ({ ...prev, image_url: uploadEvent.target.result }))
+          setImageUploading(false)
+        }
+        img.src = uploadEvent.target.result
+      }
+      reader.readAsDataURL(file)
+    } catch (err) {
+      console.error('Image upload error:', err)
+      setImageUploading(false)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setImagePreview('')
+    setNewItemForm(prev => ({ ...prev, image_url: '' }))
+  }
 
   const studentId = user?.id || 'demo-student'
   const studentName = user?.email?.split('@')[0] || 'Rahul K (S7 CSE)'
@@ -115,10 +176,11 @@ export default function StudentDashboard({ user, onNavigate }) {
         carbon_saved_kg: Number(newItemForm.carbon_saved_kg) || 8.0,
         seller_id: studentId,
         seller_name: studentName,
-        image_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=60'
+        image_url: newItemForm.image_url || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=60'
       })
 
       setShowListModal(false)
+      setImagePreview('')
       setNewItemForm({
         title: '',
         description: '',
@@ -127,6 +189,7 @@ export default function StudentDashboard({ user, onNavigate }) {
         condition: 'Functional/Tested',
         price_type: 'free',
         price: 0,
+        image_url: '',
         sub_component_input: 'Main Unit, Connection Cables',
         carbon_saved_kg: 6.5
       })
@@ -378,17 +441,27 @@ export default function StudentDashboard({ user, onNavigate }) {
                   >
                     {/* Header: Title, Category, Status Badge */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                            {item.category}
-                          </span>
-                          <span className="text-[10px] font-semibold text-slate-500">
-                            Dept: {item.department.split(' ')[0]}
-                          </span>
+                      <div className="flex items-start gap-3.5">
+                        {item.image_url && (
+                          <img
+                            src={item.image_url}
+                            alt={item.title}
+                            className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shrink-0"
+                            onError={(e) => { e.target.style.display = 'none' }}
+                          />
+                        )}
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                              {item.category}
+                            </span>
+                            <span className="text-[10px] font-semibold text-slate-500">
+                              Dept: {item.department.split(' ')[0]}
+                            </span>
+                          </div>
+                          <h3 className="text-base font-bold text-slate-900">{item.title}</h3>
+                          <p className="text-xs text-slate-500">{item.description}</p>
                         </div>
-                        <h3 className="text-base font-bold text-slate-900">{item.title}</h3>
-                        <p className="text-xs text-slate-500">{item.description}</p>
                       </div>
 
                       <div className="flex sm:flex-col items-center sm:items-end justify-between gap-2">
@@ -841,6 +914,46 @@ export default function StudentDashboard({ user, onNavigate }) {
                   onChange={(e) => setNewItemForm({ ...newItemForm, description: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
+              </div>
+
+              {/* Add Item Image */}
+              <div className="space-y-1.5">
+                <label className="font-bold text-slate-700 block">Item Photo (Optional)</label>
+                {imagePreview ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 p-2.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={imagePreview}
+                        alt="Upload preview"
+                        className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-800 truncate">Photo Attached</p>
+                        <p className="text-[10px] text-emerald-600 font-semibold">Ready to display on ad</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="px-2.5 py-1 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-dashed border-slate-200 hover:border-emerald-500 bg-slate-50/70 hover:bg-emerald-50/40 text-slate-600 hover:text-emerald-700 cursor-pointer transition text-xs font-semibold">
+                      <Camera className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>{imageUploading ? 'Processing Photo...' : 'Add / Upload Item Photo'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
               </div>
 
               <div className="pt-2 flex justify-end gap-2">

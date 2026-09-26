@@ -13,7 +13,11 @@ import {
   Filter,
   Layers,
   Building2,
-  Check
+  Check,
+  Camera,
+  UploadCloud,
+  X,
+  Image as ImageIcon
 } from 'lucide-react'
 import { api } from '../services/api'
 
@@ -51,10 +55,68 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
     condition: 'Functional/Tested',
     price_type: 'free',
     price: 0,
+    image_url: '',
     sub_components_list: ['Main Unit']
   })
+  const [imagePreview, setImagePreview] = useState('')
+  const [imageUploading, setImageUploading] = useState(false)
   const [newSubPart, setNewSubPart] = useState('')
   const [postingLoading, setPostingLoading] = useState(false)
+
+  const handleImageFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      setImageUploading(true)
+      const reader = new FileReader()
+      reader.onload = (uploadEvent) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          const MAX_WIDTH = 800
+          const MAX_HEIGHT = 800
+          let width = img.width
+          let height = img.height
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width
+              width = MAX_WIDTH
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height
+              height = MAX_HEIGHT
+            }
+          }
+
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, width, height)
+          const compressed = canvas.toDataURL('image/jpeg', 0.82)
+          setImagePreview(compressed)
+          setPostForm(prev => ({ ...prev, image_url: compressed }))
+          setImageUploading(false)
+        }
+        img.onerror = () => {
+          setImagePreview(uploadEvent.target.result)
+          setPostForm(prev => ({ ...prev, image_url: uploadEvent.target.result }))
+          setImageUploading(false)
+        }
+        img.src = uploadEvent.target.result
+      }
+      reader.readAsDataURL(file)
+    } catch (err) {
+      console.error('Image upload error:', err)
+      setImageUploading(false)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setImagePreview('')
+    setPostForm(prev => ({ ...prev, image_url: '' }))
+  }
 
   const studentId = user?.id || 'demo-student'
   const studentName = user?.email?.split('@')[0] || 'Rahul K (S7 CSE)'
@@ -136,9 +198,10 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         carbon_saved_kg: postForm.price_type === 'free' ? 12.0 : 8.5,
         seller_id: studentId,
         seller_name: studentName,
-        image_url: ''
+        image_url: postForm.image_url || ''
       })
       setShowPostModal(false)
+      setImagePreview('')
       setPostForm({
         title: '',
         description: '',
@@ -147,6 +210,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         condition: 'Functional/Tested',
         price_type: 'free',
         price: 0,
+        image_url: '',
         sub_components_list: ['Main Unit']
       })
       await loadItems()
@@ -282,6 +346,18 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-2.5">
+                  {/* Item Photo if provided */}
+                  {item.image_url && (
+                    <div className="w-full h-40 rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative">
+                      <img 
+                        src={item.image_url} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        onError={(e) => { e.target.style.display = 'none' }}
+                      />
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100 truncate max-w-[180px]">
                       {item.department.split(' ')[0]} • {item.category}
@@ -570,6 +646,48 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   onChange={(e) => setPostForm({...postForm, description: e.target.value})}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200"
                 ></textarea>
+              </div>
+
+              {/* Add Item Image */}
+              <div className="space-y-1.5">
+                <label className="block font-semibold text-slate-700">
+                  Item Photo (Optional)
+                </label>
+                {imagePreview ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 p-2.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={imagePreview}
+                        alt="Upload preview"
+                        className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-800 truncate">Photo Attached</p>
+                        <p className="text-[10px] text-emerald-600 font-semibold">Ready to display on ad</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="px-2.5 py-1 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-dashed border-slate-200 hover:border-emerald-500 bg-slate-50/70 hover:bg-emerald-50/40 text-slate-600 hover:text-emerald-700 cursor-pointer transition text-xs font-semibold">
+                      <Camera className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>{imageUploading ? 'Processing Photo...' : 'Add / Upload Item Photo'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
               </div>
 
               {/* COMPONENT SPLITTING BUILDER */}
