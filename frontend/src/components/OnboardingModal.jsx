@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { 
   GraduationCap, 
   Wrench, 
-  ShieldCheck, 
   Building2, 
   ArrowRight, 
   RefreshCw, 
@@ -10,7 +9,7 @@ import {
   LogOut,
   Key
 } from 'lucide-react'
-import { authService, STAFF_PASSCODES } from '../services/authService'
+import { authService } from '../services/authService'
 import logoImg from '../assets/logo.png'
 
 export default function OnboardingModal({ user, onComplete, onLogout }) {
@@ -56,24 +55,22 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-[#1c1c1c] rounded-3xl max-w-lg w-full border border-[#2e2e2e] shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-900 text-white p-6 sm:p-7 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-          
+        <div className="bg-[#181818] border-b border-[#2e2e2e] text-[#EDEDED] p-6 sm:p-7 relative overflow-hidden">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-2xl bg-white p-1 border border-white/20 shadow-md">
+            <div className="w-10 h-10 rounded-2xl bg-[#141414] p-1 border border-[#2e2e2e] shadow-md flex items-center justify-center">
               <img src={logoImg} alt="EcoLoop" className="w-full h-full object-contain" />
             </div>
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Welcome to EcoLoop</span>
-              <h2 className="text-xl font-black text-white">Complete Your Campus Profile</h2>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#3ECF8E] font-mono">Welcome to EcoLoop</span>
+              <h2 className="text-xl font-bold text-[#EDEDED]">Complete Your Campus Profile</h2>
             </div>
           </div>
 
-          <p className="text-xs text-slate-300">
-            Signed in with Google as <strong className="text-emerald-300 font-mono">{user?.email}</strong>. 
+          <p className="text-xs text-zinc-400">
+            Signed in with Google as <strong className="text-[#3ECF8E] font-mono">{user?.email}</strong>. 
             Select your college affiliation to personalize your circular dashboard.
           </p>
         </div>
@@ -81,76 +78,76 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 sm:p-7 space-y-5">
           {errorMsg && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {/* Full Name */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">Full Name</label>
+            <label className="block text-xs font-semibold text-zinc-300 mb-1.5">Full Name</label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
               placeholder="Enter your full name"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none transition"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] placeholder-zinc-500 text-xs font-medium focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none transition"
             />
           </div>
 
           {/* Role Selection */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">College Affiliation</label>
+            <label className="block text-xs font-semibold text-zinc-300 mb-1.5">College Affiliation</label>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => { setRole('student'); setErrorMsg('') }}
-                className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between ${
+                className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between cursor-pointer ${
                   role === 'student'
-                    ? 'border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/20 shadow-xs'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                    ? 'border-[#3ECF8E] bg-[#3ECF8E]/10 ring-1 ring-[#3ECF8E] shadow-[0_0_12px_rgba(62,207,142,0.15)]'
+                    : 'border-[#2e2e2e] bg-[#232323] hover:bg-[#282828] text-zinc-400'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-emerald-600' : 'text-slate-500'}`} />
-                  <span className={`text-xs font-bold ${role === 'student' ? 'text-emerald-950' : 'text-slate-800'}`}>
+                  <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-[#3ECF8E]' : 'text-zinc-500'}`} />
+                  <span className={`text-xs font-bold ${role === 'student' ? 'text-[#EDEDED]' : 'text-zinc-300'}`}>
                     Student
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-500 leading-tight">Peer reuse, split parts, claim hardware</span>
+                <span className="text-[10px] text-zinc-400 leading-tight">Peer reuse, split parts, claim hardware</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => { setRole('lab_staff'); setErrorMsg('') }}
-                className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between ${
+                className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between cursor-pointer ${
                   role === 'lab_staff'
-                    ? 'border-blue-500 bg-blue-50/60 ring-2 ring-blue-500/20 shadow-xs'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                    ? 'border-blue-500 bg-blue-500/10 ring-1 ring-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                    : 'border-[#2e2e2e] bg-[#232323] hover:bg-[#282828] text-zinc-400'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <Wrench className={`w-4 h-4 ${role === 'lab_staff' ? 'text-blue-600' : 'text-slate-500'}`} />
-                  <span className={`text-xs font-bold ${role === 'lab_staff' ? 'text-blue-950' : 'text-slate-800'}`}>
+                  <Wrench className={`w-4 h-4 ${role === 'lab_staff' ? 'text-blue-400' : 'text-zinc-500'}`} />
+                  <span className={`text-xs font-bold ${role === 'lab_staff' ? 'text-[#EDEDED]' : 'text-zinc-300'}`}>
                     Faculty / Lab
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-500 leading-tight">Lab triage, scrap salvage, release assets</span>
+                <span className="text-[10px] text-zinc-400 leading-tight">Lab triage, scrap salvage, release assets</span>
               </button>
             </div>
           </div>
 
           {/* Department Passcode (If faculty selected) */}
           {role !== 'student' && (
-            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 space-y-2">
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                  <Key className="w-3.5 h-3.5 text-amber-700" />
+                <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-amber-400" />
                   <span>Faculty / Staff Passcode</span>
                 </label>
-                <span className="text-[10px] font-mono font-bold text-amber-800 bg-amber-100/70 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
                   Required
                 </span>
               </div>
@@ -159,9 +156,9 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
                 value={staffPasscode}
                 onChange={(e) => setStaffPasscode(e.target.value)}
                 placeholder="Enter staff verification passcode"
-                className="w-full px-3 py-2 rounded-xl bg-white border border-amber-300 text-xs font-mono tracking-wider focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-amber-500/40 text-[#EDEDED] text-xs font-mono tracking-wider focus:ring-1 focus:ring-amber-400 focus:outline-none"
               />
-              <p className="text-[10px] text-amber-800">
+              <p className="text-[10px] text-amber-300/80">
                 Contact your Department Lab In-Charge or HOD for the verification key.
               </p>
             </div>
@@ -169,14 +166,14 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
 
           {/* Engineering Department */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              <Building2 className="w-3.5 h-3.5 inline mr-1 text-slate-400" />
+            <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+              <Building2 className="w-3.5 h-3.5 inline mr-1 text-zinc-500" />
               Department / Branch
             </label>
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none transition bg-white"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] text-xs font-medium focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none transition cursor-pointer"
             >
               <option value="Computer Science and Engineering">Computer Science &amp; Engineering (CSE)</option>
               <option value="Electronics and Communication Engineering">Electronics &amp; Communication (ECE)</option>
@@ -192,11 +189,11 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              className="w-full py-3 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-lg shadow-[#3ECF8E]/20 transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#121212]" />
                   <span>Saving Profile...</span>
                 </>
               ) : (
@@ -210,7 +207,7 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
             <button
               type="button"
               onClick={onLogout}
-              className="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center justify-center gap-1.5 transition"
+              className="w-full py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 flex items-center justify-center gap-1.5 transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Use a different account</span>

@@ -1,30 +1,289 @@
 @import "tailwindcss";
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color-scheme: light;
+@theme {
+  --font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-supabase-dark: #121212;
+  --color-supabase-card: #1c1c1c;
+  --color-supabase-elevated: #232323;
+  --color-supabase-border: #2e2e2e;
+  --color-supabase-green: #3ECF8E;
+  --color-supabase-green-hover: #34B27B;
 }
 
-body {
+:root {
+  font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+  letter-spacing: -0.011em;
+}
+
+html, body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: #121212 !important;
+  color: #EDEDED !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbars */
+/* =========================================================================
+   UNIQUE SUPABASE CUSTOM CURSOR & ACCESSIBILITY
+   ========================================================================= */
+
+/* Desktop with fine pointer: Hide default cursor and let CustomCursor render */
+@media (hover: hover) and (pointer: fine) {
+  html.custom-cursor-active,
+  html.custom-cursor-active * {
+    cursor: none !important;
+  }
+}
+
+/* Supabase Brand Selection Highlight */
+::selection {
+  background-color: rgba(62, 207, 142, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* Supabase Studio Dark Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #121212;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #2a2a2a;
+  border-radius: 9999px;
+  border: 1px solid #1c1c1c;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #3ECF8E;
 }
+
+/* Supabase Studio Ambient Grid Pattern */
+.bg-supabase-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* =========================================================================
+   SUPABASE DARK COLOR SYSTEM OVERRIDES
+   Maps existing generic utility classes directly to Supabase design tokens
+   ========================================================================= */
+
+/* 1. Surfaces & Cards */
+.bg-white {
+  background-color: #1c1c1c !important;
+}
+.bg-slate-50, .bg-slate-100 {
+  background-color: #161616 !important;
+}
+.bg-slate-900, .bg-slate-950 {
+  background-color: #121212 !important;
+}
+.bg-slate-800 {
+  background-color: #1f1f1f !important;
+}
+
+/* 2. Crisp Tech Borders */
+.border-slate-100,
+.border-slate-200,
+.border-slate-300 {
+  border-color: #2e2e2e !important;
+}
+.border-slate-700,
+.border-slate-800 {
+  border-color: #383838 !important;
+}
+
+/* 3. Text Contrast & Hierarchy */
+.text-slate-950,
+.text-slate-900,
+.text-slate-800 {
+  color: #EDEDED !important;
+}
+.text-slate-700,
+.text-slate-600 {
+  color: #C1C1C8 !important;
+}
+.text-slate-500,
+.text-slate-400 {
+  color: #8A8F98 !important;
+}
+.text-slate-300,
+.text-slate-200 {
+  color: #D1D5DB !important;
+}
+
+/* 4. Supabase Green Accent (#3ECF8E) */
+.bg-emerald-600,
+.bg-emerald-500 {
+  background-color: #3ECF8E !important;
+  color: #121212 !important;
+}
+.hover\:bg-emerald-700:hover,
+.hover\:bg-emerald-600:hover,
+.hover\:bg-emerald-500:hover {
+  background-color: #34B27B !important;
+  color: #121212 !important;
+}
+.text-emerald-950,
+.text-emerald-900,
+.text-emerald-800,
+.text-emerald-700,
+.text-emerald-600,
+.text-emerald-500,
+.text-emerald-400 {
+  color: #3ECF8E !important;
+}
+.border-emerald-600,
+.border-emerald-500,
+.border-emerald-400 {
+  border-color: #3ECF8E !important;
+}
+.bg-emerald-50,
+.bg-emerald-100 {
+  background-color: rgba(62, 207, 142, 0.12) !important;
+  border-color: rgba(62, 207, 142, 0.25) !important;
+  color: #3ECF8E !important;
+}
+
+/* 5. Status Badges & Alerts */
+.bg-blue-50,
+.bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+  color: #60A5FA !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+.text-blue-600,
+.text-blue-700,
+.text-blue-800 {
+  color: #60A5FA !important;
+}
+
+.bg-amber-50,
+.bg-amber-100 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #FBBF24 !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+.text-amber-600,
+.text-amber-700,
+.text-amber-800 {
+  color: #FBBF24 !important;
+}
+
+.bg-purple-50,
+.bg-purple-100 {
+  background-color: rgba(168, 85, 247, 0.12) !important;
+  color: #C084FC !important;
+  border-color: rgba(168, 85, 247, 0.25) !important;
+}
+.text-purple-600,
+.text-purple-700,
+.text-purple-800 {
+  color: #C084FC !important;
+}
+
+.bg-rose-50,
+.bg-rose-100 {
+  background-color: rgba(244, 63, 94, 0.12) !important;
+  color: #FB7185 !important;
+  border-color: rgba(244, 63, 94, 0.25) !important;
+}
+.text-rose-600,
+.text-rose-700,
+.text-rose-800 {
+  color: #FB7185 !important;
+}
+
+/* 6. Form Controls (Inputs, Selects, Textareas) */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background-color: #141414 !important;
+  border: 1px solid #2e2e2e !important;
+  color: #EDEDED !important;
+}
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #3ECF8E !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px #3ECF8E !important;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #52525B !important;
+}
+
+/* 7. Hover cards & Elevate */
+.hover\:border-slate-300:hover,
+.hover\:border-slate-400:hover {
+  border-color: #3e3e3e !important;
+}
+.hover\:bg-slate-50:hover,
+.hover\:bg-slate-100:hover {
+  background-color: #232323 !important;
+}
+
+/* 8. Table Styling */
+table {
+  border-color: #2e2e2e !important;
+}
+thead tr, th {
+  background-color: #181818 !important;
+  color: #A1A1AA !important;
+  border-color: #2e2e2e !important;
+}
+tbody tr {
+  border-color: #262626 !important;
+}
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+td {
+  border-color: #262626 !important;
+}
+
+/* 9. Soft Shadows for Cards */
+.shadow-sm,
+.shadow-md,
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* 10. Floating pill navigation shadow */
+nav[role="navigation"] {
+  background-color: rgba(28, 28, 28, 0.95) !important;
+  border: 1px solid #2e2e2e !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* 11. Modal Backdrops */
+.fixed.inset-0.z-50,
+.fixed.inset-0.bg-slate-900\/60,
+.fixed.inset-0.bg-slate-900\/80 {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* 12. Secondary Action Buttons */
+button.border-slate-200,
+button.border-slate-300,
+label.border-slate-200 {
+  background-color: #232323 !important;
+  border-color: #2e2e2e !important;
+  color: #EDEDED !important;
+}
+button.border-slate-200:hover,
+button.border-slate-300:hover,
+label.border-slate-200:hover {
+  background-color: #2a2a2a !important;
+  border-color: #3e3e3e !important;
+}
+

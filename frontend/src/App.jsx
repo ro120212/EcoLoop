@@ -14,6 +14,8 @@ import { getUserRole, authService } from './services/authService'
 import logoImg from './assets/logo.png'
 import { RefreshCw } from 'lucide-react'
 
+import CustomCursor from './components/CustomCursor'
+
 export default function App() {
   const [user, setUser] = useState(null)
   const [currentRole, setCurrentRole] = useState('student') // 'student' | 'lab_staff' | 'admin'
@@ -95,42 +97,62 @@ export default function App() {
   // Initial session check spinner
   if (loadingSession) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin text-emerald-400" />
-        <p className="text-xs text-slate-400 font-mono tracking-wider">Connecting to Supabase Campus Auth...</p>
+      <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center text-[#EDEDED] space-y-4">
+        <CustomCursor />
+        <div className="w-12 h-12 rounded-2xl bg-[#1c1c1c] border border-[#2e2e2e] flex items-center justify-center shadow-[0_0_25px_rgba(62,207,142,0.15)]">
+          <RefreshCw className="w-6 h-6 animate-spin text-[#3ECF8E]" />
+        </div>
+        <p className="text-xs text-zinc-400 font-mono tracking-wider">Connecting to Supabase Campus Auth...</p>
       </div>
     )
   }
 
   // If not logged in, display the dedicated Login Screen
   if (!user) {
-    return <LoginScreen onLoginSuccess={handleLoginSuccess} />
+    return (
+      <>
+        <CustomCursor />
+        <LoginScreen onLoginSuccess={handleLoginSuccess} />
+      </>
+    )
   }
 
   // If logged in via Google OAuth but role/department metadata not yet completed
   if (!user.user_metadata?.role) {
     return (
-      <OnboardingModal 
-        user={user} 
-        onComplete={handleOnboardingComplete} 
-        onLogout={handleLogout} 
-      />
+      <>
+        <CustomCursor />
+        <OnboardingModal 
+          user={user} 
+          onComplete={handleOnboardingComplete} 
+          onLogout={handleLogout} 
+        />
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen flex flex-col bg-[#121212] font-sans text-[#EDEDED] relative overflow-x-hidden">
+      {/* Precision Supabase Cursor */}
+      <CustomCursor />
+
+      {/* Supabase Ambient Background Glow & Tech Grid */}
+      <div className="fixed inset-0 bg-supabase-grid opacity-35 pointer-events-none" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(62,207,142,0.08),transparent_70%)] pointer-events-none" />
+
       {/* Top Navigation */}
-      <Navbar
-        currentRole={currentRole}
-        activeView={activeView}
-        setActiveView={setActiveView}
-        user={user}
-        onLogout={handleLogout}
-      />
+      <div className="relative z-40">
+        <Navbar
+          currentRole={currentRole}
+          activeView={activeView}
+          setActiveView={setActiveView}
+          user={user}
+          onLogout={handleLogout}
+        />
+      </div>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
         {/* STUDENT ROLE HUB */}
         {activeView === 'student_hub' && (
           <StudentDashboard 
@@ -179,23 +201,23 @@ export default function App() {
       </main>
 
       {/* Campus Circular Economy Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-[#2e2e2e] bg-[#171717] py-8 mt-16 text-xs text-zinc-400 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 shadow-xs flex items-center justify-center p-0.5 overflow-hidden">
+            <div className="w-8 h-8 rounded-xl bg-[#1c1c1c] border border-[#2e2e2e] shadow-sm flex items-center justify-center p-1 overflow-hidden">
               <img src={logoImg} alt="EcoLoop" className="w-full h-full object-contain" />
             </div>
             <div>
-              <span className="font-bold text-slate-900 block">EcoLoop Circular Campus Platform</span>
-              <span className="text-[11px] text-slate-400">NSS College of Engineering, Palakkad</span>
+              <span className="font-semibold text-[#EDEDED] block tracking-tight">EcoLoop Circular Campus Platform</span>
+              <span className="text-[11px] text-zinc-500">NSS College of Engineering, Palakkad</span>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span className="font-semibold text-emerald-800">5 Branches: CSE • Mech • Civil • EEE • IC</span>
-            <span>•</span>
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] text-zinc-400 font-mono">
+            <span className="text-[#3ECF8E] font-medium">5 Branches Active</span>
+            <span className="text-zinc-600">•</span>
             <span>Zero Landfill Mission</span>
-            <span>•</span>
-            <span>AI Intelligent Diagnostics</span>
+            <span className="text-zinc-600">•</span>
+            <span>Intelligent AI Diagnostics</span>
           </div>
         </div>
       </footer>
