@@ -256,6 +256,11 @@ export default function RepairPlatform({ user }) {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {diagnosis.cached && (
+                    <span className="px-2.5 py-0.5 rounded-full font-bold bg-blue-100 text-blue-800 text-[11px]">
+                      ⚡ Instant Campus Cache Hit ({diagnosis.cache_hits || 1} hits)
+                    </span>
+                  )}
                   <span className="px-2.5 py-0.5 rounded-full font-bold bg-orange-100 text-orange-800">
                     {diagnosis.difficulty_level} Difficulty
                   </span>

@@ -1,12 +1,19 @@
 import os
 import json
 import base64
+import hashlib
+import re
+import asyncio
 from typing import Dict, Any, Optional
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from database import db
 
 load_dotenv()
+
+def normalize_text(text: str) -> str:
+    return re.sub(r'[^a-z0-9]', '', (text or "").lower())
 
 class GeminiService:
     def __init__(self, api_key: Optional[str] = None):
@@ -25,7 +32,6 @@ class GeminiService:
             # Persist to backend/.env
             env_path = os.path.join(os.path.dirname(__file__), ".env")
             if os.path.exists(env_path):
-                import re
                 with open(env_path, "r", encoding="utf-8") as f:
                     content = f.read()
                 if "GEMINI_API_KEY=" in content:
@@ -43,7 +49,16 @@ class GeminiService:
         """
         Classifies waste into categories: E-Waste, Metal, Plastic, Paper, Organic, Hazardous.
         Provides item name, hazard level, material breakdown, and recommended disposal / reuse action.
+        Utilizes cryptographic SHA-256 caching to serve repeated component scans instantly.
         """
+        # 1. Check Component Cache
+        img_hash = hashlib.sha256(image_bytes).hexdigest()
+        cache_key = f"img:{img_hash}"
+        cached_result = db.get_cached_ai_response(cache_key)
+        if cached_result:
+            print(f"⚡ Component Cache Hit for Image ({img_hash[:8]}...) - Serving 0ms response.")
+            return cached_result
+
         prompt = """
         You are an expert waste classification and environmental engineer for a college campus e-waste recycling platform named EcoLoop.
         Analyze this image carefully and return a valid JSON object strictly matching this schema:
@@ -63,32 +78,49 @@ class GeminiService:
         """
 
         if self.client:
-            try:
-                response = self.client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=[
-                        types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
-                        prompt
-                    ]
-                )
-                text = response.text.strip()
-                # Clean markdown fences if any
-                if text.startswith("```json"):
-                    text = text[7:]
-                elif text.startswith("```"):
-                    text = text[3:]
-                if text.endswith("```"):
-                    text = text[:-3]
-                data = json.loads(text.strip())
-                data["ai_powered"] = True
-                data["model_used"] = "gemini-2.5-flash"
-                return data
-            except Exception as e:
-                print(f"Gemini API error during image classification: {e}")
-                # Fall back to intelligent heuristic parser below
+            # Auto-retry on rate limit (429 / ResourceExhausted)
+            max_retries = 2
+            for attempt in range(max_retries + 1):
+                try:
+                    response = self.client.models.generate_content(
+                        model="gemini-2.5-flash",
+                        contents=[
+                            types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                            prompt
+                        ]
+                    )
+                    text = response.text.strip()
+                    if text.startswith("```json"):
+                        text = text[7:]
+                    elif text.startswith("```"):
+                        text = text[3:]
+                    if text.endswith("```"):
+                        text = text[:-3]
+                    data = json.loads(text.strip())
+                    data["ai_powered"] = True
+                    data["model_used"] = "gemini-2.5-flash"
+                    data["cached"] = False
+
+                    # Save to permanent cache for subsequent student requests
+                    db.set_cached_ai_response(
+                        cache_key=cache_key,
+                        cache_type="classification",
+                        query_text=data.get("item_name", "Component Scan"),
+                        response_data=data
+                    )
+                    return data
+                except Exception as e:
+                    err_str = str(e).lower()
+                    if ("429" in err_str or "exhausted" in err_str or "quota" in err_str) and attempt < max_retries:
+                        wait_sec = 2 * (attempt + 1)
+                        print(f"Notice: Rate limit encountered. Auto-retrying in {wait_sec}s (Attempt {attempt+1}/{max_retries})...")
+                        await asyncio.sleep(wait_sec)
+                    else:
+                        print(f"Gemini API error during image classification: {e}")
+                        break
 
         # Heuristic fallback if API key is not configured or fails
-        return {
+        fallback_data = {
             "category": "E-Waste",
             "item_name": "Electronic Peripheral / Circuit Component",
             "hazard_level": "Medium",
@@ -100,14 +132,33 @@ class GeminiService:
             "carbon_savings_if_diverted_kg": 3.8,
             "campus_disposal_advice": "Deposit in the Central E-Waste Bin at the CSE Department foyer. Disconnect any power sources or batteries before deposit.",
             "ai_powered": False,
+            "cached": False,
             "note": "Using EcoLoop campus heuristic engine. Add your GEMINI_API_KEY in Settings to enable real-time Gemini Vision analysis."
         }
+        return fallback_data
 
     async def diagnose_repair(self, device_name: str, symptom: str, device_category: str = "Electronics") -> Dict[str, Any]:
         """
         Provides step-by-step diagnostic checklist, root causes, required tools, difficulty rating,
         and safety warnings for faulty electronics.
+        Implements intelligent exact and similarity-based component caching to handle high student volume.
         """
+        norm_dev = normalize_text(device_name)
+        norm_sym = normalize_text(symptom)
+        cache_key = f"diag:{norm_dev}:{norm_sym}"
+
+        # 1. Exact Cache Lookup
+        cached_result = db.get_cached_ai_response(cache_key)
+        if cached_result:
+            print(f"⚡ Exact Diagnostic Cache Hit for '{device_name}' - Serving 0ms response.")
+            return cached_result
+
+        # 2. Similar / Keyword Match in Pre-seeded Knowledge Base
+        similar_result = db.find_similar_diagnosis(device_name, symptom)
+        if similar_result:
+            print(f"⚡ Similar Diagnostic Knowledge Base Hit for '{device_name}' ({similar_result.get('matched_query')}) - Serving 0ms response.")
+            return similar_result
+
         prompt = f"""
         You are an expert electronics repair technician at a university campus makerspace for the 'Repair Before Replace' platform.
         A student or lab technician has reported this issue:
@@ -134,27 +185,45 @@ class GeminiService:
         """
 
         if self.client:
-            try:
-                response = self.client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=[prompt]
-                )
-                text = response.text.strip()
-                if text.startswith("```json"):
-                    text = text[7:]
-                elif text.startswith("```"):
-                    text = text[3:]
-                if text.endswith("```"):
-                    text = text[:-3]
-                data = json.loads(text.strip())
-                data["ai_powered"] = True
-                data["model_used"] = "gemini-2.5-flash"
-                return data
-            except Exception as e:
-                print(f"Gemini API error during repair diagnosis: {e}")
+            max_retries = 2
+            for attempt in range(max_retries + 1):
+                try:
+                    response = self.client.models.generate_content(
+                        model="gemini-2.5-flash",
+                        contents=[prompt]
+                    )
+                    text = response.text.strip()
+                    if text.startswith("```json"):
+                        text = text[7:]
+                    elif text.startswith("```"):
+                        text = text[3:]
+                    if text.endswith("```"):
+                        text = text[:-3]
+                    data = json.loads(text.strip())
+                    data["ai_powered"] = True
+                    data["model_used"] = "gemini-2.5-flash"
+                    data["cached"] = False
+
+                    # Cache this newly generated diagnosis for all future campus students
+                    db.set_cached_ai_response(
+                        cache_key=cache_key,
+                        cache_type="diagnosis",
+                        query_text=f"{device_name} - {symptom}",
+                        response_data=data
+                    )
+                    return data
+                except Exception as e:
+                    err_str = str(e).lower()
+                    if ("429" in err_str or "exhausted" in err_str or "quota" in err_str) and attempt < max_retries:
+                        wait_sec = 2 * (attempt + 1)
+                        print(f"Notice: Rate limit encountered. Auto-retrying in {wait_sec}s (Attempt {attempt+1}/{max_retries})...")
+                        await asyncio.sleep(wait_sec)
+                    else:
+                        print(f"Gemini API error during repair diagnosis: {e}")
+                        break
 
         # Intelligent campus rule-based fallback
-        return {
+        fallback_diag = {
             "device": device_name,
             "likely_root_causes": [
                 "Dust accumulation causing thermal throttling or poor contact",
@@ -182,7 +251,9 @@ class GeminiService:
             "spare_part_info": "Generic replacement wire/switch readily available in ECE hardware lab (~₹15 - ₹50).",
             "verdict": "Likely Repairable",
             "ai_powered": False,
+            "cached": False,
             "note": "Using EcoLoop campus troubleshooting database. Add your GEMINI_API_KEY in Settings for custom generative AI diagnostics."
         }
+        return fallback_diag
 
 gemini_service = GeminiService()

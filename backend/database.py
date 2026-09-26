@@ -3,6 +3,9 @@ import sqlite3
 import uuid
 import random
 import datetime
+import json
+import re
+import hashlib
 from typing import List, Dict, Any, Optional
 from supabase import create_client, Client
 from dotenv import load_dotenv
@@ -33,6 +36,7 @@ class DatabaseManager:
                 print(f"Notice: Supabase client init error ({e}), utilizing local store.")
         self.init_sqlite()
         self.seed_initial_data()
+        self.seed_ai_cache()
 
     def get_sqlite(self):
         conn = sqlite3.connect(DB_PATH)
@@ -169,6 +173,19 @@ class DatabaseManager:
             ]:
                 if col not in existing_ticket_cols:
                     cursor.execute(f"ALTER TABLE repair_tickets ADD COLUMN {col} {col_type}")
+
+            # AI Component & Diagnosis Cache for High-Concurrency Scalability
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS ai_cache (
+                cache_key TEXT PRIMARY KEY,
+                cache_type TEXT NOT NULL, -- 'diagnosis' or 'classification'
+                query_text TEXT,
+                response_json TEXT NOT NULL,
+                hit_count INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_accessed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """)
 
             conn.commit()
 
@@ -774,5 +791,314 @@ class DatabaseManager:
             "faculty_decision": decision,
             "message": f"Ticket resolved as: {decision.replace('_', ' ').title()}"
         }
+
+    # --- High-Concurrency AI Component & Diagnosis Caching Layer ---
+    def get_cached_ai_response(self, cache_key: str) -> Optional[Dict[str, Any]]:
+        try:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT response_json, hit_count FROM ai_cache WHERE cache_key = ?", (cache_key,))
+                row = cursor.fetchone()
+                if row:
+                    cursor.execute("""
+                        UPDATE ai_cache 
+                        SET hit_count = hit_count + 1, last_accessed = CURRENT_TIMESTAMP 
+                        WHERE cache_key = ?
+                    """, (cache_key,))
+                    conn.commit()
+                    data = json.loads(row[0])
+                    data["cached"] = True
+                    data["cache_hits"] = row[1] + 1
+                    return data
+        except Exception as e:
+            print(f"Notice: Cache lookup error: {e}")
+        return None
+
+    def find_similar_diagnosis(self, device_name: str, symptom: str) -> Optional[Dict[str, Any]]:
+        norm_dev = (device_name or "").lower()
+        norm_sym = (symptom or "").lower()
+        
+        dev_tokens = [t for t in re.findall(r'[a-z0-9]+', norm_dev) if len(t) > 2]
+        sym_tokens = [t for t in re.findall(r'[a-z0-9]+', norm_sym) if len(t) > 2]
+
+        try:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT cache_key, query_text, response_json, hit_count FROM ai_cache WHERE cache_type = 'diagnosis'")
+                rows = cursor.fetchall()
+                for r in rows:
+                    q_text = (r[1] or "").lower()
+                    dev_match = any(token in q_text for token in dev_tokens) if dev_tokens else False
+                    sym_match = any(token in q_text for token in sym_tokens) if sym_tokens else False
+                    
+                    if dev_match and (sym_match or not sym_tokens):
+                        cursor.execute("""
+                            UPDATE ai_cache 
+                            SET hit_count = hit_count + 1, last_accessed = CURRENT_TIMESTAMP 
+                            WHERE cache_key = ?
+                        """, (r[0],))
+                        conn.commit()
+                        data = json.loads(r[2])
+                        data["cached"] = True
+                        data["cache_hits"] = r[3] + 1
+                        data["matched_query"] = r[1]
+                        return data
+        except Exception as e:
+            print(f"Notice: Similar diagnosis search: {e}")
+        return None
+
+    def set_cached_ai_response(self, cache_key: str, cache_type: str, query_text: str, response_data: Dict[str, Any]):
+        try:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO ai_cache (cache_key, cache_type, query_text, response_json, hit_count, created_at, last_accessed)
+                    VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    ON CONFLICT(cache_key) DO UPDATE SET
+                        response_json = excluded.response_json,
+                        hit_count = hit_count + 1,
+                        last_accessed = CURRENT_TIMESTAMP
+                """, (cache_key, cache_type, query_text, json.dumps(response_data)))
+                conn.commit()
+        except Exception as e:
+            print(f"Notice: Set cache error: {e}")
+
+    def seed_ai_cache(self):
+        """Pre-seeds rich diagnostic guides for frequent campus laboratory hardware items."""
+        try:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM ai_cache")
+                if cursor.fetchone()[0] > 0:
+                    return
+
+                preseeded = [
+                    (
+                        "diag:dellkeyboard:keysnottypingorstickyafterliquidspill",
+                        "diagnosis",
+                        "Dell Keyboard - Keys not typing or sticky after liquid spill",
+                        {
+                            "device": "Dell KB216 USB Keyboard",
+                            "likely_root_causes": [
+                                "Dried liquid residue insulating membrane contact traces",
+                                "Stuck scissor/dome mechanism under keycaps from dust or beverage spill",
+                                "Oxidized carbon trace on inner membrane layer"
+                            ],
+                            "difficulty_level": "Beginner",
+                            "estimated_repair_time_mins": 20,
+                            "safety_warnings": ["Ensure USB cable is unplugged before spraying isopropyl alcohol."],
+                            "tools_and_materials_needed": [
+                                "Keycap puller or flat plastic spudger",
+                                "99% Isopropyl Alcohol (IPA)",
+                                "Cotton swabs & microfiber cloth",
+                                "Phillips #0 screwdriver"
+                            ],
+                            "step_by_step_troubleshooting": [
+                                {"step": 1, "title": "Disassembly & Dome Inspection", "description": "Unplug keyboard. Remove keycaps around affected area using a puller. Unscrew perimeter screws from back casing to separate membrane layers."},
+                                {"step": 2, "title": "Membrane Washing & Contact Cleaning", "description": "Gently wipe the clear 3-layer plastic membrane sheets with 99% IPA using cotton swabs. Do not scrub hard to avoid scratching conductive silver traces."},
+                                {"step": 3, "title": "Dry & Rubber Dome Alignment", "description": "Allow to dry completely for 10 minutes. Align rubber dome sheet over the membrane contacts. Fasten back housing and plug into USB port to test via an online key tester."}
+                            ],
+                            "spare_part_info": "Conductive silver trace repair pen (~₹90) or salvage silicone domes from scrapped lab keyboards.",
+                            "verdict": "Likely Repairable",
+                            "ai_powered": True,
+                            "cached": True
+                        }
+                    ),
+                    (
+                        "diag:logitechmouse:leftclickdoubleclickingintermittently",
+                        "diagnosis",
+                        "Logitech Mouse - Left click double clicking intermittently",
+                        {
+                            "device": "Logitech B100 USB Optical Mouse",
+                            "likely_root_causes": [
+                                "Micro-switch copper leaf spring fatigue or oxidation",
+                                "Accumulated lint or dust inside the click plunger",
+                                "Cold solder joint on the Omron / Kailh microswitch terminal"
+                            ],
+                            "difficulty_level": "Beginner",
+                            "estimated_repair_time_mins": 15,
+                            "safety_warnings": ["Unplug mouse from USB before opening."],
+                            "tools_and_materials_needed": [
+                                "Phillips #00 precision screwdriver",
+                                "Electronic contact cleaner spray or 99% IPA",
+                                "Sewing needle or fine tweezers"
+                            ],
+                            "step_by_step_troubleshooting": [
+                                {"step": 1, "title": "Open Casing", "description": "Remove the bottom screw located under the mouse foot skate. Lift top shell gently away from PCB."},
+                                {"step": 2, "title": "Microswitch Actuator Flush", "description": "Apply 1 drop of contact cleaner directly into the tiny gap around the click button actuator. Click the button rapidly 40 times to work the fluid into the copper leaf spring contacts."},
+                                {"step": 3, "title": "Tension Spring Readjustment", "description": "If double clicking persists, use a needle to unclip the microswitch cover and slightly increase spring arch tension before snapping cover back on."}
+                            ],
+                            "spare_part_info": "Standard 3-pin tactile micro-switch (~₹10 - ₹25 from campus electronics lab).",
+                            "verdict": "Likely Repairable",
+                            "ai_powered": True,
+                            "cached": True
+                        }
+                    ),
+                    (
+                        "diag:desktopsmps:nopowerpcwontturnonfannotspinning",
+                        "diagnosis",
+                        "Desktop SMPS - No power PC wont turn on fan not spinning",
+                        {
+                            "device": "450W ATX Desktop SMPS",
+                            "likely_root_causes": [
+                                "Blown internal ceramic / glass fuse (T5A 250V) due to campus voltage surge",
+                                "Bulging primary electrolytic filter capacitors (200V/470uF)",
+                                "Failed 5VSB (standby +5V) circuit or shorted NTC thermistor"
+                            ],
+                            "difficulty_level": "Intermediate",
+                            "estimated_repair_time_mins": 35,
+                            "safety_warnings": [
+                                "HIGH VOLTAGE HAZARD: Primary capacitors store lethal 300V DC even after unplugging.",
+                                "Always discharge high-voltage capacitors through a 1k-ohm 5W power resistor before touching circuitry."
+                            ],
+                            "tools_and_materials_needed": [
+                                "Digital Multimeter (DC Voltage & Continuity)",
+                                "Paperclip or wire jumper for PS_ON test",
+                                "Soldering iron (40W) & desoldering pump",
+                                "Replacement T5A fuse or 105C low-ESR capacitors"
+                            ],
+                            "step_by_step_troubleshooting": [
+                                {"step": 1, "title": "Paperclip Bench Jump Test", "description": "Disconnect SMPS from PC. Locate the 24-pin ATX connector. Short the Green wire (PS_ON) to any Black wire (Ground) using a paperclip. If fan spins, SMPS is functional and motherboard was the failure point."},
+                                {"step": 2, "title": "5VSB Standby Rail Measurement", "description": "Plug SMPS into AC mains. Measure voltage between Purple wire (+5VSB) and Ground. Must read steady 5.0V +/- 5%."},
+                                {"step": 3, "title": "Visual Capacitor & Fuse Inspection", "description": "Unplug, discharge capacitors, and open cover. Check if the glass fuse is blackened. Look for bulging tops on secondary filter capacitors and replace bulged units."}
+                            ],
+                            "spare_part_info": "Low-ESR electrolytic capacitors (~₹15 each) and T5A fuses (~₹5).",
+                            "verdict": "Likely Repairable",
+                            "ai_powered": True,
+                            "cached": True
+                        }
+                    ),
+                    (
+                        "diag:desktopram:pcgives3beepsnodisplayonboot",
+                        "diagnosis",
+                        "Desktop RAM - PC gives 3 beeps no display on boot",
+                        {
+                            "device": "Kingston 8GB DDR3/DDR4 RAM Stick",
+                            "likely_root_causes": [
+                                "Surface oxidation on the gold contact fingers",
+                                "Dust obstruction inside the motherboard DIMM slot contacts",
+                                "Improper seating with one clip not locked fully"
+                            ],
+                            "difficulty_level": "Beginner",
+                            "estimated_repair_time_mins": 10,
+                            "safety_warnings": ["Ground yourself before touching RAM to discharge static electricity."],
+                            "tools_and_materials_needed": [
+                                "Soft white pencil eraser (Natraj or Staedtler)",
+                                "99% Isopropyl Alcohol & lint-free cloth",
+                                "Can of compressed air or bulb blower"
+                            ],
+                            "step_by_step_troubleshooting": [
+                                {"step": 1, "title": "Gold Finger Polishing", "description": "Remove RAM module. Gently rub both sides of the gold edge fingers with the pencil eraser until bright and shiny. Brush away eraser shavings."},
+                                {"step": 2, "title": "IPA Degrease", "description": "Dampen cloth with IPA and wipe contacts clean of any skin oils or residues. Let dry for 60 seconds."},
+                                {"step": 3, "title": "Slot Cleaning & Firm Reseating", "description": "Blow dust out of motherboard DIMM slot. Align notch and press down firmly on both ends until the side clips click in automatically."}
+                            ],
+                            "spare_part_info": "Zero hardware cost (cleaning restores 90% of memory contact faults).",
+                            "verdict": "Likely Repairable",
+                            "ai_powered": True,
+                            "cached": True
+                        }
+                    ),
+                    (
+                        "diag:arduinouno:devicedescriptorrequestfailednotdetecteduousb",
+                        "diagnosis",
+                        "Arduino Uno - Device descriptor request failed not detected via USB",
+                        {
+                            "device": "Arduino Uno R3 Microcontroller Board",
+                            "likely_root_causes": [
+                                "Blown self-resetting polyfuse (500mA PTC) from short circuit on 5V pin",
+                                "Corrupted ATmega16U2 USB-serial firmware",
+                                "Defective USB-B cable with broken data D+/D- lines"
+                            ],
+                            "difficulty_level": "Intermediate",
+                            "estimated_repair_time_mins": 25,
+                            "safety_warnings": ["Disconnect external 12V DC power jacks before diagnosing USB circuitry."],
+                            "tools_and_materials_needed": [
+                                "Known-good USB 2.0 A-to-B data cable",
+                                "Digital multimeter",
+                                "Another Arduino or USBasp programmer for ISP burning"
+                            ],
+                            "step_by_step_troubleshooting": [
+                                {"step": 1, "title": "5V Rail Voltage Verification", "description": "Plug into USB and measure DC voltage between 5V pin and GND on headers. If below 4.5V, check if polyfuse (golden component near USB port) is hot."},
+                                {"step": 2, "title": "Loopback Echo Test", "description": "Connect jumper wire between RESET and GND, and another between TX (pin 1) and RX (pin 0). Open Arduino Serial Monitor and send keystrokes; if echoed back, serial converter is healthy."},
+                                {"step": 3, "title": "Reflash 16U2 Firmware via DFU", "description": "Short the two reset pins next to the USB chip to enter DFU mode and re-flash official Arduino USB firmware using Atmel FLIP or dfu-programmer."}
+                            ],
+                            "spare_part_info": "500mA SMD PTC fuse (~₹12) or external CH340 USB-TTL adapter (~₹80).",
+                            "verdict": "Likely Repairable",
+                            "ai_powered": True,
+                            "cached": True
+                        }
+                    ),
+                    (
+                        "diag:solderingiron:tipnotheatingupheatingelementcold",
+                        "diagnosis",
+                        "Soldering Iron - Tip not heating up heating element cold",
+                        {
+                            "device": "Soldron 25W Soldering Iron",
+                            "likely_root_causes": [
+                                "Broken nichrome wire heating element inside the ceramic barrel",
+                                "Severed power cord inside the handle strain relief boot",
+                                "Cold solder joint connecting mains lead to heating coil terminal"
+                            ],
+                            "difficulty_level": "Beginner",
+                            "estimated_repair_time_mins": 15,
+                            "safety_warnings": ["Ensure iron is completely unplugged before opening handle."],
+                            "tools_and_materials_needed": [
+                                "Multimeter (Resistance 20k ohm range)",
+                                "Small Phillips screwdriver",
+                                "Replacement 25W ceramic/mica heating element"
+                            ],
+                            "step_by_step_troubleshooting": [
+                                {"step": 1, "title": "Plug-to-Cord Continuity Check", "description": "Unplug iron. Measure resistance between plug prongs. An open circuit (infinite ohms) confirms an internal disconnection."},
+                                {"step": 2, "title": "Heating Element Resistance Test", "description": "Unscrew handle collar. Measure resistance across the two element leads. Normal value for 25W 230V is ~2,100 ohms (R = V^2 / P). If open circuit, element is blown."},
+                                {"step": 3, "title": "Element Replacement", "description": "Unscrew tip barrel, slide out old element, and solder the replacement element leads to the terminal block. Reassemble handle."}
+                            ],
+                            "spare_part_info": "Soldron 25W heating element replacement core (~₹45 - ₹60 at local electronic shops).",
+                            "verdict": "Likely Repairable",
+                            "ai_powered": True,
+                            "cached": True
+                        }
+                    ),
+                    (
+                        "diag:nema17steppermotor:vibratingstutteringnotrotatingsmoothly",
+                        "diagnosis",
+                        "NEMA 17 Stepper Motor - Vibrating stuttering not rotating smoothly",
+                        {
+                            "device": "NEMA 17 Bipolar Stepper Motor",
+                            "likely_root_causes": [
+                                "Crossed phase wires (Phase A and Phase B leads mismatched to driver)",
+                                "A4988 / TMC2208 driver Vref potentiometer voltage set too low",
+                                "Intermittent break in 4-wire JST DuPont connector harness"
+                            ],
+                            "difficulty_level": "Beginner",
+                            "estimated_repair_time_mins": 15,
+                            "safety_warnings": ["Never unplug stepper motor while driver board is powered (destroys driver)."],
+                            "tools_and_materials_needed": [
+                                "Digital Multimeter (Continuity / Resistance 200 ohm mode)",
+                                "Ceramic / insulated tuning screwdriver",
+                                "JST connector crimper or replacement 4-pin harness"
+                            ],
+                            "step_by_step_troubleshooting": [
+                                {"step": 1, "title": "Coil Phase Identification", "description": "Unplug motor. Test resistance between pin pairs. Two pins showing ~2 to 5 ohms belong to Coil A; the other two belong to Coil B. There should be NO continuity between Coil A and Coil B."},
+                                {"step": 2, "title": "Driver Pinout Alignment", "description": "Connect Coil A to driver pins 1A and 1B; connect Coil B to driver pins 2A and 2B. If motor vibrates instead of turning, invert one pair (swap 1A and 1B)."},
+                                {"step": 3, "title": "Driver Vref Calibration", "description": "Power on controller board. Measure DC voltage from driver potentiometer top to GND. Adjust to 0.75V - 0.90V for standard 1.5A NEMA 17 motors."}
+                            ],
+                            "spare_part_info": "4-pin DuPont JST motor cable (~₹30) or A4988 driver module (~₹75).",
+                            "verdict": "Likely Repairable",
+                            "ai_powered": True,
+                            "cached": True
+                        }
+                    )
+                ]
+
+                for item in preseeded:
+                    cursor.execute("""
+                        INSERT INTO ai_cache (cache_key, cache_type, query_text, response_json, hit_count, created_at, last_accessed)
+                        VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    """, (item[0], item[1], item[2], json.dumps(item[3])))
+
+                conn.commit()
+                print(f"Pre-seeded {len(preseeded)} common campus hardware diagnostic entries into AI Cache.")
+        except Exception as e:
+            print(f"Notice: AI Cache pre-seeding: {e}")
 
 db = DatabaseManager()

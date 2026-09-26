@@ -189,13 +189,20 @@ export default function AIWasteClassifier({ onNavigateModule }) {
                   <h3 className="text-base font-bold text-slate-900 mt-0.5">{result.item_name}</h3>
                 </div>
 
-                <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                  result.category === 'E-Waste' ? 'bg-purple-100 text-purple-800' :
-                  result.category === 'Metal' ? 'bg-blue-100 text-blue-800' :
-                  'bg-emerald-100 text-emerald-800'
-                }`}>
-                  {result.category}
-                </span>
+                <div className="flex items-center gap-2">
+                  {result.cached && (
+                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                      ⚡ Instant Cache Hit
+                    </span>
+                  )}
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                    result.category === 'E-Waste' ? 'bg-purple-100 text-purple-800' :
+                    result.category === 'Metal' ? 'bg-blue-100 text-blue-800' :
+                    'bg-emerald-100 text-emerald-800'
+                  }`}>
+                    {result.category}
+                  </span>
+                </div>
               </div>
 
               {/* Hazard Meter */}
