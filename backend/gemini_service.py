@@ -22,6 +22,18 @@ class GeminiService:
         self.api_key = api_key
         try:
             self.client = genai.Client(api_key=self.api_key)
+            # Persist to backend/.env
+            env_path = os.path.join(os.path.dirname(__file__), ".env")
+            if os.path.exists(env_path):
+                import re
+                with open(env_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                if "GEMINI_API_KEY=" in content:
+                    new_content = re.sub(r"GEMINI_API_KEY=.*", f"GEMINI_API_KEY={api_key}", content)
+                else:
+                    new_content = content.rstrip() + f"\nGEMINI_API_KEY={api_key}\n"
+                with open(env_path, "w", encoding="utf-8") as f:
+                    f.write(new_content)
             return True
         except Exception as e:
             print(f"Error updating Gemini API key: {e}")
