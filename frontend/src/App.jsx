@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import LoginScreen from './components/LoginScreen'
+import OnboardingModal from './components/OnboardingModal'
 import StudentDashboard from './components/StudentDashboard'
 import LabStaffDashboard from './components/LabStaffDashboard'
 import AdminDashboard from './components/AdminDashboard'
@@ -83,6 +84,14 @@ export default function App() {
     else setActiveView('student_hub')
   }
 
+  const handleOnboardingComplete = (updatedUser, role) => {
+    setUser(updatedUser)
+    setCurrentRole(role)
+    if (role === 'admin') setActiveView('admin_hub')
+    else if (role === 'lab_staff') setActiveView('lab_staff_hub')
+    else setActiveView('student_hub')
+  }
+
   // Initial session check spinner
   if (loadingSession) {
     return (
@@ -96,6 +105,17 @@ export default function App() {
   // If not logged in, display the dedicated Login Screen
   if (!user) {
     return <LoginScreen onLoginSuccess={handleLoginSuccess} />
+  }
+
+  // If logged in via Google OAuth but role/department metadata not yet completed
+  if (!user.user_metadata?.role) {
+    return (
+      <OnboardingModal 
+        user={user} 
+        onComplete={handleOnboardingComplete} 
+        onLogout={handleLogout} 
+      />
+    )
   }
 
   return (

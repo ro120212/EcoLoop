@@ -49,6 +49,11 @@ export const getUserRole = (user) => {
   return 'student'
 }
 
+export const isProfileComplete = (user) => {
+  if (!user) return false
+  return Boolean(user.user_metadata?.role)
+}
+
 export const STAFF_PASSCODES = {
   lab_staff: 'NSSCE-LAB-2026',
   admin: 'NSSCE-ADMIN-2026'
@@ -155,6 +160,41 @@ export const authService = {
 
     if (error) throw error
     return data
+  },
+
+  async signInWithGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    })
+    if (error) throw error
+    return data
+  },
+
+  async completeOnboarding({ role, department, fullName, staffPasscode }) {
+    if (role === 'lab_staff') {
+      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.lab_staff) {
+        throw new Error('Invalid Faculty / Lab Staff Passcode. Contact your Department Lab In-Charge.')
+      }
+    } else if (role === 'admin') {
+      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.admin) {
+        throw new Error('Invalid Administrator Passcode. Authorization denied.')
+      }
+    }
+
+    const { data, error } = await supabase.auth.updateUser({
+      data: {
+        role: role || 'student',
+        department: department || 'Computer Science and Engineering',
+        full_name: fullName,
+        onboarded: true
+      }
+    })
+
+    if (error) throw error
+    return data.user
   },
 
   async signOut() {
