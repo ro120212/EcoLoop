@@ -4,7 +4,6 @@ import LoginScreen from './components/LoginScreen'
 import OnboardingModal from './components/OnboardingModal'
 import StudentDashboard from './components/StudentDashboard'
 import LabStaffDashboard from './components/LabStaffDashboard'
-import AdminDashboard from './components/AdminDashboard'
 import MarketplaceCircular from './components/MarketplaceCircular'
 import AIWasteClassifier from './components/AIWasteClassifier'
 import RepairPlatform from './components/RepairPlatform'
@@ -18,7 +17,7 @@ import CustomCursor from './components/CustomCursor'
 
 export default function App() {
   const [user, setUser] = useState(null)
-  const [currentRole, setCurrentRole] = useState('student') // 'student' | 'lab_staff' | 'admin'
+  const [currentRole, setCurrentRole] = useState('student') // 'student' | 'lab_staff'
   const [activeView, setActiveView] = useState('student_hub')
   const [stats, setStats] = useState(null)
   const [loadingSession, setLoadingSession] = useState(true)
@@ -45,9 +44,7 @@ export default function App() {
     const detectedRole = getUserRole(authenticatedUser)
     setCurrentRole(detectedRole)
 
-    if (detectedRole === 'admin') {
-      setActiveView('admin_hub')
-    } else if (detectedRole === 'lab_staff') {
+    if (detectedRole === 'lab_staff') {
       setActiveView('lab_staff_hub')
     } else {
       setActiveView('student_hub')
@@ -80,17 +77,16 @@ export default function App() {
 
   const handleLoginSuccess = (authenticatedUser, role) => {
     setUser(authenticatedUser)
-    setCurrentRole(role || getUserRole(authenticatedUser))
-    if (role === 'admin') setActiveView('admin_hub')
-    else if (role === 'lab_staff') setActiveView('lab_staff_hub')
+    const assignedRole = role || getUserRole(authenticatedUser)
+    setCurrentRole(assignedRole)
+    if (assignedRole === 'lab_staff') setActiveView('lab_staff_hub')
     else setActiveView('student_hub')
   }
 
   const handleOnboardingComplete = (updatedUser, role) => {
     setUser(updatedUser)
     setCurrentRole(role)
-    if (role === 'admin') setActiveView('admin_hub')
-    else if (role === 'lab_staff') setActiveView('lab_staff_hub')
+    if (role === 'lab_staff') setActiveView('lab_staff_hub')
     else setActiveView('student_hub')
   }
 
@@ -168,21 +164,13 @@ export default function App() {
           />
         )}
 
-        {/* ADMIN ROLE HUB */}
-        {activeView === 'admin_hub' && (
-          <AdminDashboard 
-            onNavigateToMarketplace={() => setActiveView('marketplace')} 
-          />
-        )}
-
         {/* CIRCULAR MARKETPLACE & COMPONENT SPLITTING */}
         {activeView === 'marketplace' && (
           <MarketplaceCircular 
             user={user} 
             onGoToPortfolio={() => {
               if (currentRole === 'student') setActiveView('student_hub')
-              else if (currentRole === 'lab_staff') setActiveView('lab_staff_hub')
-              else setActiveView('admin_hub')
+              else setActiveView('lab_staff_hub')
             }} 
           />
         )}
@@ -190,6 +178,7 @@ export default function App() {
         {/* AI COMPONENT SCANNER */}
         {activeView === 'ai_scanner' && (
           <AIWasteClassifier 
+            user={user}
             onNavigateModule={setActiveView} 
           />
         )}
@@ -201,7 +190,7 @@ export default function App() {
       </main>
 
       {/* Campus Circular Economy Footer */}
-      <footer className="border-t border-[#2e2e2e] bg-[#171717] py-8 mt-16 text-xs text-zinc-400 relative z-10">
+      <footer className="border-t border-[#2e2e2e] bg-[#171717] py-6 mt-16 text-xs text-zinc-400 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-[#1c1c1c] border border-[#2e2e2e] shadow-sm flex items-center justify-center p-1 overflow-hidden">
@@ -211,13 +200,6 @@ export default function App() {
               <span className="font-semibold text-[#EDEDED] block tracking-tight">EcoLoop Circular Campus Platform</span>
               <span className="text-[11px] text-zinc-500">NSS College of Engineering, Palakkad</span>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] text-zinc-400 font-mono">
-            <span className="text-[#3ECF8E] font-medium">5 Branches Active</span>
-            <span className="text-zinc-600">•</span>
-            <span>Zero Landfill Mission</span>
-            <span className="text-zinc-600">•</span>
-            <span>Intelligent AI Diagnostics</span>
           </div>
         </div>
       </footer>

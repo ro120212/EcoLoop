@@ -74,7 +74,7 @@ export default function LoginScreen({ onLoginSuccess }) {
     }
 
     if (regRole !== 'student' && !regStaffPasscode.trim()) {
-      setErrorMsg(`Department staff verification passcode is required for ${regRole === 'lab_staff' ? 'Faculty / Lab Staff' : 'Administrator'} accounts.`)
+      setErrorMsg('Department staff verification passcode is required for Faculty / Lab Staff accounts.')
       return
     }
 
@@ -308,7 +308,6 @@ export default function LoginScreen({ onLoginSuccess }) {
                   >
                     <option value="student">Student</option>
                     <option value="lab_staff">Faculty / Lab Staff</option>
-                    <option value="admin">Administrator</option>
                   </select>
                 </div>
                 <div>

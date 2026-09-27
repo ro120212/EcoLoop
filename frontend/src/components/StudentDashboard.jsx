@@ -348,45 +348,45 @@ export default function StudentDashboard({ user, onNavigate }) {
       {activeTab === 'seller' && (
         <div className="space-y-6">
           {/* Status Filter Tabs */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#1c1c1c] p-3 rounded-2xl border border-[#2e2e2e] shadow-xs">
             <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-semibold">
-              <span className="text-slate-400 mr-2 text-[11px] font-bold uppercase tracking-wider">Status:</span>
+              <span className="text-zinc-500 mr-2 text-[11px] font-bold uppercase tracking-wider font-mono">Status:</span>
               <button
                 onClick={() => setSellerStatusFilter('all')}
-                className={`px-3 py-1.5 rounded-xl transition ${
+                className={`px-3 py-1.5 rounded-xl transition cursor-pointer ${
                   sellerStatusFilter === 'all'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-[#3ECF8E] text-[#121212] font-bold shadow-xs'
+                    : 'text-zinc-400 hover:bg-[#282828] hover:text-[#EDEDED]'
                 }`}
               >
                 All Listings ({myListings.length})
               </button>
               <button
                 onClick={() => setSellerStatusFilter('available')}
-                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 ${
+                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer ${
                   sellerStatusFilter === 'available'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
+                    ? 'bg-[#3ECF8E] text-[#121212] font-bold shadow-xs'
+                    : 'text-[#3ECF8E] bg-[#3ECF8E]/10 hover:bg-[#3ECF8E]/20 border border-[#3ECF8E]/25'
                 }`}
               >
-                <span>🟢 Active in Marketplace ({availableListings.length})</span>
+                <span>🟢 Active ({availableListings.length})</span>
               </button>
               <button
                 onClick={() => setSellerStatusFilter('reserved')}
-                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 ${
+                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer ${
                   sellerStatusFilter === 'reserved'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-amber-700 bg-amber-50 hover:bg-amber-100'
+                    ? 'bg-amber-500 text-[#121212] font-bold shadow-xs'
+                    : 'text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30'
                 }`}
               >
-                <span>🟡 Reserved / Meetup Scheduled ({reservedListings.length})</span>
+                <span>🟡 Reserved ({reservedListings.length})</span>
               </button>
               <button
                 onClick={() => setSellerStatusFilter('sold')}
-                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 ${
+                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer ${
                   sellerStatusFilter === 'sold'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-blue-700 bg-blue-50 hover:bg-blue-100'
+                    ? 'bg-blue-500 text-white font-bold shadow-xs'
+                    : 'text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30'
                 }`}
               >
                 <span>🔵 Sold & Taken ({soldListings.length})</span>
@@ -395,7 +395,7 @@ export default function StudentDashboard({ user, onNavigate }) {
 
             <button
               onClick={() => setShowListModal(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 transition self-end sm:self-auto"
+              className="px-3.5 py-1.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs flex items-center gap-1.5 transition self-end sm:self-auto cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New Listing</span>
@@ -404,10 +404,10 @@ export default function StudentDashboard({ user, onNavigate }) {
 
           {/* Listings Feed */}
           {filteredSellerListings.length === 0 ? (
-            <div className="bg-white p-12 rounded-3xl border border-slate-200 text-center space-y-3">
-              <Package className="w-12 h-12 text-slate-300 mx-auto" />
-              <h4 className="text-base font-bold text-slate-700">No items in this category</h4>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            <div className="bg-[#1c1c1c] p-12 rounded-3xl border border-[#2e2e2e] text-center space-y-3">
+              <Package className="w-12 h-12 text-zinc-600 mx-auto" />
+              <h4 className="text-base font-bold text-[#EDEDED]">No items in this category</h4>
+              <p className="text-xs text-zinc-400 max-w-sm mx-auto">
                 {sellerStatusFilter === 'available' && "You don't have any unsold items live on the marketplace right now."}
                 {sellerStatusFilter === 'reserved' && "No buyers have currently reserved your items."}
                 {sellerStatusFilter === 'sold' && "No completed sales or handoffs recorded yet."}
@@ -415,7 +415,7 @@ export default function StudentDashboard({ user, onNavigate }) {
               </p>
               <button
                 onClick={() => setShowListModal(true)}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition"
+                className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs transition cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
               >
                 + List an Item Now
               </button>
@@ -433,57 +433,57 @@ export default function StudentDashboard({ user, onNavigate }) {
                 return (
                   <div
                     key={item.id}
-                    className={`bg-white rounded-3xl border shadow-sm p-6 transition space-y-4 ${
-                      item.status === 'reserved' ? 'border-amber-300 ring-2 ring-amber-100' :
-                      item.status === 'handoff_completed' ? 'border-blue-200 bg-slate-50/40' :
-                      'border-slate-200 hover:border-slate-300'
+                    className={`bg-[#1c1c1c] rounded-3xl border shadow-sm p-6 transition space-y-4 ${
+                      item.status === 'reserved' ? 'border-amber-500/50 ring-1 ring-amber-500/20' :
+                      item.status === 'handoff_completed' ? 'border-blue-500/30 bg-[#161616]' :
+                      'border-[#2e2e2e] hover:border-[#3ECF8E]/40'
                     }`}
                   >
                     {/* Header: Title, Category, Status Badge */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2e2e2e] pb-3">
                       <div className="flex items-start gap-3.5">
                         {item.image_url && (
                           <img
                             src={item.image_url}
                             alt={item.title}
-                            className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shrink-0"
+                            className="w-14 h-14 rounded-2xl object-cover border border-[#2e2e2e] shrink-0"
                             onError={(e) => { e.target.style.display = 'none' }}
                           />
                         )}
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#242424] text-zinc-300 border border-[#2e2e2e] font-mono">
                               {item.category}
                             </span>
-                            <span className="text-[10px] font-semibold text-slate-500">
+                            <span className="text-[10px] font-semibold text-zinc-500">
                               Dept: {item.department.split(' ')[0]}
                             </span>
                           </div>
-                          <h3 className="text-base font-bold text-slate-900">{item.title}</h3>
-                          <p className="text-xs text-slate-500">{item.description}</p>
+                          <h3 className="text-base font-bold text-[#EDEDED]">{item.title}</h3>
+                          <p className="text-xs text-zinc-400">{item.description}</p>
                         </div>
                       </div>
 
                       <div className="flex sm:flex-col items-center sm:items-end justify-between gap-2">
                         {item.status === 'available' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] text-xs font-bold border border-[#3ECF8E]/25">
+                            <span className="w-2 h-2 rounded-full bg-[#3ECF8E] animate-pulse" />
                             <span>Active in Marketplace (Unsold)</span>
                           </span>
                         )}
                         {item.status === 'reserved' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
-                            <Clock className="w-3.5 h-3.5 text-amber-600" />
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-bold border border-amber-500/30">
+                            <Clock className="w-3.5 h-3.5 text-amber-400" />
                             <span>Reserved (Meetup Scheduled)</span>
                           </span>
                         )}
                         {item.status === 'handoff_completed' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-900 text-xs font-bold">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 text-xs font-bold border border-blue-500/30">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
                             <span>Sold & Taken (Lifespan Extended)</span>
                           </span>
                         )}
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-xs font-bold text-zinc-300">
                           {item.price_type === 'free' ? '🎁 Free Surplus' : `₹${item.price}`}
                         </span>
                       </div>
@@ -491,44 +491,44 @@ export default function StudentDashboard({ user, onNavigate }) {
 
                     {/* Visual 4-Stage Lifecycle Stepper */}
                     <div className="py-1">
-                      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 relative">
+                      <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-500 relative">
                         {/* Step 1: Listed */}
-                        <div className="flex items-center gap-1.5 text-emerald-700">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 text-[#3ECF8E]">
+                          <CheckCircle2 className="w-4 h-4 text-[#3ECF8E] flex-shrink-0" />
                           <span>1. Listed on Campus</span>
                         </div>
-                        <div className={`h-0.5 flex-1 mx-3 ${item.status !== 'available' ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                        <div className={`h-0.5 flex-1 mx-3 ${item.status !== 'available' ? 'bg-[#3ECF8E]' : 'bg-[#2a2a2a]'}`} />
 
                         {/* Step 2: Buyer Claimed */}
-                        <div className={`flex items-center gap-1.5 ${item.status !== 'available' ? 'text-emerald-700' : 'text-slate-400'}`}>
+                        <div className={`flex items-center gap-1.5 ${item.status !== 'available' ? 'text-[#3ECF8E]' : 'text-zinc-600'}`}>
                           {item.status !== 'available' ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-[#3ECF8E] flex-shrink-0" />
                           ) : (
-                            <div className="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center text-[9px] text-slate-400">2</div>
+                            <div className="w-4 h-4 rounded-full border-2 border-zinc-700 flex items-center justify-center text-[9px] text-zinc-600">2</div>
                           )}
                           <span>2. Buyer Claimed</span>
                         </div>
-                        <div className={`h-0.5 flex-1 mx-3 ${item.status === 'handoff_completed' ? 'bg-emerald-500' : item.status === 'reserved' ? 'bg-amber-400 animate-pulse' : 'bg-slate-200'}`} />
+                        <div className={`h-0.5 flex-1 mx-3 ${item.status === 'handoff_completed' ? 'bg-[#3ECF8E]' : item.status === 'reserved' ? 'bg-amber-400 animate-pulse' : 'bg-[#2a2a2a]'}`} />
 
                         {/* Step 3: Meetup & Verification */}
-                        <div className={`flex items-center gap-1.5 ${item.status === 'reserved' ? 'text-amber-800 font-bold' : item.status === 'handoff_completed' ? 'text-emerald-700' : 'text-slate-400'}`}>
+                        <div className={`flex items-center gap-1.5 ${item.status === 'reserved' ? 'text-amber-300 font-bold' : item.status === 'handoff_completed' ? 'text-[#3ECF8E]' : 'text-zinc-600'}`}>
                           {item.status === 'handoff_completed' ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-[#3ECF8E] flex-shrink-0" />
                           ) : item.status === 'reserved' ? (
-                            <Clock className="w-4 h-4 text-amber-600 animate-spin flex-shrink-0" />
+                            <Clock className="w-4 h-4 text-amber-400 animate-spin flex-shrink-0" />
                           ) : (
-                            <div className="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center text-[9px] text-slate-400">3</div>
+                            <div className="w-4 h-4 rounded-full border-2 border-zinc-700 flex items-center justify-center text-[9px] text-zinc-600">3</div>
                           )}
                           <span>3. PIN Verification</span>
                         </div>
-                        <div className={`h-0.5 flex-1 mx-3 ${item.status === 'handoff_completed' ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                        <div className={`h-0.5 flex-1 mx-3 ${item.status === 'handoff_completed' ? 'bg-[#3ECF8E]' : 'bg-[#2a2a2a]'}`} />
 
                         {/* Step 4: Sold / Taken */}
-                        <div className={`flex items-center gap-1.5 ${item.status === 'handoff_completed' ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
+                        <div className={`flex items-center gap-1.5 ${item.status === 'handoff_completed' ? 'text-blue-300 font-bold' : 'text-zinc-600'}`}>
                           {item.status === 'handoff_completed' ? (
-                            <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" />
                           ) : (
-                            <div className="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center text-[9px] text-slate-400">4</div>
+                            <div className="w-4 h-4 rounded-full border-2 border-zinc-700 flex items-center justify-center text-[9px] text-zinc-600">4</div>
                           )}
                           <span>4. Sold & Diverted</span>
                         </div>
@@ -536,35 +536,35 @@ export default function StudentDashboard({ user, onNavigate }) {
                     </div>
 
                     {/* LOCATION TRACKER & HANDOFF DETAILS */}
-                    <div className="rounded-2xl p-4 bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                    <div className="rounded-2xl p-4 bg-[#141414] border border-[#2e2e2e] space-y-2 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-700 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                        <span className="font-bold text-zinc-300 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-rose-400" />
                           <span>Item Location Status:</span>
                         </span>
-                        <span className="font-bold text-emerald-700">+{item.carbon_saved_kg || 6.5} kg CO₂e Offset</span>
+                        <span className="font-bold text-[#3ECF8E]">+{item.carbon_saved_kg || 6.5} kg CO₂e Offset</span>
                       </div>
 
                       {item.status === 'available' && (
-                        <p className="text-slate-700">
-                          📍 <strong>In your custody (Campus/Hostel)</strong> — Currently visible to all NSSCE students. No buyer has claimed it yet.
+                        <p className="text-zinc-400">
+                          📍 <strong className="text-zinc-200">In your custody (Campus/Hostel)</strong> — Currently visible to all NSSCE students. No buyer has claimed it yet.
                         </p>
                       )}
 
                       {item.status === 'reserved' && (
                         <div className="space-y-1">
-                          <p className="text-slate-800">
-                            📍 <strong>Scheduled Meetup:</strong> <span className="font-bold text-slate-900 bg-amber-100 px-2 py-0.5 rounded">{item.meeting_point}</span>
+                          <p className="text-zinc-300">
+                            📍 <strong className="text-zinc-200">Scheduled Meetup:</strong> <span className="font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded">{item.meeting_point}</span>
                           </p>
-                          <p className="text-slate-600">
-                            Claimed by Buyer: <strong>{item.buyer_name}</strong> {item.claimed_component && item.claimed_component !== 'All' ? `(Part: ${item.claimed_component})` : '(Complete Device)'}
+                          <p className="text-zinc-400">
+                            Claimed by Buyer: <strong className="text-zinc-200">{item.buyer_name}</strong> {item.claimed_component && item.claimed_component !== 'All' ? `(Part: ${item.claimed_component})` : '(Complete Device)'}
                           </p>
                         </div>
                       )}
 
                       {item.status === 'handoff_completed' && (
-                        <p className="text-blue-900 font-medium">
-                          📍 <strong>Handed off & In Use:</strong> Transferred to <strong>{item.buyer_name}</strong> for academic project. Zero landfill waste generated.
+                        <p className="text-blue-300 font-medium">
+                          📍 <strong className="text-zinc-200">Handed off & In Use:</strong> Transferred to <strong className="text-zinc-200">{item.buyer_name}</strong> for academic project. Zero landfill waste generated.
                         </p>
                       )}
                     </div>
@@ -572,15 +572,15 @@ export default function StudentDashboard({ user, onNavigate }) {
                     {/* Sub-components list if any */}
                     {subParts.length > 0 && (
                       <div className="text-xs space-y-1">
-                        <span className="font-bold text-slate-600 text-[11px]">Harvestable Components:</span>
+                        <span className="font-bold text-zinc-500 text-[11px]">Harvestable Components:</span>
                         <div className="flex flex-wrap gap-1.5">
                           {subParts.map((sp, idx) => (
                             <span 
                               key={idx}
                               className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${
                                 item.status === 'handoff_completed' 
-                                  ? 'bg-blue-50 text-blue-800 border-blue-200' 
-                                  : 'bg-white text-slate-700 border-slate-200'
+                                  ? 'bg-blue-500/10 text-blue-300 border-blue-500/30' 
+                                  : 'bg-[#242424] text-zinc-300 border-[#2e2e2e]'
                               }`}
                             >
                               {sp.name || sp}
@@ -592,13 +592,13 @@ export default function StudentDashboard({ user, onNavigate }) {
 
                     {/* INLINE PIN VERIFICATION BOX (FOR RESERVED ITEMS ONLY) */}
                     {item.status === 'reserved' && (
-                      <div className="mt-4 p-4 rounded-2xl bg-amber-50 border border-amber-300 space-y-3 text-xs">
+                      <div className="mt-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3 text-xs">
                         <div className="flex items-center gap-2">
-                          <KeyRound className="w-4 h-4 text-amber-700" />
-                          <h4 className="font-bold text-amber-950">Confirm In-Person Physical Handoff</h4>
+                          <KeyRound className="w-4 h-4 text-amber-400" />
+                          <h4 className="font-bold text-amber-300">Confirm In-Person Physical Handoff</h4>
                         </div>
-                        <p className="text-amber-900 leading-relaxed">
-                          When you meet <strong>{item.buyer_name}</strong> at <em>"{item.meeting_point}"</em>, ask them for the <strong>4-digit code</strong> generated on their phone. Enter it below to mark the item as sold:
+                        <p className="text-zinc-300 leading-relaxed">
+                          When you meet <strong className="text-[#EDEDED]">{item.buyer_name}</strong> at <em className="text-amber-300">"{item.meeting_point}"</em>, ask them for the <strong className="text-[#EDEDED]">4-digit code</strong> generated on their phone. Enter it below to mark the item as sold:
                         </p>
 
                         <div className="flex flex-wrap items-center gap-2">
@@ -607,12 +607,12 @@ export default function StudentDashboard({ user, onNavigate }) {
                             maxLength="4"
                             value={pinInputs[item.id] || ''}
                             onChange={(e) => setPinInputs({ ...pinInputs, [item.id]: e.target.value })}
-                            className="w-32 px-3 py-2 text-center font-mono font-bold tracking-widest text-base rounded-xl border border-amber-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                            className="w-32 px-3 py-2 text-center font-mono font-bold tracking-widest text-base rounded-xl border border-amber-500/40 bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
                           />
                           <button
                             onClick={() => handleVerifyPin(item.id)}
                             disabled={verifyingId === item.id || !pinInputs[item.id]}
-                            className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition disabled:opacity-50 flex items-center gap-1.5"
+                            className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-sm transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                           >
                             <Check className="w-4 h-4" />
                             <span>{verifyingId === item.id ? 'Verifying PIN...' : 'Verify Code & Mark as Sold'}</span>
@@ -621,7 +621,7 @@ export default function StudentDashboard({ user, onNavigate }) {
 
                         {verifyMsg[item.id] && (
                           <div className={`p-2.5 rounded-xl text-xs font-semibold ${
-                            verifyMsg[item.id].success ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-200'
+                            verifyMsg[item.id].success ? 'bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/30' : 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
                           }`}>
                             {verifyMsg[item.id].text}
                           </div>
@@ -640,15 +640,15 @@ export default function StudentDashboard({ user, onNavigate }) {
       {activeTab === 'buyer' && (
         <div className="space-y-6">
           {activeClaims.length === 0 && completedClaims.length === 0 ? (
-            <div className="bg-white p-12 rounded-3xl border border-slate-200 text-center space-y-3">
-              <ShoppingBag className="w-12 h-12 text-slate-300 mx-auto" />
-              <h4 className="text-base font-bold text-slate-700">No hardware claims yet</h4>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            <div className="bg-[#1c1c1c] p-12 rounded-3xl border border-[#2e2e2e] text-center space-y-3">
+              <ShoppingBag className="w-12 h-12 text-zinc-600 mx-auto" />
+              <h4 className="text-base font-bold text-[#EDEDED]">No hardware claims yet</h4>
+              <p className="text-xs text-zinc-400 max-w-sm mx-auto">
                 Need spare components for your mini-project? Browse hardware released by lab staff and fellow students.
               </p>
               <button
                 onClick={() => onNavigate('marketplace')}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition"
+                className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs transition cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
               >
                 Browse Circular Marketplace
               </button>
@@ -658,42 +658,42 @@ export default function StudentDashboard({ user, onNavigate }) {
               {/* Active Claims with PIN */}
               {activeClaims.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-amber-600" />
+                  <h3 className="text-sm font-bold text-[#EDEDED] flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-amber-400" />
                     <span>Pending Handoffs (Show This Code to Seller)</span>
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {activeClaims.map(item => (
-                      <div key={item.id} className="bg-white p-5 rounded-3xl border border-blue-200 shadow-sm space-y-3 text-xs flex flex-col justify-between">
+                      <div key={item.id} className="bg-[#1c1c1c] p-5 rounded-3xl border border-[#2e2e2e] shadow-sm space-y-3 text-xs flex flex-col justify-between">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#242424] text-zinc-300 border border-[#2e2e2e] font-mono">
                               {item.department}
                             </span>
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                            <span className="text-[10px] font-bold text-[#3ECF8E] bg-[#3ECF8E]/10 border border-[#3ECF8E]/25 px-2 py-0.5 rounded font-mono">
                               {item.price_type === 'free' ? 'FREE GIFT' : `₹${item.price}`}
                             </span>
                           </div>
-                          <h4 className="font-bold text-slate-900 text-base">{item.title}</h4>
-                          <p className="text-slate-600 text-xs">
-                            Seller: <strong>{item.seller_name}</strong>
+                          <h4 className="font-bold text-[#EDEDED] text-base">{item.title}</h4>
+                          <p className="text-zinc-400 text-xs">
+                            Seller: <strong className="text-zinc-200">{item.seller_name}</strong>
                           </p>
                         </div>
 
                         {/* PIN & QR Code Box */}
-                        <div className="p-4 rounded-2xl bg-gradient-to-tr from-slate-900 to-blue-950 text-white space-y-2 text-center">
-                          <span className="text-[10px] uppercase font-bold tracking-widest text-blue-300">
+                        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] space-y-2 text-center">
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400 font-mono">
                             Your Secret 4-Digit Pickup PIN
                           </span>
-                          <div className="font-mono text-3xl font-black tracking-widest text-emerald-400">
+                          <div className="font-mono text-3xl font-black tracking-widest text-[#3ECF8E]">
                             {item.handoff_pin || '7492'}
                           </div>
-                          <div className="pt-1 text-[11px] text-slate-300 flex items-center justify-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                            <span>Meeting Spot: <strong>{item.meeting_point}</strong></span>
+                          <div className="pt-1 text-[11px] text-zinc-300 flex items-center justify-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-[#3ECF8E] flex-shrink-0" />
+                            <span>Meeting Spot: <strong className="text-amber-300">{item.meeting_point}</strong></span>
                           </div>
-                          <p className="text-[10px] text-slate-400 pt-1">
+                          <p className="text-[10px] text-zinc-500 pt-1">
                             Show this code to the seller when you meet in person.
                           </p>
                         </div>
@@ -705,21 +705,21 @@ export default function StudentDashboard({ user, onNavigate }) {
 
               {/* Completed Claims */}
               {completedClaims.length > 0 && (
-                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+                <div className="bg-[#1c1c1c] p-6 rounded-3xl border border-[#2e2e2e] shadow-sm space-y-3">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <h3 className="text-sm font-bold text-slate-900">Collected Hardware (In Use)</h3>
+                    <CheckCircle2 className="w-4 h-4 text-[#3ECF8E]" />
+                    <h3 className="text-sm font-bold text-[#EDEDED]">Collected Hardware (In Use)</h3>
                   </div>
-                  <div className="divide-y divide-slate-100 text-xs">
+                  <div className="divide-y divide-[#2a2a2a] text-xs">
                     {completedClaims.map((item, idx) => (
                       <div key={idx} className="py-2.5 flex items-center justify-between">
                         <div>
-                          <strong className="text-slate-800">{item.title}</strong>
-                          <span className="block text-[11px] text-slate-400">
+                          <strong className="text-[#EDEDED]">{item.title}</strong>
+                          <span className="block text-[11px] text-zinc-500">
                             Obtained from: {item.seller_name} • {item.department}
                           </span>
                         </div>
-                        <span className="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                        <span className="font-bold text-[#3ECF8E] bg-[#3ECF8E]/10 border border-[#3ECF8E]/25 px-2.5 py-1 rounded-lg font-mono">
                           +{item.carbon_saved_kg || 8.5} kg CO₂e Saved
                         </span>
                       </div>
@@ -735,55 +735,55 @@ export default function StudentDashboard({ user, onNavigate }) {
       {/* QUICK SHORTCUT CARDS */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-slate-900">Student Circular Tools</h3>
-          <span className="text-xs text-slate-500">Fast access to active modules</span>
+          <h3 className="text-sm font-bold text-[#EDEDED]">Student Circular Tools</h3>
+          <span className="text-xs text-zinc-500">Fast access to active modules</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div 
             onClick={() => onNavigate('marketplace')}
-            className="group bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-500 hover:shadow-md transition cursor-pointer flex flex-col justify-between"
+            className="group bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] hover:border-[#3ECF8E]/50 hover:shadow-[0_0_15px_rgba(62,207,142,0.15)] transition cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+              <div className="w-10 h-10 rounded-xl bg-[#242424] text-[#3ECF8E] border border-[#2e2e2e] flex items-center justify-center mb-3 group-hover:scale-110 transition shadow-sm">
                 <ShoppingBag className="w-5 h-5" />
               </div>
-              <h4 className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition">Circular Marketplace</h4>
-              <p className="text-xs text-slate-500 mt-1">Browse and claim spare RAM, motors, cables, and tools across CSE, Mech, Civil, EEE, IC.</p>
+              <h4 className="text-sm font-bold text-[#EDEDED] group-hover:text-[#3ECF8E] transition">Circular Marketplace</h4>
+              <p className="text-xs text-zinc-400 mt-1">Browse and claim spare RAM, motors, cables, and tools across CSE, Mech, Civil, EEE, IC.</p>
             </div>
-            <span className="text-xs font-semibold text-blue-600 mt-3 flex items-center gap-1">
+            <span className="text-xs font-semibold text-[#3ECF8E] mt-3 flex items-center gap-1">
               Browse Items <ArrowRight className="w-3 h-3" />
             </span>
           </div>
 
           <div 
             onClick={() => onNavigate('ai_scanner')}
-            className="group bg-white p-5 rounded-2xl border border-slate-200 hover:border-purple-500 hover:shadow-md transition cursor-pointer flex flex-col justify-between"
+            className="group bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] hover:border-[#3ECF8E]/50 hover:shadow-[0_0_15px_rgba(62,207,142,0.15)] transition cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+              <div className="w-10 h-10 rounded-xl bg-[#242424] text-[#3ECF8E] border border-[#2e2e2e] flex items-center justify-center mb-3 group-hover:scale-110 transition shadow-sm">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <h4 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition">AI E-Waste Scanner</h4>
-              <p className="text-xs text-slate-500 mt-1">Snap a photo. Automated AI vision detects salvageable components and 1-click lists it for reuse.</p>
+              <h4 className="text-sm font-bold text-[#EDEDED] group-hover:text-[#3ECF8E] transition">AI E-Waste Scanner</h4>
+              <p className="text-xs text-zinc-400 mt-1">Snap a photo. Automated AI vision detects salvageable components and 1-click lists it for reuse.</p>
             </div>
-            <span className="text-xs font-semibold text-purple-600 mt-3 flex items-center gap-1">
+            <span className="text-xs font-semibold text-[#3ECF8E] mt-3 flex items-center gap-1">
               Scan with AI <ArrowRight className="w-3 h-3" />
             </span>
           </div>
 
           <div 
             onClick={() => onNavigate('repair')}
-            className="group bg-white p-5 rounded-2xl border border-slate-200 hover:border-orange-500 hover:shadow-md transition cursor-pointer flex flex-col justify-between"
+            className="group bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] hover:border-[#3ECF8E]/50 hover:shadow-[0_0_15px_rgba(62,207,142,0.15)] transition cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+              <div className="w-10 h-10 rounded-xl bg-[#242424] text-[#3ECF8E] border border-[#2e2e2e] flex items-center justify-center mb-3 group-hover:scale-110 transition shadow-sm">
                 <Wrench className="w-5 h-5" />
               </div>
-              <h4 className="text-sm font-bold text-slate-900 group-hover:text-orange-700 transition">Repair Before Replace</h4>
-              <p className="text-xs text-slate-500 mt-1">Get intelligent diagnostic checklists to fix faulty electronics before giving up on them.</p>
+              <h4 className="text-sm font-bold text-[#EDEDED] group-hover:text-[#3ECF8E] transition">Repair Before Replace</h4>
+              <p className="text-xs text-zinc-400 mt-1">Get intelligent diagnostic checklists to fix faulty electronics before giving up on them.</p>
             </div>
-            <span className="text-xs font-semibold text-orange-600 mt-3 flex items-center gap-1">
+            <span className="text-xs font-semibold text-[#3ECF8E] mt-3 flex items-center gap-1">
               Troubleshoot Fault <ArrowRight className="w-3 h-3" />
             </span>
           </div>
@@ -792,21 +792,21 @@ export default function StudentDashboard({ user, onNavigate }) {
 
       {/* QUICK LIST ITEM MODAL */}
       {showListModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-5 border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#1c1c1c] rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-5 border border-[#2e2e2e] text-[#EDEDED]">
+            <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
                   <Plus className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">List Electronics for Sale or Free Reuse</h3>
-                  <p className="text-xs text-slate-500">Items will be visible to students across all 5 NSSCE branches</p>
+                  <h3 className="text-base font-bold text-[#EDEDED]">List Electronics for Sale or Free Reuse</h3>
+                  <p className="text-xs text-zinc-400">Items will be visible to students across all 5 NSSCE branches</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowListModal(false)}
-                className="text-slate-400 hover:text-slate-700 text-sm font-bold p-1"
+                className="text-zinc-400 hover:text-[#EDEDED] text-sm font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -814,23 +814,23 @@ export default function StudentDashboard({ user, onNavigate }) {
 
             <form onSubmit={handleCreateListing} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Item Title *</label>
+                <label className="font-semibold text-zinc-300">Item Title *</label>
                 <input
                   type="text"
                   required
                   value={newItemForm.title}
                   onChange={(e) => setNewItemForm({ ...newItemForm, title: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">Department</label>
+                  <label className="font-semibold text-zinc-300">Department</label>
                   <select
                     value={newItemForm.department}
                     onChange={(e) => setNewItemForm({ ...newItemForm, department: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none cursor-pointer"
                   >
                     {DEPARTMENTS.map(d => (
                       <option key={d} value={d}>{d}</option>
@@ -839,11 +839,11 @@ export default function StudentDashboard({ user, onNavigate }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">Category</label>
+                  <label className="font-semibold text-zinc-300">Category</label>
                   <select
                     value={newItemForm.category}
                     onChange={(e) => setNewItemForm({ ...newItemForm, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none cursor-pointer"
                   >
                     <option value="Microcontrollers & Embedded">Microcontrollers & Embedded</option>
                     <option value="PC Towers & Hardware">PC Towers & Hardware</option>
@@ -858,11 +858,11 @@ export default function StudentDashboard({ user, onNavigate }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">Condition</label>
+                  <label className="font-semibold text-zinc-300">Condition</label>
                   <select
                     value={newItemForm.condition}
                     onChange={(e) => setNewItemForm({ ...newItemForm, condition: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none cursor-pointer"
                   >
                     <option value="Like New">Like New</option>
                     <option value="Functional/Tested">Functional / Tested</option>
@@ -872,12 +872,12 @@ export default function StudentDashboard({ user, onNavigate }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">Pricing Option</label>
+                  <label className="font-semibold text-zinc-300">Pricing Option</label>
                   <div className="flex gap-2">
                     <select
                       value={newItemForm.price_type}
                       onChange={(e) => setNewItemForm({ ...newItemForm, price_type: e.target.value })}
-                      className="w-1/2 px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                      className="w-1/2 px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none cursor-pointer"
                     >
                       <option value="free">Free Gift 🎁</option>
                       <option value="priced">Student Price (₹)</option>
@@ -888,7 +888,7 @@ export default function StudentDashboard({ user, onNavigate }) {
                         min="1"
                         value={newItemForm.price}
                         onChange={(e) => setNewItemForm({ ...newItemForm, price: e.target.value })}
-                        className="w-1/2 px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold"
+                        className="w-1/2 px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none font-bold"
                       />
                     )}
                   </div>
@@ -896,54 +896,56 @@ export default function StudentDashboard({ user, onNavigate }) {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Splittable Components (Comma separated)</label>
+                <label className="font-semibold text-zinc-300">Splittable Components (Comma separated)</label>
                 <input
                   type="text"
                   value={newItemForm.sub_component_input}
                   onChange={(e) => setNewItemForm({ ...newItemForm, sub_component_input: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  placeholder="e.g. 8GB RAM Stick, 500W Power Supply, CPU Fan"
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] placeholder-zinc-500 focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
                 />
-                <span className="text-[10px] text-slate-400">Allows other students to harvest specific parts if they don't need the whole device.</span>
+                <span className="text-[10px] text-zinc-500">Allows other students to harvest specific parts if they don't need the whole device.</span>
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Description & Working Notes</label>
+                <label className="font-semibold text-zinc-300">Description & Working Notes</label>
                 <textarea
                   rows={2}
                   value={newItemForm.description}
                   onChange={(e) => setNewItemForm({ ...newItemForm, description: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  placeholder="Describe functionality, port conditions, or accessories included"
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] placeholder-zinc-500 focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
                 />
               </div>
 
               {/* Add Item Image */}
               <div className="space-y-1.5">
-                <label className="font-bold text-slate-700 block">Item Photo (Optional)</label>
+                <label className="font-semibold text-zinc-300 block">Item Photo (Optional)</label>
                 {imagePreview ? (
-                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 p-2.5 flex items-center justify-between gap-3">
+                  <div className="relative rounded-2xl overflow-hidden border border-[#2e2e2e] bg-[#141414] p-2.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <img
                         src={imagePreview}
                         alt="Upload preview"
-                        className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
+                        className="w-14 h-14 rounded-xl object-cover border border-[#2e2e2e] shrink-0"
                       />
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-800 truncate">Photo Attached</p>
-                        <p className="text-[10px] text-emerald-600 font-semibold">Ready to display on ad</p>
+                        <p className="text-xs font-bold text-[#EDEDED] truncate">Photo Attached</p>
+                        <p className="text-[10px] text-[#3ECF8E] font-semibold">Ready to display on ad</p>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={handleRemoveImage}
-                      className="px-2.5 py-1 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition"
+                      className="px-2.5 py-1 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold transition cursor-pointer"
                     >
                       Remove
                     </button>
                   </div>
                 ) : (
                   <div>
-                    <label className="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-dashed border-slate-200 hover:border-emerald-500 bg-slate-50/70 hover:bg-emerald-50/40 text-slate-600 hover:text-emerald-700 cursor-pointer transition text-xs font-semibold">
-                      <Camera className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <label className="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-dashed border-[#2e2e2e] hover:border-[#3ECF8E]/50 bg-[#141414] hover:bg-[#1a1a1a] text-zinc-400 hover:text-[#3ECF8E] cursor-pointer transition text-xs font-semibold">
+                      <Camera className="w-4 h-4 text-[#3ECF8E] shrink-0" />
                       <span>{imageUploading ? 'Processing Photo...' : 'Add / Upload Item Photo'}</span>
                       <input
                         type="file"
@@ -960,14 +962,14 @@ export default function StudentDashboard({ user, onNavigate }) {
                 <button
                   type="button"
                   onClick={() => setShowListModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 rounded-xl border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#242424] font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submittingItem}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
                 >
                   {submittingItem ? 'Listing Item...' : 'Publish to Marketplace'}
                 </button>

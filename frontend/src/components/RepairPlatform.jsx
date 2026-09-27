@@ -224,25 +224,25 @@ export default function RepairPlatform({ user }) {
         {/* Diagnosis Results */}
         <div className="lg:col-span-7">
           {diagnosis ? (
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 text-xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4 text-xs">
+              <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-mono">
                     Troubleshooting Analysis
                   </span>
-                  <h3 className="text-base font-bold text-slate-900 mt-0.5">{diagnosis.device}</h3>
+                  <h3 className="text-base font-bold text-[#EDEDED] mt-0.5">{diagnosis.device}</h3>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {diagnosis.cached && (
-                    <span className="px-2.5 py-0.5 rounded-full font-bold bg-blue-100 text-blue-800 text-[11px]">
+                    <span className="px-2.5 py-0.5 rounded-full font-bold bg-blue-500/10 text-blue-300 border border-blue-500/30 text-[11px] font-mono">
                       ⚡ Instant Campus Cache Hit ({diagnosis.cache_hits || 1} hits)
                     </span>
                   )}
-                  <span className="px-2.5 py-0.5 rounded-full font-bold bg-orange-100 text-orange-800">
+                  <span className="px-2.5 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30 font-mono">
                     {diagnosis.difficulty_level} Difficulty
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800">
+                  <span className="px-2.5 py-0.5 rounded-full font-bold bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/30 font-mono">
                     ~{diagnosis.estimated_repair_time_mins} mins
                   </span>
                 </div>
@@ -250,12 +250,12 @@ export default function RepairPlatform({ user }) {
 
               {/* Safety Alerts */}
               {diagnosis.safety_warnings?.length > 0 && (
-                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 space-y-1">
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-1">
                   <span className="font-bold flex items-center gap-1.5">
-                    <ShieldAlert className="w-4 h-4 text-amber-700" />
+                    <ShieldAlert className="w-4 h-4 text-amber-400" />
                     Critical Safety Warnings:
                   </span>
-                  <ul className="list-disc pl-5 space-y-0.5 text-[11px]">
+                  <ul className="list-disc pl-5 space-y-0.5 text-[11px] text-zinc-300">
                     {diagnosis.safety_warnings.map((w, idx) => (
                       <li key={idx}>{w}</li>
                     ))}
@@ -265,8 +265,8 @@ export default function RepairPlatform({ user }) {
 
               {/* Root Causes */}
               <div>
-                <h4 className="font-bold text-slate-800 mb-1">Likely Root Causes:</h4>
-                <ul className="list-disc pl-5 space-y-1 text-slate-600">
+                <h4 className="font-bold text-zinc-200 mb-1">Likely Root Causes:</h4>
+                <ul className="list-disc pl-5 space-y-1 text-zinc-400">
                   {diagnosis.likely_root_causes?.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}
@@ -274,18 +274,18 @@ export default function RepairPlatform({ user }) {
               </div>
 
               {/* Tools Needed */}
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="font-bold text-slate-800 block mb-1">Tools & Parts Required:</span>
+              <div className="p-3 rounded-xl bg-[#141414] border border-[#2e2e2e]">
+                <span className="font-bold text-zinc-200 block mb-1">Tools &amp; Parts Required:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {diagnosis.tools_and_materials_needed?.map((t, idx) => (
-                    <span key={idx} className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-medium">
+                    <span key={idx} className="px-2 py-0.5 rounded-md bg-[#242424] border border-[#2e2e2e] text-zinc-300 text-[11px] font-medium font-mono">
                       🔧 {t}
                     </span>
                   ))}
                 </div>
                 {diagnosis.spare_part_info && (
-                  <p className="mt-2 text-[11px] text-slate-600">
-                    <strong>Spare Part Info:</strong> {diagnosis.spare_part_info}
+                  <p className="mt-2 text-[11px] text-zinc-400">
+                    <strong className="text-zinc-200">Spare Part Info:</strong> {diagnosis.spare_part_info}
                   </p>
                 )}
               </div>
@@ -315,19 +315,21 @@ export default function RepairPlatform({ user }) {
 
                 <button
                   onClick={() => {
+                    const studentDept = user?.user_metadata?.department || 'Computer Science and Engineering'
+                    const labs = DEPARTMENT_LABS[studentDept] || ['Hardware & Systems Lab']
                     setTicketForm({
-                      user_name: 'Student Fixer',
-                      device_name: diagnosis.device,
+                      user_name: studentName,
+                      device_name: diagnosis.device || deviceName,
                       symptom: symptom,
-                      department: 'Computer Science and Engineering',
-                      lab_name: 'Hardware & Systems Lab',
-                      technician_name: 'CSE Faculty / Lab In-Charge'
+                      department: studentDept,
+                      lab_name: labs[0],
+                      technician_name: `${studentDept.split(' ')[0]} Faculty / Lab In-Charge`
                     })
                     setShowTicketModal(true)
                   }}
                   className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition cursor-pointer"
                 >
-                  Create Helpdesk Ticket
+                  Review &amp; Approve Helpdesk Ticket
                 </button>
               </div>
             </div>
@@ -385,43 +387,43 @@ export default function RepairPlatform({ user }) {
                   case 'repaired_returned':
                     return <span className="px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 text-[10px]">✅ Repaired & Returned (+8.5kg CO₂e)</span>
                   case 'unrepairable_parts_advised':
-                    return <span className="px-2 py-0.5 rounded-full font-bold bg-purple-100 text-purple-800 text-[10px]">🧩 Advised for Marketplace Parts</span>
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30 text-[10px] font-mono">🧩 Advised for Marketplace Parts</span>
                   case 'lab_cannibalized':
-                    return <span className="px-2 py-0.5 rounded-full font-bold bg-indigo-100 text-indigo-800 text-[10px]">🏢 Lab Adopted (Dept Spares)</span>
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-blue-500/10 text-blue-300 border border-blue-500/30 text-[10px] font-mono">🏢 Lab Adopted (Dept Spares)</span>
                   default:
-                    return <span className="px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 text-[10px] capitalize">{t.status}</span>
+                    return <span className="px-2 py-0.5 rounded-full font-bold bg-[#242424] text-zinc-300 border border-[#2e2e2e] text-[10px] capitalize font-mono">{t.status}</span>
                 }
               }
 
               return (
-                <div key={t.id} className="p-4 rounded-xl border border-slate-200 space-y-3 bg-slate-50/60 shadow-xs">
+                <div key={t.id} className="p-4 rounded-xl border border-[#2e2e2e] space-y-3 bg-[#141414] shadow-xs">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/30 font-mono">
                           {t.department ? t.department.split(' ')[0] : 'General'}
                         </span>
                         {t.lab_name && (
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#242424] text-zinc-300 border border-[#2e2e2e]">
                             {t.lab_name}
                           </span>
                         )}
                       </div>
-                      <h4 className="font-bold text-slate-900 text-sm">{t.device_name}</h4>
+                      <h4 className="font-bold text-[#EDEDED] text-sm">{t.device_name}</h4>
                     </div>
                     {statusBadge()}
                   </div>
 
-                  <p className="text-xs text-slate-600 bg-white p-2.5 rounded-lg border border-slate-100">
-                    <strong className="text-slate-800">Problem Reported:</strong> {t.symptom}
+                  <p className="text-xs text-zinc-300 bg-[#181818] p-2.5 rounded-lg border border-[#2e2e2e]">
+                    <strong className="text-[#EDEDED]">Problem Reported:</strong> {t.symptom}
                   </p>
 
                   {/* Faculty Decision Callout if resolved */}
                   {t.faculty_decision && (
                     <div className={`p-3 rounded-lg border text-xs space-y-1 ${
-                      t.faculty_decision === 'repaired_returned' ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' :
-                      t.faculty_decision === 'unrepairable_parts_advised' ? 'bg-purple-50/80 border-purple-200 text-purple-950' :
-                      'bg-indigo-50/80 border-indigo-200 text-indigo-950'
+                      t.faculty_decision === 'repaired_returned' ? 'bg-[#3ECF8E]/10 border-[#3ECF8E]/30 text-[#3ECF8E]' :
+                      t.faculty_decision === 'unrepairable_parts_advised' ? 'bg-purple-500/10 border-purple-500/30 text-purple-300' :
+                      'bg-blue-500/10 border-blue-500/30 text-blue-300'
                     }`}>
                       <div className="font-bold flex items-center justify-between text-[11px]">
                         <span>
@@ -435,16 +437,16 @@ export default function RepairPlatform({ user }) {
                         <p className="text-[11px] leading-relaxed opacity-90">{t.faculty_notes}</p>
                       )}
                       {t.faculty_decision === 'unrepairable_parts_advised' && (
-                        <p className="text-[10px] text-purple-700 font-semibold pt-1">
+                        <p className="text-[10px] text-purple-400 font-semibold pt-1">
                           💡 You can disassemble this device and list the working parts (screens, chassis, motors) on the Circular Marketplace!
                         </p>
                       )}
                     </div>
                   )}
 
-                  <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1 border-t border-slate-200">
-                    <span>Requested by: <strong className="text-slate-700">{t.user_name}</strong></span>
-                    <span>Workshop: <strong className="text-slate-700">{t.technician_name}</strong></span>
+                  <div className="text-[11px] text-zinc-500 flex items-center justify-between pt-1 border-t border-[#2e2e2e]">
+                    <span>Requested by: <strong className="text-zinc-300">{t.user_name}</strong></span>
+                    <span>Workshop: <strong className="text-zinc-300">{t.technician_name}</strong></span>
                   </div>
                 </div>
               )
@@ -453,101 +455,78 @@ export default function RepairPlatform({ user }) {
         )}
       </div>
 
-      {/* Post Ticket Modal */}
+      {/* Pre-Filled Ticket Approval Modal */}
       {showTicketModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h2 className="text-base font-bold text-slate-900">Post Department Helpdesk Ticket</h2>
-                <p className="text-xs text-slate-500">Route your broken equipment to college lab staff & technicians</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="bg-[#1c1c1c] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[#2e2e2e] space-y-4 text-[#EDEDED]">
+            <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
+                  <Wrench className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-[#EDEDED]">Approve Hardware Repair Ticket</h2>
+                  <p className="text-xs text-zinc-400">Pre-filled diagnostic report ready for department dispatch</p>
+                </div>
               </div>
-              <button onClick={() => setShowTicketModal(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+              <button 
+                onClick={() => setShowTicketModal(false)} 
+                className="text-zinc-400 hover:text-[#EDEDED] font-bold cursor-pointer"
+              >
+                ✕
+              </button>
             </div>
 
-            <form onSubmit={handleCreateTicket} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Your Name & Roll No. *</label>
-                <input
-                  type="text"
-                  value={ticketForm.user_name}
-                  onChange={(e) => setTicketForm({...ticketForm, user_name: e.target.value})}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  required
-                />
+            {/* Pre-filled Summary Card */}
+            <div className="p-4 rounded-2xl bg-[#141414] border border-[#2e2e2e] space-y-2.5 text-xs">
+              <div className="flex items-center justify-between border-b border-[#242424] pb-2">
+                <span className="text-zinc-400 font-mono text-[11px]">Device:</span>
+                <span className="font-bold text-[#EDEDED] text-sm">{ticketForm.device_name || 'Electronics Device'}</span>
               </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Target Department Workshop *</label>
-                <select
-                  value={ticketForm.department}
-                  onChange={(e) => {
-                    const dept = e.target.value
-                    const labs = DEPARTMENT_LABS[dept] || ['General Workshop']
-                    setTicketForm({
-                      ...ticketForm,
-                      department: dept,
-                      lab_name: labs[0],
-                      technician_name: `${dept.split(' ')[0]} Faculty / Lab In-Charge`
-                    })
-                  }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                >
-                  {DEPARTMENTS.map(d => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
+              <div className="flex items-center justify-between border-b border-[#242424] pb-2">
+                <span className="text-zinc-400 font-mono text-[11px]">Lab Destination:</span>
+                <span className="font-semibold text-[#3ECF8E]">{ticketForm.department.split(' ')[0]} — {ticketForm.lab_name}</span>
               </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Specific Lab / Workshop Helpdesk *</label>
-                <select
-                  value={ticketForm.lab_name}
-                  onChange={(e) => setTicketForm({...ticketForm, lab_name: e.target.value})}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                >
-                  {(DEPARTMENT_LABS[ticketForm.department] || ['General Workshop']).map(l => (
-                    <option key={l} value={l}>{l}</option>
-                  ))}
-                </select>
+              <div className="flex items-center justify-between border-b border-[#242424] pb-2">
+                <span className="text-zinc-400 font-mono text-[11px]">Assigned Workshop:</span>
+                <span className="text-zinc-300">{ticketForm.technician_name}</span>
               </div>
-
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Device Name & Model *</label>
-                <input
-                  type="text"
-                  value={ticketForm.device_name}
-                  onChange={(e) => setTicketForm({...ticketForm, device_name: e.target.value})}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  required
-                />
+                <span className="text-zinc-400 font-mono text-[11px] block mb-1">Issue / Symptom:</span>
+                <p className="p-2 rounded-xl bg-[#181818] border border-[#2e2e2e] text-zinc-300 text-xs">
+                  {ticketForm.symptom || 'Hardware malfunction requiring workshop inspection.'}
+                </p>
               </div>
+              {diagnosis && (
+                <div>
+                  <span className="text-zinc-400 font-mono text-[11px] block mb-1">AI Diagnostic Protocol Attached:</span>
+                  <div className="p-2 rounded-xl bg-[#3ECF8E]/5 border border-[#3ECF8E]/20 text-[#3ECF8E] text-[11px]">
+                    ✓ Root Causes ({diagnosis.likely_root_causes?.length || 0}) • {diagnosis.difficulty_level} Difficulty • Est. {diagnosis.estimated_repair_time_mins} mins
+                  </div>
+                </div>
+              )}
+            </div>
 
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Problem Description / Symptoms *</label>
-                <textarea
-                  rows="2"
-                  value={ticketForm.symptom}
-                  onChange={(e) => setTicketForm({...ticketForm, symptom: e.target.value})}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  required
-                ></textarea>
-              </div>
+            <p className="text-[11px] text-zinc-400">
+              By approving, this ticket will be dispatched immediately to the laboratory faculty in-charge. You can drop off the hardware at the lab workshop during campus hours.
+            </p>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
+            <form onSubmit={handleCreateTicket} className="space-y-3 pt-1">
+              <div className="flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowTicketModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 font-semibold text-slate-600 transition"
+                  className="px-4 py-2 rounded-xl border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#242424] font-semibold text-xs transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submittingTicket}
-                  className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                 >
-                  {submittingTicket ? 'Submitting...' : 'Submit to Helpdesk'}
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{submittingTicket ? 'Dispatching Ticket...' : 'Approve & Submit Repair Ticket'}</span>
                 </button>
               </div>
             </form>

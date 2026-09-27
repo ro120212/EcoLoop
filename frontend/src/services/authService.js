@@ -18,23 +18,13 @@ export const PRESET_ACCOUNTS = {
     full_name: 'Prof. Haridasan K (Lab In-Charge)',
     department: 'Computer Science and Engineering',
     description: 'Faculty / Lab Staff: Department workshop helpdesk, audit triage, scrap adoption'
-  },
-  admin: {
-    username: 'admin',
-    email: 'admin@ecoloop.nssce.ac.in',
-    password: 'admin@123',
-    role: 'admin',
-    full_name: 'Campus E-Waste Cell Admin',
-    department: 'Central Administration',
-    description: 'Administration: Campus-wide analytics, 5-branch triage, compliance oversight'
   }
 }
 
 export const mapUsernameToEmail = (usernameOrEmail) => {
   const clean = (usernameOrEmail || '').trim().toLowerCase()
   if (clean === 'student') return PRESET_ACCOUNTS.student.email
-  if (clean === 'faculty' || clean === 'lab_staff' || clean === 'staff') return PRESET_ACCOUNTS.faculty.email
-  if (clean === 'admin') return PRESET_ACCOUNTS.admin.email
+  if (clean === 'faculty' || clean === 'lab_staff' || clean === 'staff' || clean === 'admin') return PRESET_ACCOUNTS.faculty.email
   if (clean.includes('@')) return clean
   return `${clean}@ecoloop.nssce.ac.in`
 }
@@ -42,10 +32,10 @@ export const mapUsernameToEmail = (usernameOrEmail) => {
 export const getUserRole = (user) => {
   if (!user) return 'student'
   const metaRole = user.user_metadata?.role
-  if (metaRole) return metaRole
+  if (metaRole === 'lab_staff' || metaRole === 'faculty') return 'lab_staff'
+  if (metaRole === 'admin') return 'lab_staff' // Admin consolidated into faculty / developer control
   const email = (user.email || '').toLowerCase()
-  if (email.startsWith('admin') || email.includes('admin')) return 'admin'
-  if (email.startsWith('faculty') || email.includes('staff') || email.includes('lab')) return 'lab_staff'
+  if (email.startsWith('faculty') || email.includes('staff') || email.includes('lab') || email.startsWith('admin')) return 'lab_staff'
   return 'student'
 }
 
@@ -55,8 +45,7 @@ export const isProfileComplete = (user) => {
 }
 
 export const STAFF_PASSCODES = {
-  lab_staff: 'NSSCE-LAB-2026',
-  admin: 'NSSCE-ADMIN-2026'
+  lab_staff: 'NSSCE-LAB-2026'
 }
 
 export const authService = {
