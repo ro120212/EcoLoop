@@ -12,7 +12,8 @@ import {
   Key
 } from 'lucide-react'
 import { authService } from '../services/authService'
-import logoImg from '../assets/logo.png'
+import LiveWallpaper from './LiveWallpaper'
+import EcoLoopLogo from './EcoLoopLogo'
 
 export default function LoginScreen({ onLoginSuccess }) {
   const [isRegistering, setIsRegistering] = useState(false)
@@ -103,30 +104,23 @@ export default function LoginScreen({ onLoginSuccess }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] flex flex-col justify-center items-center px-4 py-8 sm:px-6 relative overflow-hidden">
-      {/* Supabase Grid Pattern and Ambient Glow */}
-      <div className="fixed inset-0 bg-supabase-grid opacity-30 pointer-events-none" />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[radial-gradient(ellipse_at_top,rgba(62,207,142,0.12),transparent_70%)] pointer-events-none" />
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8 sm:px-6 relative overflow-hidden">
+      {/* Continuous Emerald Aurora Live Wallpaper */}
+      <LiveWallpaper />
 
       {/* Top Campus Branding */}
       <div className="w-full max-w-lg text-center mb-6 space-y-2 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1c1c1c] border border-[#2e2e2e] text-[#3ECF8E] text-xs font-semibold shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1c1c1c]/80 backdrop-blur-md border border-[#2e2e2e] text-[#3ECF8E] text-xs font-semibold shadow-sm">
           <Building2 className="w-3.5 h-3.5" />
           <span>NSS College of Engineering, Palakkad</span>
         </div>
       </div>
 
       {/* Main Login Card */}
-      <div className="w-full max-w-lg bg-[#1c1c1c] rounded-3xl shadow-2xl border border-[#2e2e2e] overflow-hidden relative z-10">
-        {/* Card Header with EcoLoop Logo */}
-        <div className="bg-[#181818] px-6 sm:px-8 pt-8 pb-5 text-center border-b border-[#2e2e2e]">
-          <div className="w-20 h-20 mx-auto mb-3 rounded-2xl bg-[#141414] shadow-md border border-[#2e2e2e] flex items-center justify-center p-2 overflow-hidden shadow-[0_0_20px_rgba(62,207,142,0.15)]">
-            <img 
-              src={logoImg} 
-              alt="EcoLoop Logo" 
-              className="w-full h-full object-contain"
-            />
-          </div>
+      <div className="w-full max-w-lg bg-[#1c1c1c]/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-[#2e2e2e] overflow-hidden relative z-10">
+        {/* Card Header with Pure Transparent EcoLoop Logo */}
+        <div className="bg-[#181818]/90 px-6 sm:px-8 pt-8 pb-5 text-center border-b border-[#2e2e2e]">
+          <EcoLoopLogo className="w-16 h-16 mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-[#EDEDED] tracking-tight">EcoLoop</h1>
           <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto">
             University Circular Electronics &amp; E-Waste Reuse Platform

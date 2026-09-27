@@ -10,7 +10,7 @@ import RepairPlatform from './components/RepairPlatform'
 import { api } from './services/api'
 import { supabase } from './services/supabaseClient'
 import { getUserRole, authService } from './services/authService'
-import logoImg from './assets/logo.png'
+import LiveWallpaper from './components/LiveWallpaper'
 import { RefreshCw } from 'lucide-react'
 
 import CustomCursor from './components/CustomCursor'
@@ -128,13 +128,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#121212] font-sans text-[#EDEDED] relative overflow-x-hidden">
+    <div className="min-h-screen flex flex-col font-sans text-[#EDEDED] relative overflow-x-hidden">
       {/* Precision Supabase Cursor */}
       <CustomCursor />
 
-      {/* Supabase Ambient Background Glow & Tech Grid */}
-      <div className="fixed inset-0 bg-supabase-grid opacity-35 pointer-events-none" />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(62,207,142,0.08),transparent_70%)] pointer-events-none" />
+      {/* Continuous Emerald Aurora Live Wallpaper */}
+      <LiveWallpaper />
 
       {/* Top Navigation */}
       <div className="relative z-40">

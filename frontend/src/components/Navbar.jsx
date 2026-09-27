@@ -8,7 +8,7 @@ import {
   Package
 } from 'lucide-react'
 
-import logoImg from '../assets/logo.png'
+import EcoLoopLogo from './EcoLoopLogo'
 
 export default function Navbar({ 
   currentRole, 
@@ -34,13 +34,7 @@ export default function Navbar({
           className="flex items-center gap-3 cursor-pointer select-none group" 
           onClick={() => setActiveView(currentRole === 'student' ? 'student_hub' : 'lab_staff_hub')}
         >
-          <div className="w-10 h-10 rounded-xl bg-[#1c1c1c] border border-[#2e2e2e] shadow-sm flex items-center justify-center p-1 overflow-hidden transition-all group-hover:border-[#3ECF8E]/50 group-hover:shadow-[0_0_12px_rgba(62,207,142,0.2)]">
-            <img 
-              src={logoImg} 
-              alt="EcoLoop Logo" 
-              className="w-full h-full object-contain" 
-            />
-          </div>
+          <EcoLoopLogo className="w-9 h-9 transition-transform group-hover:scale-110" />
           <div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold tracking-tight text-[#EDEDED] group-hover:text-white transition">EcoLoop</span>

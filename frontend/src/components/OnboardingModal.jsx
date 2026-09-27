@@ -10,7 +10,7 @@ import {
   Key
 } from 'lucide-react'
 import { authService } from '../services/authService'
-import logoImg from '../assets/logo.png'
+import EcoLoopLogo from './EcoLoopLogo'
 
 export default function OnboardingModal({ user, onComplete, onLogout }) {
   const [role, setRole] = useState('student')
@@ -60,9 +60,7 @@ export default function OnboardingModal({ user, onComplete, onLogout }) {
         {/* Header */}
         <div className="bg-[#181818] border-b border-[#2e2e2e] text-[#EDEDED] p-6 sm:p-7 relative overflow-hidden">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#141414] p-1 border border-[#2e2e2e] shadow-md flex items-center justify-center">
-              <img src={logoImg} alt="EcoLoop" className="w-full h-full object-contain" />
-            </div>
+            <EcoLoopLogo className="w-9 h-9 shrink-0" />
             <div>
               <span className="text-xs font-semibold uppercase tracking-wider text-[#3ECF8E] font-mono">Welcome to EcoLoop</span>
               <h2 className="text-xl font-bold text-[#EDEDED]">Complete Your Campus Profile</h2>
