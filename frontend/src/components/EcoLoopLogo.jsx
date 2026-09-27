@@ -11,7 +11,7 @@ export default function EcoLoopLogo({ className = "w-8 h-8", ...props }) {
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`shrink-0 transition-transform duration-300 hover:scale-105 ${className}`}
+      className={`shrink-0 transition-transform duration-300 hover:scale-105 drop-shadow-[0_0_10px_rgba(62,207,142,0.45)] ${className}`}
       {...props}
     >
       <defs>

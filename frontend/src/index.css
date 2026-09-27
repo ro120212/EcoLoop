@@ -294,68 +294,68 @@ label.border-slate-200:hover {
 @keyframes aurora-1 {
   0% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-    opacity: 0.16;
+    opacity: 0.45;
   }
   35% {
     transform: translate3d(10vw, 12vh, 0) scale(1.2) rotate(40deg);
-    opacity: 0.25;
+    opacity: 0.70;
   }
   70% {
     transform: translate3d(-8vw, 18vh, 0) scale(0.9) rotate(80deg);
-    opacity: 0.18;
+    opacity: 0.55;
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-    opacity: 0.16;
+    opacity: 0.45;
   }
 }
 
 @keyframes aurora-2 {
   0% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-    opacity: 0.14;
+    opacity: 0.40;
   }
   40% {
     transform: translate3d(-12vw, -10vh, 0) scale(1.22) rotate(-50deg);
-    opacity: 0.22;
+    opacity: 0.65;
   }
   75% {
     transform: translate3d(8vw, -6vh, 0) scale(0.88) rotate(-100deg);
-    opacity: 0.16;
+    opacity: 0.48;
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-    opacity: 0.14;
+    opacity: 0.40;
   }
 }
 
 @keyframes aurora-3 {
   0% {
     transform: translate3d(0, 0, 0) scale(0.95);
-    opacity: 0.12;
+    opacity: 0.35;
   }
   50% {
     transform: translate3d(14vw, -12vh, 0) scale(1.28);
-    opacity: 0.24;
+    opacity: 0.68;
   }
   100% {
     transform: translate3d(0, 0, 0) scale(0.95);
-    opacity: 0.12;
+    opacity: 0.35;
   }
 }
 
 @keyframes aurora-4 {
   0% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-    opacity: 0.10;
+    opacity: 0.30;
   }
   50% {
     transform: translate3d(-10vw, 15vh, 0) scale(1.15) rotate(180deg);
-    opacity: 0.20;
+    opacity: 0.58;
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1) rotate(360deg);
-    opacity: 0.10;
+    opacity: 0.30;
   }
 }
 

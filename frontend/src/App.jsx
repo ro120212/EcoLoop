@@ -11,6 +11,7 @@ import { api } from './services/api'
 import { supabase } from './services/supabaseClient'
 import { getUserRole, authService } from './services/authService'
 import LiveWallpaper from './components/LiveWallpaper'
+import EcoLoopLogo from './components/EcoLoopLogo'
 import { RefreshCw } from 'lucide-react'
 
 import CustomCursor from './components/CustomCursor'
@@ -192,9 +193,7 @@ export default function App() {
       <footer className="border-t border-[#2e2e2e] bg-[#171717] py-6 mt-16 text-xs text-zinc-400 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#1c1c1c] border border-[#2e2e2e] shadow-sm flex items-center justify-center p-1 overflow-hidden">
-              <img src={logoImg} alt="EcoLoop" className="w-full h-full object-contain" />
-            </div>
+            <EcoLoopLogo className="w-7 h-7" />
             <div>
               <span className="font-semibold text-[#EDEDED] block tracking-tight">EcoLoop Circular Campus Platform</span>
               <span className="text-[11px] text-zinc-500">NSS College of Engineering, Palakkad</span>

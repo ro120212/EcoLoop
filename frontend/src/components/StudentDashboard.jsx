@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { 
   User, 
-  Leaf, 
   ShoppingBag, 
   Sparkles, 
   Wrench, 
@@ -222,9 +221,10 @@ export default function StudentDashboard({ user, onNavigate }) {
 
   return (
     <div className="space-y-8 pb-16">
-      {/* Student Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#1c1c1c] text-[#EDEDED] p-6 sm:p-8 shadow-xl border border-[#2e2e2e]">
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      {/* Consolidated Student Campus Circular Hub Card */}
+      <div className="relative overflow-hidden rounded-3xl bg-[#1c1c1c] text-[#EDEDED] p-6 sm:p-8 shadow-xl border border-[#2e2e2e] space-y-6">
+        {/* Top Header Row with Action Button */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] text-xs font-semibold">
               <User className="w-3.5 h-3.5" />
@@ -238,74 +238,59 @@ export default function StudentDashboard({ user, onNavigate }) {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            {/* Quick Score Card */}
-            <div className="bg-[#141414] border border-[#2e2e2e] p-4 rounded-2xl flex items-center gap-4 text-xs shadow-sm">
-              <div className="w-11 h-11 rounded-xl bg-[#3ECF8E]/10 border border-[#3ECF8E]/25 text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
-                <Leaf className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-zinc-400 block text-[11px]">Personal Carbon Mitigated</span>
-                <p className="text-lg font-bold text-[#3ECF8E] font-mono">{portfolio.total_co2_saved_kg || 28.5} kg CO₂e</p>
-                <span className="text-[10px] text-zinc-400 font-mono">NSSCE Campus Diverted</span>
-              </div>
+          <button
+            onClick={() => setShowListModal(true)}
+            className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-lg shadow-[#3ECF8E]/20 flex items-center justify-center gap-2 transition cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ List Electronics for Sale / Free</span>
+          </button>
+        </div>
+
+        {/* Nested Sub-Cards Grid */}
+        <div className="pt-6 border-t border-[#282828] grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
+              <Package className="w-5 h-5" />
             </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Total Listed</span>
+              <p className="text-xl font-bold text-[#EDEDED]">{myListings.length} Items</p>
+              <span className="text-[10px] text-zinc-400">{availableListings.length} currently active</span>
+            </div>
+          </div>
 
-            {/* List Item CTA Button */}
-            <button
-              onClick={() => setShowListModal(true)}
-              className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-lg shadow-[#3ECF8E]/20 flex items-center justify-center gap-2 transition cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ List Electronics for Sale / Free</span>
-            </button>
+          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-amber-400 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Pending Meetups</span>
+              <p className="text-xl font-bold text-amber-400">{reservedListings.length} Reserved</p>
+              <span className="text-[10px] text-amber-300 font-medium">Awaiting PIN handoff</span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Overview Stat Counters */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-[#1c1c1c] p-4 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
-            <Package className="w-5 h-5" />
+          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Sold / Handed Off</span>
+              <p className="text-xl font-bold text-[#3ECF8E]">{soldListings.length} Taken</p>
+              <span className="text-[10px] text-[#3ECF8E] font-medium">Transferred to peers</span>
+            </div>
           </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Total Listed</span>
-            <p className="text-xl font-bold text-[#EDEDED]">{myListings.length} Items</p>
-            <span className="text-[10px] text-zinc-400">{availableListings.length} currently active</span>
-          </div>
-        </div>
 
-        <div className="bg-[#1c1c1c] p-4 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-amber-400 flex items-center justify-center flex-shrink-0">
-            <Clock className="w-5 h-5" />
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Pending Meetups</span>
-            <p className="text-xl font-bold text-amber-400">{reservedListings.length} Reserved</p>
-            <span className="text-[10px] text-amber-300 font-medium">Awaiting PIN handoff</span>
-          </div>
-        </div>
-
-        <div className="bg-[#1c1c1c] p-4 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Sold / Handed Off</span>
-            <p className="text-xl font-bold text-[#3ECF8E]">{soldListings.length} Taken</p>
-            <span className="text-[10px] text-[#3ECF8E] font-medium">Transferred to peers</span>
-          </div>
-        </div>
-
-        <div className="bg-[#1c1c1c] p-4 rounded-2xl border border-[#2e2e2e] shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-zinc-300 flex items-center justify-center flex-shrink-0">
-            <ShoppingBag className="w-5 h-5" />
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Claimed by Me</span>
-            <p className="text-xl font-bold text-zinc-200">{myClaims.length} Items</p>
-            <span className="text-[10px] text-zinc-400 font-medium">{activeClaims.length} ready for pickup</span>
+          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-zinc-300 flex items-center justify-center flex-shrink-0">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Claimed by Me</span>
+              <p className="text-xl font-bold text-zinc-200">{myClaims.length} Items</p>
+              <span className="text-[10px] text-zinc-400 font-medium">{activeClaims.length} ready for pickup</span>
+            </div>
           </div>
         </div>
       </div>
