@@ -42,25 +42,38 @@ export default function RepairPlatform({ user }) {
   const [diagnosis, setDiagnosis] = useState(null)
   const [tickets, setTickets] = useState([])
   const [loadingTickets, setLoadingTickets] = useState(true)
-  const [showTicketModal, setShowTicketModal] = useState(false)
-  const [selectedFilterDept, setSelectedFilterDept] = useState('All')
 
-  // Ticket form
+  // Modals: Manual vs Pre-filled Approval
+  const [showManualModal, setShowManualModal] = useState(false)
+  const [showApprovalModal, setShowApprovalModal] = useState(false)
+
+  // Manual Ticket Form
+  const defaultDept = user?.user_metadata?.department || 'Computer Science and Engineering'
+  const [manualForm, setManualForm] = useState({
+    user_name: studentName,
+    device_name: '',
+    symptom: '',
+    department: defaultDept,
+    lab_name: (DEPARTMENT_LABS[defaultDept] || ['Hardware & Systems Lab'])[0],
+    technician_name: `${defaultDept.split(' ')[0]} Faculty / Lab In-Charge`
+  })
+
+  // Pre-filled Approval Form
   const [ticketForm, setTicketForm] = useState({
     user_name: studentName,
     device_name: '',
     symptom: '',
-    department: 'Computer Science and Engineering',
-    lab_name: 'Hardware & Systems Lab',
-    technician_name: 'CSE Faculty / Lab In-Charge'
+    department: defaultDept,
+    lab_name: (DEPARTMENT_LABS[defaultDept] || ['Hardware & Systems Lab'])[0],
+    technician_name: `${defaultDept.split(' ')[0]} Faculty / Lab In-Charge`
   })
   const [submittingTicket, setSubmittingTicket] = useState(false)
 
-  const loadTickets = async (dept = selectedFilterDept) => {
+  const loadTickets = async () => {
     try {
       setLoadingTickets(true)
-      // Only fetch tickets belonging to this logged in student
-      const data = await api.getRepairTickets(dept, studentId)
+      // Only fetch tickets submitted by this specific student across all departments
+      const data = await api.getRepairTickets('All', studentId)
       setTickets(data)
     } catch (err) {
       console.error('Failed to load repair tickets:', err)
@@ -70,8 +83,8 @@ export default function RepairPlatform({ user }) {
   }
 
   useEffect(() => {
-    loadTickets(selectedFilterDept)
-  }, [selectedFilterDept, studentId])
+    loadTickets()
+  }, [studentId])
 
   const handleDiagnose = async (e) => {
     e.preventDefault()
@@ -87,7 +100,48 @@ export default function RepairPlatform({ user }) {
     }
   }
 
-  const handleCreateTicket = async (e) => {
+  // Open empty manual ticket form
+  const handleOpenManualModal = () => {
+    setManualForm({
+      user_name: studentName,
+      device_name: '',
+      symptom: '',
+      department: defaultDept,
+      lab_name: (DEPARTMENT_LABS[defaultDept] || ['Hardware & Systems Lab'])[0],
+      technician_name: `${defaultDept.split(' ')[0]} Faculty / Lab In-Charge`
+    })
+    setShowManualModal(true)
+  }
+
+  // Submit manual ticket
+  const handleManualSubmit = async (e) => {
+    e.preventDefault()
+    if (!manualForm.device_name.trim() || !manualForm.symptom.trim()) {
+      alert('Please enter both device name and problem description.')
+      return
+    }
+    try {
+      setSubmittingTicket(true)
+      await api.createRepairTicket({
+        ...manualForm,
+        user_id: studentId,
+        user_name: manualForm.user_name || studentName || 'Student',
+        ai_diagnosis: 'Manual student submission via workbench helpdesk.',
+        ai_steps: 'Requires workbench hardware evaluation by lab staff.',
+        difficulty: 'Medium',
+        tools_needed: 'Workbench tools'
+      })
+      setShowManualModal(false)
+      await loadTickets()
+    } catch (err) {
+      alert('Error creating ticket: ' + err.message)
+    } finally {
+      setSubmittingTicket(false)
+    }
+  }
+
+  // Submit pre-filled AI approved ticket
+  const handleApproveTicket = async (e) => {
     e.preventDefault()
     try {
       setSubmittingTicket(true)
@@ -100,16 +154,8 @@ export default function RepairPlatform({ user }) {
         difficulty: diagnosis?.difficulty_level || 'Medium',
         tools_needed: diagnosis?.tools_and_materials_needed?.join(', ') || ''
       })
-      setShowTicketModal(false)
-      setTicketForm({
-        user_name: studentName,
-        device_name: '',
-        symptom: '',
-        department: 'Computer Science and Engineering',
-        lab_name: 'Hardware & Systems Lab',
-        technician_name: 'CSE Faculty / Lab In-Charge'
-      })
-      await loadTickets(selectedFilterDept)
+      setShowApprovalModal(false)
+      await loadTickets()
     } catch (err) {
       alert('Error saving ticket: ' + err.message)
     } finally {
@@ -137,14 +183,8 @@ export default function RepairPlatform({ user }) {
         </div>
 
         <button
-          onClick={() => {
-            setTicketForm(prev => ({
-              ...prev,
-              user_name: studentName || prev.user_name
-            }))
-            setShowTicketModal(true)
-          }}
-          className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+          onClick={handleOpenManualModal}
+          className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
         >
           <Plus className="w-4 h-4" />
           <span>Post Repair Help Request</span>
@@ -325,7 +365,7 @@ export default function RepairPlatform({ user }) {
                       lab_name: labs[0],
                       technician_name: `${studentDept.split(' ')[0]} Faculty / Lab In-Charge`
                     })
-                    setShowTicketModal(true)
+                    setShowApprovalModal(true)
                   }}
                   className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition cursor-pointer"
                 >
@@ -347,27 +387,12 @@ export default function RepairPlatform({ user }) {
         </div>
       </div>
 
-      {/* Student's Own Tickets */}
+      {/* Student's Own Tickets (Only this user's tickets, no multiple branch filters) */}
       <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-[#EDEDED]">My Repair Helpdesk Tickets</h3>
+            <h3 className="text-sm font-bold text-[#EDEDED]">My Repair Helpdesk Tickets ({tickets.length})</h3>
             <p className="text-xs text-zinc-400">Track the inspection and triage progress of your submitted hardware repair requests</p>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {['All', ...DEPARTMENTS].map(d => (
-              <button
-                key={d}
-                onClick={() => setSelectedFilterDept(d)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                  selectedFilterDept === d
-                    ? 'bg-[#3ECF8E] text-[#121212] shadow-xs'
-                    : 'bg-[#232323] text-zinc-400 hover:text-[#EDEDED] border border-[#2e2e2e]'
-                }`}
-              >
-                {d === 'All' ? 'All Departments' : d.split(' ')[0]}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -455,8 +480,130 @@ export default function RepairPlatform({ user }) {
         )}
       </div>
 
+      {/* Manual Ticket Creation Modal */}
+      {showManualModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="bg-[#1c1c1c] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[#2e2e2e] space-y-4 text-[#EDEDED]">
+            <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
+                  <Wrench className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-[#EDEDED]">Post Repair Help Request</h2>
+                  <p className="text-xs text-zinc-400">Describe the issue and dispatch to a campus department lab</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowManualModal(false)} 
+                className="text-zinc-400 hover:text-[#EDEDED] font-bold cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleManualSubmit} className="space-y-4 pt-1">
+              <div>
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  Device / Equipment Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g., Dell Latitude 5400, Arduino Mega, Oscilloscope"
+                  value={manualForm.device_name}
+                  onChange={(e) => setManualForm({ ...manualForm, device_name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] transition"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    Department *
+                  </label>
+                  <select
+                    value={manualForm.department}
+                    onChange={(e) => {
+                      const newDept = e.target.value
+                      const labs = DEPARTMENT_LABS[newDept] || ['Hardware & Systems Lab']
+                      setManualForm({
+                        ...manualForm,
+                        department: newDept,
+                        lab_name: labs[0],
+                        technician_name: `${newDept.split(' ')[0]} Faculty / Lab In-Charge`
+                      })
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] transition cursor-pointer"
+                  >
+                    {DEPARTMENTS.map((d) => (
+                      <option key={d} value={d} className="bg-[#1c1c1c] text-[#EDEDED]">
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    Target Lab / Workshop *
+                  </label>
+                  <select
+                    value={manualForm.lab_name}
+                    onChange={(e) => setManualForm({ ...manualForm, lab_name: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] transition cursor-pointer"
+                  >
+                    {(DEPARTMENT_LABS[manualForm.department] || ['Hardware & Systems Lab']).map((lab) => (
+                      <option key={lab} value={lab} className="bg-[#1c1c1c] text-[#EDEDED]">
+                        {lab}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  Problem Description / Symptoms *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Explain what is wrong (e.g., does not power on, display flickering, unusual clicking noise, broken connector)..."
+                  value={manualForm.symptom}
+                  onChange={(e) => setManualForm({ ...manualForm, symptom: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] transition resize-none"
+                />
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[11px] text-zinc-400">
+                Assigned Workshop: <strong className="text-zinc-200">{manualForm.technician_name}</strong>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowManualModal(false)}
+                  className="px-4 py-2 rounded-xl border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#242424] font-semibold text-xs transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingTicket}
+                  className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{submittingTicket ? 'Submitting Request...' : 'Submit Help Request'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Pre-Filled Ticket Approval Modal */}
-      {showTicketModal && (
+      {showApprovalModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
           <div className="bg-[#1c1c1c] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[#2e2e2e] space-y-4 text-[#EDEDED]">
             <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
@@ -470,7 +617,7 @@ export default function RepairPlatform({ user }) {
                 </div>
               </div>
               <button 
-                onClick={() => setShowTicketModal(false)} 
+                onClick={() => setShowApprovalModal(false)} 
                 className="text-zinc-400 hover:text-[#EDEDED] font-bold cursor-pointer"
               >
                 ✕
@@ -511,11 +658,11 @@ export default function RepairPlatform({ user }) {
               By approving, this ticket will be dispatched immediately to the laboratory faculty in-charge. You can drop off the hardware at the lab workshop during campus hours.
             </p>
 
-            <form onSubmit={handleCreateTicket} className="space-y-3 pt-1">
+            <form onSubmit={handleApproveTicket} className="space-y-3 pt-1">
               <div className="flex items-center justify-end gap-2.5">
                 <button
                   type="button"
-                  onClick={() => setShowTicketModal(false)}
+                  onClick={() => setShowApprovalModal(false)}
                   className="px-4 py-2 rounded-xl border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#242424] font-semibold text-xs transition cursor-pointer"
                 >
                   Cancel
