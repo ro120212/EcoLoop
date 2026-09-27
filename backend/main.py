@@ -81,7 +81,7 @@ class ApiKeyReq(BaseModel):
     api_key: str
 
 # --- Platform Health & Metrics ---
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root():
     return {
         "status": "online",
@@ -91,7 +91,7 @@ def root():
         "version": "2.0.0"
     }
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {
         "status": "healthy",
