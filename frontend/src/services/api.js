@@ -1,15 +1,17 @@
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '')
+
 export const api = {
   // Stats & Departments
   async getStats() {
-    const res = await fetch('/api/stats')
+    const res = await fetch(`${API_BASE}/api/stats`)
     return res.json()
   },
   async getDepartments() {
-    const res = await fetch('/api/departments')
+    const res = await fetch(`${API_BASE}/api/departments`)
     return res.json()
   },
   async setGeminiKey(apiKey) {
-    const res = await fetch('/api/settings/gemini-key', {
+    const res = await fetch(`${API_BASE}/api/settings/gemini-key`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ api_key: apiKey }),
@@ -23,11 +25,11 @@ export const api = {
     if (department && department !== 'All') params.append('department', department)
     if (category && category !== 'All') params.append('category', category)
     if (status) params.append('status', status)
-    const res = await fetch(`/api/marketplace?${params.toString()}`)
+    const res = await fetch(`${API_BASE}/api/marketplace?${params.toString()}`)
     return res.json()
   },
   async createMarketItem(data) {
-    const res = await fetch('/api/marketplace', {
+    const res = await fetch(`${API_BASE}/api/marketplace`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -35,7 +37,7 @@ export const api = {
     return res.json()
   },
   async claimItem(itemId, buyerId, buyerName, meetingPoint, claimedComponent = 'All') {
-    const res = await fetch('/api/marketplace/claim', {
+    const res = await fetch(`${API_BASE}/api/marketplace/claim`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -53,7 +55,7 @@ export const api = {
     return data
   },
   async verifyHandoffPin(itemId, enteredPin) {
-    const res = await fetch('/api/marketplace/verify-pin', {
+    const res = await fetch(`${API_BASE}/api/marketplace/verify-pin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -68,7 +70,7 @@ export const api = {
     return data
   },
   async getUserPortfolio(userId) {
-    const res = await fetch(`/api/user/portfolio/${userId}`)
+    const res = await fetch(`${API_BASE}/api/user/portfolio/${userId}`)
     return res.json()
   },
 
@@ -76,7 +78,7 @@ export const api = {
   async classifyWaste(imageFile) {
     const formData = new FormData()
     formData.append('file', imageFile)
-    const res = await fetch('/api/ai/classify', {
+    const res = await fetch(`${API_BASE}/api/ai/classify`, {
       method: 'POST',
       body: formData,
     })
@@ -85,7 +87,7 @@ export const api = {
 
   // AI Repair Troubleshooter
   async diagnoseRepair(deviceName, symptom, deviceCategory) {
-    const res = await fetch('/api/repair/diagnose', {
+    const res = await fetch(`${API_BASE}/api/repair/diagnose`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -101,7 +103,7 @@ export const api = {
       const params = new URLSearchParams()
       if (department && department !== 'All') params.append('department', department)
       if (userId) params.append('user_id', userId)
-      const res = await fetch(`/api/repair/tickets?${params.toString()}`)
+      const res = await fetch(`${API_BASE}/api/repair/tickets?${params.toString()}`)
       if (!res.ok) return []
       return await res.json()
     } catch {
@@ -109,7 +111,7 @@ export const api = {
     }
   },
   async createRepairTicket(data) {
-    const res = await fetch('/api/repair/tickets', {
+    const res = await fetch(`${API_BASE}/api/repair/tickets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -117,7 +119,7 @@ export const api = {
     return res.json()
   },
   async resolveRepairTicket(ticketId, data) {
-    const res = await fetch(`/api/repair/tickets/${ticketId}/resolve`, {
+    const res = await fetch(`${API_BASE}/api/repair/tickets/${ticketId}/resolve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -131,11 +133,11 @@ export const api = {
 
   // Lab Audits & Triage across CSE, Mech, Civil, EEE, IC
   async getAudits() {
-    const res = await fetch('/api/audits')
+    const res = await fetch(`${API_BASE}/api/audits`)
     return res.json()
   },
   async createAudit(data) {
-    const res = await fetch('/api/audits', {
+    const res = await fetch(`${API_BASE}/api/audits`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -143,17 +145,17 @@ export const api = {
     return res.json()
   },
   async getAuditAnalytics() {
-    const res = await fetch('/api/audits/analytics')
+    const res = await fetch(`${API_BASE}/api/audits/analytics`)
     return res.json()
   },
   async getInventory(department) {
     const params = new URLSearchParams()
     if (department && department !== 'All') params.append('department', department)
-    const res = await fetch(`/api/inventory?${params.toString()}`)
+    const res = await fetch(`${API_BASE}/api/inventory?${params.toString()}`)
     return res.json()
   },
   async upsertInventory(data) {
-    const res = await fetch('/api/inventory', {
+    const res = await fetch(`${API_BASE}/api/inventory`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

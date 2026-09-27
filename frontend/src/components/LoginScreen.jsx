@@ -4,65 +4,147 @@ import {
   Lock, 
   Eye, 
   EyeOff, 
-  Building2, 
   ArrowRight,
   AlertCircle,
   RefreshCw,
   CheckCircle2,
-  Key,
-  Sparkles,
-  Wrench,
-  Package
+  Key
 } from 'lucide-react'
 import { authService } from '../services/authService'
 import LiveWallpaper from './LiveWallpaper'
 import EcoLoopLogo from './EcoLoopLogo'
 
-function TypewriterText() {
-  const phrases = [
-    "Transforming campus e-waste into student innovation.",
-    "Zero landfill electronics across all 5 engineering branches.",
-    "Peer-to-peer component exchange & intelligent AI triage.",
-    "Repair before replace — empowering campus engineers."
+function MultilineTypewriter() {
+  const sequences = [
+    {
+      kicker: "// NSSCE CIRCULAR ELECTRONICS INITIATIVE",
+      headline: "Turn Campus E-Waste Into Raw Potential.",
+      editorial: "Reclaiming circuits, sensors, and lab kits.",
+      narrative: "A circular exchange ecosystem empowering engineering students and faculty to trade microcontrollers, diagnose hardware with AI, and restore before replacing."
+    },
+    {
+      kicker: "// ZERO LANDFILL ENGINEERING IN ACTION",
+      headline: "Repair First. Replace Never.",
+      editorial: "Where discarded components find second lives.",
+      narrative: "Equipping the next generation of engineers with AI-powered diagnostics and peer repair mentorship across all 5 engineering branches."
+    },
+    {
+      kicker: "// INTELLIGENT HARDWARE SALVAGE",
+      headline: "Smart Vision. Circular Campus.",
+      editorial: "Instantly inspect, triage, and list electronics.",
+      narrative: "Transform unused Arduino, Raspberry Pi, and test kits into shared academic resources for peer projects and practical learning."
+    }
   ]
 
-  const [phraseIdx, setPhraseIdx] = useState(0)
-  const [displayText, setDisplayText] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [seqIdx, setSeqIdx] = useState(0)
+  const [lineIdx, setLineIdx] = useState(0)
+  const [charCounts, setCharCounts] = useState([0, 0, 0, 0])
+  const [phase, setPhase] = useState('typing') // 'typing' | 'pause' | 'deleting'
+
+  const currentSeq = sequences[seqIdx]
+  const currentLines = [
+    currentSeq.kicker,
+    currentSeq.headline,
+    currentSeq.editorial,
+    currentSeq.narrative
+  ]
 
   useEffect(() => {
-    const currentPhrase = phrases[phraseIdx]
     let timer
 
-    if (!isDeleting) {
-      if (displayText.length < currentPhrase.length) {
+    if (phase === 'typing') {
+      const targetLen = currentLines[lineIdx].length
+      const currentLen = charCounts[lineIdx]
+
+      if (currentLen < targetLen) {
         timer = setTimeout(() => {
-          setDisplayText(currentPhrase.substring(0, displayText.length + 1))
-        }, 40)
+          setCharCounts(prev => {
+            const next = [...prev]
+            next[lineIdx] = currentLen + 1
+            return next
+          })
+        }, lineIdx === 0 ? 25 : (lineIdx === 1 ? 35 : 28))
       } else {
-        timer = setTimeout(() => {
-          setIsDeleting(true)
-        }, 2200)
+        if (lineIdx < currentLines.length - 1) {
+          timer = setTimeout(() => {
+            setLineIdx(prev => prev + 1)
+          }, 160)
+        } else {
+          setPhase('pause')
+        }
       }
-    } else {
-      if (displayText.length > 0) {
+    } else if (phase === 'pause') {
+      timer = setTimeout(() => {
+        setPhase('deleting')
+      }, 7500)
+    } else if (phase === 'deleting') {
+      const currentLen = charCounts[lineIdx]
+
+      if (currentLen > 0) {
         timer = setTimeout(() => {
-          setDisplayText(currentPhrase.substring(0, displayText.length - 1))
-        }, 20)
+          setCharCounts(prev => {
+            const next = [...prev]
+            next[lineIdx] = Math.max(0, currentLen - 2)
+            return next
+          })
+        }, 12)
       } else {
-        setIsDeleting(false)
-        setPhraseIdx((prev) => (prev + 1) % phrases.length)
+        if (lineIdx > 0) {
+          setLineIdx(prev => prev - 1)
+        } else {
+          setSeqIdx(prev => (prev + 1) % sequences.length)
+          setLineIdx(0)
+          setCharCounts([0, 0, 0, 0])
+          setPhase('typing')
+        }
       }
     }
 
     return () => clearTimeout(timer)
-  }, [displayText, isDeleting, phraseIdx])
+  }, [phase, lineIdx, charCounts, seqIdx])
 
   return (
-    <span className="text-[#3ECF8E] font-mono tracking-tight inline-block min-h-[3.6rem] sm:min-h-[4.2rem]">
-      {displayText}
-      <span className="inline-block w-2.5 h-6 sm:h-7 bg-[#3ECF8E] ml-1.5 translate-y-1 animate-pulse" />
-    </span>
+    <div className="space-y-3 sm:space-y-4 text-left select-none">
+      {/* Line 0: Tech Kicker (JetBrains Mono, emerald, uppercase) */}
+      <div className="min-h-[1.5rem] flex items-center">
+        <span className="font-mono text-xs sm:text-sm font-semibold tracking-[0.25em] text-[#3ECF8E] uppercase">
+          {currentLines[0].slice(0, charCounts[0])}
+        </span>
+        {((phase === 'typing' && lineIdx === 0) || (phase === 'deleting' && lineIdx === 0)) && (
+          <span className="inline-block w-2 h-3.5 bg-[#3ECF8E] ml-1.5 animate-pulse" />
+        )}
+      </div>
+
+      {/* Line 1: Hero Display Headline (Geist Sans, extra bold/black, large scale) */}
+      <div className="min-h-[4.2rem] sm:min-h-[6.2rem] flex items-center">
+        <h1 className="font-sans font-black text-3xl sm:text-5xl lg:text-[3.4rem] text-[#EDEDED] tracking-tight leading-[1.08]">
+          {currentLines[1].slice(0, charCounts[1])}
+          {((phase === 'typing' && lineIdx === 1) || (phase === 'deleting' && lineIdx === 1)) && (
+            <span className="inline-block w-2 sm:w-2.5 h-7 sm:h-10 bg-[#3ECF8E] ml-2 translate-y-1 animate-pulse" />
+          )}
+        </h1>
+      </div>
+
+      {/* Line 2: Editorial Vision Accent (Instrument Serif, italic, mint/soft emerald) */}
+      <div className="min-h-[2.2rem] sm:min-h-[2.8rem] flex items-center">
+        <p className="font-serif italic text-2xl sm:text-3xl lg:text-4xl text-emerald-200/90 font-normal leading-tight">
+          {currentLines[2].slice(0, charCounts[2])}
+          {((phase === 'typing' && lineIdx === 2) || (phase === 'deleting' && lineIdx === 2)) && (
+            <span className="inline-block w-2 sm:w-2.5 h-6 sm:h-7 bg-[#3ECF8E] ml-1.5 translate-y-0.5 animate-pulse" />
+          )}
+        </p>
+      </div>
+
+      {/* Line 3: Mission Narrative Body (Geist Regular, clean readable zinc) */}
+      <div className="min-h-[3.2rem] sm:min-h-[4.2rem] flex items-center">
+        <p className="font-sans text-xs sm:text-sm lg:text-base text-zinc-300/90 font-light leading-relaxed max-w-xl">
+          {currentLines[3].slice(0, charCounts[3])}
+          {((phase === 'typing' && lineIdx === 3) || (phase === 'deleting' && lineIdx === 3) || phase === 'pause') && (
+            <span className="inline-block w-1.5 sm:w-2 h-4 sm:h-5 bg-[#3ECF8E] ml-1.5 translate-y-0.5 animate-pulse" />
+          )}
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -155,79 +237,37 @@ export default function LoginScreen({ onLoginSuccess }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-8 py-10 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-8 py-10 pb-16 sm:pb-20 relative overflow-hidden">
       {/* Continuous Emerald Aurora Live Wallpaper */}
       <LiveWallpaper />
 
       <div className="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
-        {/* Left Column: Project Introduction & Animated Typewriter */}
+        {/* Left Column: Multiline Typographic Presentation directly on canvas */}
         <div className="lg:col-span-7 flex flex-col justify-center space-y-6 text-left py-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1c1c1c]/90 backdrop-blur-md border border-[#2e2e2e] text-[#3ECF8E] text-xs font-semibold shadow-sm w-fit">
-            <Building2 className="w-3.5 h-3.5 text-[#3ECF8E]" />
-            <span>NSS College of Engineering, Palakkad</span>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <EcoLoopLogo className="w-12 h-12 shrink-0" />
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-[#EDEDED] tracking-tight flex items-center gap-2">
-                  EcoLoop
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-[#3ECF8E]/15 border border-[#3ECF8E]/30 text-[#3ECF8E] font-mono font-medium">v2.0</span>
-                </h1>
-                <p className="text-xs sm:text-sm text-zinc-400 font-medium">
-                  University Circular Electronics &amp; E-Waste Reuse Platform
-                </p>
-              </div>
+          {/* Top Identity: App Name + Logo */}
+          <div className="flex items-center gap-3.5">
+            <EcoLoopLogo className="w-12 h-12 shrink-0 drop-shadow-[0_0_25px_rgba(62,207,142,0.45)]" />
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-black text-[#EDEDED] tracking-tight">
+                EcoLoop
+              </h1>
+              <p className="text-xs text-zinc-400 font-medium">
+                University Circular Electronics &amp; E-Waste Reuse Platform
+              </p>
             </div>
           </div>
 
-          {/* Typewriter Mission Statement Box */}
-          <div className="p-5 rounded-2xl bg-[#1c1c1c]/80 backdrop-blur-xl border border-[#2e2e2e] shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#3ECF8E]/5 rounded-full blur-2xl pointer-events-none" />
-            <div className="flex items-center gap-2 text-[11px] font-mono text-[#3ECF8E] uppercase tracking-wider mb-2 font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Campus Mission &amp; Purpose</span>
-            </div>
-            <div className="min-h-[56px] flex items-center">
-              <TypewriterText />
-            </div>
-          </div>
-
-          {/* Core Feature Highlights */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-            <div className="p-3.5 rounded-xl bg-[#1c1c1c]/60 backdrop-blur-md border border-[#282828] space-y-1.5">
-              <div className="w-7 h-7 rounded-lg bg-[#3ECF8E]/10 border border-[#3ECF8E]/20 flex items-center justify-center text-[#3ECF8E]">
-                <Package className="w-3.5 h-3.5" />
-              </div>
-              <h3 className="text-xs font-semibold text-zinc-200">Circular Exchange</h3>
-              <p className="text-[11px] text-zinc-400 leading-snug">Pass on microcontrollers, modules, and kits to campus peers safely.</p>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-[#1c1c1c]/60 backdrop-blur-md border border-[#282828] space-y-1.5">
-              <div className="w-7 h-7 rounded-lg bg-[#3ECF8E]/10 border border-[#3ECF8E]/20 flex items-center justify-center text-[#3ECF8E]">
-                <Sparkles className="w-3.5 h-3.5" />
-              </div>
-              <h3 className="text-xs font-semibold text-zinc-200">AI Waste Classifier</h3>
-              <p className="text-[11px] text-zinc-400 leading-snug">Gemini vision diagnostics to inspect components and salvage value.</p>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-[#1c1c1c]/60 backdrop-blur-md border border-[#282828] space-y-1.5">
-              <div className="w-7 h-7 rounded-lg bg-[#3ECF8E]/10 border border-[#3ECF8E]/20 flex items-center justify-center text-[#3ECF8E]">
-                <Wrench className="w-3.5 h-3.5" />
-              </div>
-              <h3 className="text-xs font-semibold text-zinc-200">Repair Before Replace</h3>
-              <p className="text-[11px] text-zinc-400 leading-snug">Log hardware tickets and collaborate with peer repair mentors.</p>
-            </div>
+          {/* Multiline Sequential Typewriter (Directly on screen canvas, NO box) */}
+          <div className="py-2">
+            <MultilineTypewriter />
           </div>
         </div>
 
         {/* Right Column: Login / Register Card */}
         <div className="lg:col-span-5 w-full">
           <div className="w-full bg-[#1c1c1c]/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-[#2e2e2e] overflow-hidden">
-            {/* Card Header with Pure Transparent EcoLoop Logo */}
+            {/* Card Header (Clean header without duplicate logo) */}
             <div className="bg-[#181818]/90 px-6 sm:px-8 pt-7 pb-5 text-center border-b border-[#2e2e2e]">
-              <EcoLoopLogo className="w-14 h-14 mx-auto mb-2.5" />
               <h2 className="text-xl font-bold text-[#EDEDED] tracking-tight">
                 {isRegistering ? 'Create Campus Account' : 'Welcome Back'}
               </h2>
@@ -486,9 +526,9 @@ export default function LoginScreen({ onLoginSuccess }) {
     </div>
   </div>
 
-      {/* Footer Info */}
-      <div className="mt-8 text-center text-xs text-zinc-500 max-w-sm relative z-10 font-mono">
-        <span>NSSCE Palakkad • 5 Engineering Branches • Built with Supabase</span>
+      {/* Bottom Center: Simple Institution Text (No Badging, Positioned Lower) */}
+      <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 text-center text-xs text-zinc-400/80 font-medium tracking-wider z-10 font-mono pointer-events-none">
+        NSS College of Engineering, Palakkad
       </div>
     </div>
   )

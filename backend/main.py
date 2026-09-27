@@ -91,6 +91,14 @@ def root():
         "version": "2.0.0"
     }
 
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "service": "ecoloop-backend",
+        "version": "2.0.0"
+    }
+
 @app.get("/api/departments")
 def get_departments():
     return DEPARTMENTS

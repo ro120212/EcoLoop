@@ -60,7 +60,7 @@ class GeminiService:
             return cached_result
 
         prompt = """
-        You are an expert waste classification and environmental engineer for a college campus e-waste recycling platform named EcoLoop.
+        You are an expert waste classification and environmental engineer for NSS College of Engineering's circular platform, EcoLoop.
         Analyze this image carefully and return a valid JSON object strictly matching this schema:
         {
             "category": "E-Waste" | "Metal" | "Plastic" | "Paper" | "Organic" | "Hazardous",
@@ -68,12 +68,22 @@ class GeminiService:
             "hazard_level": "Low" | "Medium" | "High",
             "hazard_reason": "Explanation of any toxicity (e.g. contains lead, battery puncture risk, cadmium)",
             "materials_detected": ["material1", "material2", "material3"],
-            "recommended_action": "Reuse" | "Repair" | "Recycle" | "Specialized Drop-off",
+            "recommended_action": "Reuse" | "Repair" | "Component Harvesting" | "Lab Salvage",
             "condition_estimate": "Functional" | "Repairable" | "Scrap / Non-functional",
             "estimated_weight_g": 150,
             "carbon_savings_if_diverted_kg": 2.5,
-            "campus_disposal_advice": "Clear, actionable steps for a student or lab tech on campus to safely handle and route this item."
+            "campus_disposal_advice": "Clear, actionable handling steps strictly adhering to NSSCE campus rules."
         }
+
+        STRICT CAMPUS RULES FOR 'campus_disposal_advice' AND 'recommended_action':
+        - CRITICAL: There are NO e-waste collection points, NO specialized drop-off bins, and NO bulk pick-up services on campus.
+        - NEVER tell the user to find an e-waste collection point, look for a drop-off bin, arrange a bulk pick-up, or contact external waste programs.
+        - ALL items must be routed strictly through the following 3 campus avenues:
+          1. Reuse: If functional, advise listing on the campus Circular Marketplace for peer student and lab projects.
+          2. Repair: If repairable, advise submitting a diagnosis ticket to the campus Repair Clinic for student or staff technician troubleshooting.
+          3. Component Harvesting / Lab Salvage: If scrap, non-functional, or hazardous, advise handing over directly to the department electronics/hardware lab staff to harvest salvageable parts (ICs, copper, connectors, passive components) or store safely.
+        - Keep advice concise, practical, and grounded in these real campus facilities.
+
         Respond with ONLY the JSON object, no markdown code fence blocks if possible.
         """
 
@@ -126,11 +136,11 @@ class GeminiService:
             "hazard_level": "Medium",
             "hazard_reason": "Electronic boards contain lead solder and flame retardant plastics that must not enter landfills.",
             "materials_detected": ["Copper", "Silicon", "FR4 Fiberglass", "ABS Plastic", "Tin Solder"],
-            "recommended_action": "Recycle",
+            "recommended_action": "Component Harvesting",
             "condition_estimate": "Scrap / Non-functional",
             "estimated_weight_g": 320,
             "carbon_savings_if_diverted_kg": 3.8,
-            "campus_disposal_advice": "Deposit in the Central E-Waste Bin at the CSE Department foyer. Disconnect any power sources or batteries before deposit.",
+            "campus_disposal_advice": "Hand over to the department electronics/hardware lab staff for component harvesting. Working ICs, heatsinks, and copper coils can be salvaged for peer student lab experiments.",
             "ai_powered": False,
             "cached": False,
             "note": "Using EcoLoop campus heuristic engine. Add your GEMINI_API_KEY in Settings to enable real-time Gemini Vision analysis."
