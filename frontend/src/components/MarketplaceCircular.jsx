@@ -22,6 +22,7 @@ import {
   Copy
 } from 'lucide-react'
 import { api } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const DEPARTMENTS = [
   'All',
@@ -34,6 +35,7 @@ const DEPARTMENTS = [
 ]
 
 export default function MarketplaceCircular({ user, onGoToPortfolio }) {
+  const toast = useToast()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedDept, setSelectedDept] = useState('All')
@@ -54,6 +56,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
       navigator.clipboard.writeText(String(pin))
     }
     setCopiedModalPin(true)
+    toast.info('PIN Copied to Clipboard!', `Show code "${pin}" to the seller at your meeting spot.`)
     setTimeout(() => setCopiedModalPin(false), 2000)
   }
 
@@ -167,9 +170,11 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         claimedComponent
       )
       setClaimingSuccess(res)
+      toast.success('Hardware Reserved!', `4-digit PIN generated for "${claimingItem.title}".`)
       await loadItems()
     } catch (err) {
       setClaimingError(err.message)
+      toast.error('Reservation Failed', err.message)
     } finally {
       setClaimingLoading(false)
     }
@@ -212,6 +217,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         seller_name: studentName,
         image_url: postForm.image_url || ''
       })
+      const savedTitle = postForm.title
       setShowPostModal(false)
       setImagePreview('')
       setPostForm({
@@ -225,9 +231,10 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         image_url: '',
         sub_components_list: ['Main Unit']
       })
+      toast.success('Hardware Listed for Campus Reuse!', `"${savedTitle}" is now live on the circular marketplace.`)
       await loadItems()
     } catch (err) {
-      alert('Error creating listing: ' + err.message)
+      toast.error('Listing Failed', err.message)
     } finally {
       setPostingLoading(false)
     }

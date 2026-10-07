@@ -11,6 +11,7 @@ import {
   AlertTriangle
 } from 'lucide-react'
 import { api } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const DEPARTMENT_LABS = {
   'Computer Science and Engineering': ['Hardware & Systems Lab', 'IoT & Embedded Lab', 'Networking Lab'],
@@ -22,6 +23,7 @@ const DEPARTMENT_LABS = {
 }
 
 export default function AIWasteClassifier({ user, onNavigateModule }) {
+  const toast = useToast()
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState('')
   const [loading, setLoading] = useState(false)
@@ -52,8 +54,10 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
       setActionSuccessMsg(null)
       const data = await api.classifyWaste(selectedFile)
       setResult(data)
+      toast.success('AI Vision Analysis Complete!', `Identified "${data.item_name || 'Component'}" with circular specs.`)
     } catch (err) {
       setError('Classification failed: ' + err.message)
+      toast.error('Scan Error', err.message)
     } finally {
       setLoading(false)
     }
@@ -129,8 +133,9 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
         actionText: 'View in Circular Marketplace',
         actionView: 'marketplace'
       })
+      toast.success('Added to Marketplace!', `"${result.item_name}" is now live for campus reuse.`)
     } catch (err) {
-      alert('Failed to post item: ' + err.message)
+      toast.error('Listing Error', err.message)
     } finally {
       setSubmittingAction(false)
     }
@@ -167,8 +172,9 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
         actionText: 'Track Ticket in Repair Clinic',
         actionView: 'repair'
       })
+      toast.success('Repair Ticket Created!', `Logged "${result.item_name}" to the public repair triage platform.`)
     } catch (err) {
-      alert('Failed to submit ticket: ' + err.message)
+      toast.error('Ticket Error', err.message)
     } finally {
       setSubmittingAction(false)
     }

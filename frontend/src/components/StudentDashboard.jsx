@@ -26,6 +26,7 @@ import {
   Copy
 } from 'lucide-react'
 import { api } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const DEPARTMENTS = [
   'Computer Science and Engineering',
@@ -37,6 +38,7 @@ const DEPARTMENTS = [
 ]
 
 export default function StudentDashboard({ user, onNavigate, initialTab = 'seller', onTabChange }) {
+  const toast = useToast()
   const [portfolio, setPortfolio] = useState({ my_listings: [], my_claims: [], total_co2_saved_kg: 0, items_diverted_count: 0 })
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTabState] = useState(initialTab || 'seller') // 'seller' | 'buyer'
@@ -53,6 +55,7 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
       navigator.clipboard.writeText(String(pin))
     }
     setCopiedPin(prev => ({ ...prev, [itemId]: true }))
+    toast.info('Pickup PIN Copied!', `Show code "${pin}" to the seller at your meeting spot.`)
     setTimeout(() => {
       setCopiedPin(prev => ({ ...prev, [itemId]: false }))
     }, 2000)
@@ -174,10 +177,13 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
     try {
       setVerifyingId(itemId)
       const res = await api.verifyHandoffPin(itemId, pin)
+      const co2 = res.co2_saved_kg || 8.5
       setVerifyMsg({ ...verifyMsg, [itemId]: { success: true, text: res.message || 'Handoff verified successfully! Status updated to Sold.' } })
+      toast.celebrate('Physical Handoff Verified! 🎉', `Status updated to Sold. +${co2} kg CO₂e offset credited to your profile!`)
       await loadPortfolio()
     } catch (err) {
       setVerifyMsg({ ...verifyMsg, [itemId]: { success: false, text: err.message } })
+      toast.error('PIN Verification Failed', err.message)
     } finally {
       setVerifyingId(null)
     }
@@ -208,6 +214,7 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
         image_url: newItemForm.image_url || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=60'
       })
 
+      const listedTitle = newItemForm.title
       setShowListModal(false)
       setImagePreview('')
       setNewItemForm({
@@ -222,11 +229,12 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
         sub_component_input: 'Main Unit, Connection Cables',
         carbon_saved_kg: 6.5
       })
+      toast.success('Listing Published!', `"${listedTitle}" is now live on your profile and circular marketplace.`)
       await loadPortfolio()
       setActiveTab('seller')
       setSellerStatusFilter('available')
     } catch (err) {
-      alert('Error creating listing: ' + err.message)
+      toast.error('Listing Error', err.message)
     } finally {
       setSubmittingItem(false)
     }

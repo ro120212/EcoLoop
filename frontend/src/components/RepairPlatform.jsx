@@ -18,6 +18,7 @@ import {
   Lightbulb
 } from 'lucide-react'
 import { api } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const DEPARTMENTS = [
   'Computer Science and Engineering',
@@ -38,6 +39,7 @@ const DEPARTMENT_LABS = {
 }
 
 export default function RepairPlatform({ user }) {
+  const toast = useToast()
   const studentId = user?.id || (user?.email ? user.email : 'student')
   const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Student')
   const defaultDept = user?.user_metadata?.department || 'Computer Science and Engineering'
@@ -115,8 +117,9 @@ export default function RepairPlatform({ user }) {
       setDiagnosing(true)
       const data = await api.diagnoseRepair(deviceName, symptom, category)
       setDiagnosis(data)
+      toast.success('AI Diagnostic Protocol Generated!', `Troubleshooting guide ready for "${deviceName}".`)
     } catch (err) {
-      alert('Diagnosis error: ' + err.message)
+      toast.error('Diagnosis Error', err.message)
     } finally {
       setDiagnosing(false)
     }
@@ -139,11 +142,12 @@ export default function RepairPlatform({ user }) {
   const handleManualSubmit = async (e) => {
     e.preventDefault()
     if (!manualForm.device_name.trim() || !manualForm.symptom.trim()) {
-      alert('Please enter both device name and problem description.')
+      toast.error('Missing Information', 'Please enter both device name and problem description.')
       return
     }
     try {
       setSubmittingTicket(true)
+      const devName = manualForm.device_name.trim()
       await api.createRepairTicket({
         ...manualForm,
         user_id: studentId,
@@ -154,9 +158,10 @@ export default function RepairPlatform({ user }) {
         tools_needed: 'Workbench tools / multimeter / soldering iron'
       })
       setShowManualModal(false)
+      toast.success('Repair Request Published!', `"${devName}" is now open for campus peer assistance.`)
       await loadTickets()
     } catch (err) {
-      alert('Error creating ticket: ' + err.message)
+      toast.error('Failed to Create Ticket', err.message)
     } finally {
       setSubmittingTicket(false)
     }
@@ -167,6 +172,7 @@ export default function RepairPlatform({ user }) {
     e.preventDefault()
     try {
       setSubmittingTicket(true)
+      const devName = ticketForm.device_name || deviceName
       await api.createRepairTicket({
         ...ticketForm,
         user_id: studentId,
@@ -177,9 +183,10 @@ export default function RepairPlatform({ user }) {
         tools_needed: diagnosis?.tools_and_materials_needed?.join(', ') || ''
       })
       setShowApprovalModal(false)
+      toast.success('Community Repair Ticket Created!', `AI troubleshooting steps for "${devName}" are now live.`)
       await loadTickets()
     } catch (err) {
-      alert('Error saving ticket: ' + err.message)
+      toast.error('Failed to Save Ticket', err.message)
     } finally {
       setSubmittingTicket(false)
     }
@@ -191,15 +198,17 @@ export default function RepairPlatform({ user }) {
     if (!resolvingTicket) return
     try {
       setSubmittingResolve(true)
+      const devName = resolvingTicket.device_name
       await api.resolveRepairTicket(resolvingTicket.id, {
         faculty_decision: resolveForm.outcome,
         faculty_notes: resolveForm.notes || 'Repaired through peer collaboration on campus.',
         resolved_by: resolveForm.helper_name || studentName || 'NSSCE Peer Helper'
       })
       setResolvingTicket(null)
+      toast.celebrate('Repair Solved & Logged! 🛠️', `"${devName}" saved from e-waste (+8.5kg CO₂e offset logged).`)
       await loadTickets()
     } catch (err) {
-      alert('Error resolving ticket: ' + err.message)
+      toast.error('Resolution Error', err.message)
     } finally {
       setSubmittingResolve(false)
     }

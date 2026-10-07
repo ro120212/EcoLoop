@@ -13,8 +13,10 @@ import LiveWallpaper from './components/LiveWallpaper'
 import EcoLoopLogo from './components/EcoLoopLogo'
 import { RefreshCw } from 'lucide-react'
 import CustomCursor from './components/CustomCursor'
+import { useToast } from './context/ToastContext'
 
 export default function App() {
+  const toast = useToast()
   const [user, setUser] = useState(null)
   const [activeView, setActiveView] = useState('student_hub')
   const [dashboardTab, setDashboardTab] = useState('seller')
@@ -73,17 +75,21 @@ export default function App() {
     setUser(null)
     setActiveView('student_hub')
     setDomainError('')
+    toast.info('Signed Out', 'You have been signed out of EcoLoop.')
   }
 
   const handleLoginSuccess = (authenticatedUser) => {
     setUser(authenticatedUser)
     setActiveView('student_hub')
     setDomainError('')
+    const name = authenticatedUser?.user_metadata?.full_name || authenticatedUser?.email?.split('@')[0] || 'Student'
+    toast.success('Welcome to EcoLoop!', `Logged in as ${name}.`)
   }
 
   const handleOnboardingComplete = (updatedUser) => {
     setUser(updatedUser)
     setActiveView('student_hub')
+    toast.success('Profile Setup Complete!', 'Welcome to the NSSCE Circular Campus.')
   }
 
   // Initial session check spinner
