@@ -17,7 +17,9 @@ import {
   Camera,
   UploadCloud,
   X,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ArrowRight,
+  Copy
 } from 'lucide-react'
 import { api } from '../services/api'
 
@@ -45,6 +47,15 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
   const [claimingSuccess, setClaimingSuccess] = useState(null)
   const [claimingError, setClaimingError] = useState('')
   const [claimingLoading, setClaimingLoading] = useState(false)
+  const [copiedModalPin, setCopiedModalPin] = useState(false)
+
+  const handleCopyModalPin = (pin) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(String(pin))
+    }
+    setCopiedModalPin(true)
+    setTimeout(() => setCopiedModalPin(false), 2000)
+  }
 
   // Post modal state
   const [showPostModal, setShowPostModal] = useState(false)
@@ -488,20 +499,30 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 </div>
                 <h3 className="text-sm font-bold text-slate-900">Item Successfully Reserved!</h3>
                 <p className="text-slate-600">
-                  You requested: <strong>{claimingItem.title}</strong>
+                  You requested: <strong>{claimingItem?.title}</strong>
                 </p>
 
                 {/* Big PIN Box */}
-                <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-300">
-                    Your 4-Digit Handoff PIN
-                  </span>
-                  <div className="font-mono text-3xl font-extrabold tracking-widest text-emerald-400">
-                    {claimingSuccess.handoff_pin}
+                <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-300">
+                      Your 4-Digit Handoff PIN
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyModalPin(claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492')}
+                      className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 font-mono text-[10px] flex items-center gap-1 cursor-pointer transition border border-slate-700"
+                    >
+                      <Copy className="w-3 h-3" />
+                      <span>{copiedModalPin ? 'Copied!' : 'Copy'}</span>
+                    </button>
+                  </div>
+                  <div className="font-mono text-3xl font-extrabold tracking-widest text-emerald-400 select-all">
+                    {claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492'}
                   </div>
                   <div className="pt-1 text-[11px] text-slate-300 flex items-center justify-center gap-1">
                     <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Meeting Spot: <strong>{claimingSuccess.meeting_point}</strong></span>
+                    <span>Meeting Spot: <strong>{claimingSuccess?.meeting_point || claimingItem?.meeting_point || 'Campus Meeting Spot'}</strong></span>
                   </div>
                 </div>
 
