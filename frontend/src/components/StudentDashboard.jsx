@@ -28,9 +28,10 @@ import { api } from '../services/api'
 
 const DEPARTMENTS = [
   'Computer Science and Engineering',
+  'Electronics and Communication Engineering',
+  'Electrical and Electronics Engineering',
   'Mechanical Engineering',
   'Civil Engineering',
-  'Electrical and Electronics Engineering',
   'Instrumentation and Control Engineering'
 ]
 

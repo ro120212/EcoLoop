@@ -19,9 +19,10 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "ecoloop_local.db")
 
 DEPARTMENTS = [
     "Computer Science and Engineering",
+    "Electronics and Communication Engineering",
+    "Electrical and Electronics Engineering",
     "Mechanical Engineering",
     "Civil Engineering",
-    "Electrical and Electronics Engineering",
     "Instrumentation and Control Engineering"
 ]
 
@@ -758,8 +759,8 @@ class DatabaseManager:
                     f"Adopted by department lab for cannibalization: {notes}"
                 ))
 
-            # Option 1: Repaired & Returned -> Log extended lifespan carbon credit
-            if decision == "repaired_returned":
+            # Option 1: Repaired & Returned / Peer Repaired -> Log extended lifespan carbon credit
+            if decision in ["repaired_returned", "peer_repaired"]:
                 co2 = 8.5
                 trees = round(co2 / 21.77, 1)
                 try:

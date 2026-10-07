@@ -3,36 +3,24 @@ import {
   Sparkles, 
   ShoppingBag, 
   Wrench, 
-  BarChart3, 
   LogOut,
-  Package
+  GraduationCap
 } from 'lucide-react'
-
 import EcoLoopLogo from './EcoLoopLogo'
 
 export default function Navbar({ 
-  currentRole, 
   activeView, 
   setActiveView, 
   user, 
   onLogout 
 }) {
-  const getRoleBadge = (role) => {
-    if (role === 'lab_staff') {
-      return { label: '🔬 Faculty / Lab In-Charge', bg: 'bg-blue-500/10 text-blue-300 border-blue-500/30' }
-    }
-    return { label: '🎓 Student Account', bg: 'bg-[#3ECF8E]/10 text-[#3ECF8E] border-[#3ECF8E]/30' }
-  }
-
-  const roleInfo = getRoleBadge(currentRole)
-
   return (
     <header className="sticky top-0 z-40 bg-[#121212]/90 backdrop-blur-md border-b border-[#2e2e2e]">
       {/* Main Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
         <div 
           className="flex items-center gap-3 cursor-pointer select-none group" 
-          onClick={() => setActiveView(currentRole === 'student' ? 'student_hub' : 'lab_staff_hub')}
+          onClick={() => setActiveView('student_hub')}
         >
           <EcoLoopLogo className="w-9 h-9 transition-transform group-hover:scale-110" />
           <div>
@@ -46,22 +34,26 @@ export default function Navbar({
           </div>
         </div>
 
-        {/* Global Controls */}
+        {/* Global User Info & Sign Out */}
         <div className="flex items-center gap-2 sm:gap-3">
           {user && (
             <div className="flex items-center gap-3 pl-2 sm:pl-3 border-l border-[#2e2e2e]">
               <div className="hidden sm:block text-right">
                 <p className="text-xs font-semibold text-[#EDEDED] leading-tight">
-                  {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
+                  {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Student'}
                 </p>
-                <span className="text-[10px] capitalize px-1.5 py-0.5 rounded bg-[#232323] text-zinc-400 font-mono border border-[#2e2e2e]">
-                  {currentRole.replace('_', ' ')}
-                </span>
+                <div className="flex items-center justify-end gap-1 mt-0.5">
+                  <span className="text-[10px] text-[#3ECF8E] font-mono font-medium">
+                    {user.user_metadata?.department ? user.user_metadata.department.split(' ')[0] : 'NSSCE'}
+                  </span>
+                  <span className="text-[10px] text-zinc-500">•</span>
+                  <span className="text-[10px] text-zinc-400 font-mono">Peer Member</span>
+                </div>
               </div>
               <button
                 onClick={onLogout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-semibold transition"
-                title="Sign out of Supabase"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-semibold transition cursor-pointer"
+                title="Sign out of EcoLoop"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Sign Out</span>
@@ -78,104 +70,53 @@ export default function Navbar({
           aria-label="Module Navigation"
           className="inline-flex items-center gap-1 p-1 rounded-full bg-[#1c1c1c]/90 backdrop-blur-md border border-[#2e2e2e] shadow-lg shadow-black/40 max-w-full overflow-x-auto no-scrollbar"
         >
-          {/* STUDENT TABS */}
-          {currentRole === 'student' && (
-            <>
-              <button
-                onClick={() => setActiveView('student_hub')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'student_hub' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <span>🎓 Student Dashboard &amp; PINs</span>
-              </button>
-              <button
-                onClick={() => setActiveView('marketplace')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'marketplace' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <ShoppingBag className={`w-3.5 h-3.5 ${activeView === 'marketplace' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-                <span>Browse Marketplace &amp; Split Parts</span>
-              </button>
-              <button
-                onClick={() => setActiveView('ai_scanner')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'ai_scanner' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-                <span>AI Component Scanner</span>
-              </button>
-              <button
-                onClick={() => setActiveView('repair')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'repair' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-                <span>Repair Before Replace</span>
-              </button>
-            </>
-          )}
+          <button
+            onClick={() => setActiveView('student_hub')}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeView === 'student_hub' 
+                ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
+                : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
+            }`}
+          >
+            <GraduationCap className={`w-3.5 h-3.5 ${activeView === 'student_hub' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
+            <span>Student Dashboard &amp; PINs</span>
+          </button>
 
-          {/* LAB STAFF TABS */}
-          {currentRole === 'lab_staff' && (
-            <>
-              <button
-                onClick={() => setActiveView('lab_staff_hub')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'lab_staff_hub' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <BarChart3 className={`w-3.5 h-3.5 ${activeView === 'lab_staff_hub' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-                <span>🔬 Department Operations &amp; Audits</span>
-              </button>
-              <button
-                onClick={() => setActiveView('repair')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'repair' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-                <span>Repair Triage &amp; Helpdesk</span>
-              </button>
-              <button
-                onClick={() => setActiveView('marketplace')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'marketplace' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <Package className={`w-3.5 h-3.5 ${activeView === 'marketplace' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-                <span>Release Hardware to Students</span>
-              </button>
-              <button
-                onClick={() => setActiveView('ai_scanner')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeView === 'ai_scanner' 
-                    ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
-                    : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
-                }`}
-              >
-                <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-                <span>AI Component Scanner</span>
-              </button>
-            </>
-          )}
+          <button
+            onClick={() => setActiveView('marketplace')}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeView === 'marketplace' 
+                ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
+                : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
+            }`}
+          >
+            <ShoppingBag className={`w-3.5 h-3.5 ${activeView === 'marketplace' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
+            <span>Browse Marketplace &amp; Split Parts</span>
+          </button>
+
+          <button
+            onClick={() => setActiveView('ai_scanner')}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeView === 'ai_scanner' 
+                ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
+                : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
+            }`}
+          >
+            <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
+            <span>AI Component Scanner</span>
+          </button>
+
+          <button
+            onClick={() => setActiveView('repair')}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeView === 'repair' 
+                ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
+                : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
+            }`}
+          >
+            <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
+            <span>Community Peer Repair</span>
+          </button>
         </nav>
       </div>
     </header>

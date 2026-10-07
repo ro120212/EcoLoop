@@ -26,7 +26,7 @@ function MultilineTypewriter() {
       kicker: "// ZERO LANDFILL ENGINEERING IN ACTION",
       headline: "Repair First. Replace Never.",
       editorial: "Where discarded components find second lives.",
-      narrative: "Equipping the next generation of engineers with AI-powered diagnostics and peer repair mentorship across all 5 engineering branches."
+      narrative: "Equipping the next generation of engineers with AI-powered diagnostics and peer repair mentorship across all 6 engineering departments."
     },
     {
       kicker: "// INTELLIGENT HARDWARE SALVAGE",
@@ -148,7 +148,7 @@ function MultilineTypewriter() {
   )
 }
 
-export default function LoginScreen({ onLoginSuccess }) {
+export default function LoginScreen({ onLoginSuccess, externalError }) {
   const [isRegistering, setIsRegistering] = useState(false)
   
   // Login Form
@@ -157,7 +157,13 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
+  const [errorMsg, setErrorMsg] = useState(externalError || '')
+
+  useEffect(() => {
+    if (externalError) {
+      setErrorMsg(externalError)
+    }
+  }, [externalError])
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true)
@@ -174,9 +180,7 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [regFullName, setRegFullName] = useState('')
   const [regEmail, setRegEmail] = useState('')
   const [regPassword, setRegPassword] = useState('')
-  const [regRole, setRegRole] = useState('student')
   const [regDepartment, setRegDepartment] = useState('Computer Science and Engineering')
-  const [regStaffPasscode, setRegStaffPasscode] = useState('')
   const [regSuccessMsg, setRegSuccessMsg] = useState('')
 
   // Handle Login
@@ -207,8 +211,9 @@ export default function LoginScreen({ onLoginSuccess }) {
       return
     }
 
-    if (regRole !== 'student' && !regStaffPasscode.trim()) {
-      setErrorMsg('Department staff verification passcode is required for Faculty / Lab Staff accounts.')
+    const cleanEmail = regEmail.trim().toLowerCase()
+    if (!cleanEmail.endsWith('@nssce.ac.in') && cleanEmail !== 'student@ecoloop.nssce.ac.in') {
+      setErrorMsg('Access restricted: Only official NSS College of Engineering accounts (@nssce.ac.in) are permitted to register.')
       return
     }
 
@@ -217,18 +222,16 @@ export default function LoginScreen({ onLoginSuccess }) {
     setRegSuccessMsg('')
     try {
       await authService.signUp({
-        email: regEmail.trim(),
+        email: cleanEmail,
         password: regPassword,
-        role: regRole,
+        role: 'student',
         fullName: regFullName.trim(),
-        department: regDepartment,
-        staffPasscode: regStaffPasscode
+        department: regDepartment
       })
       setRegSuccessMsg('Registration successful! You can now log in using your campus credentials.')
       setIsRegistering(false)
-      setIdentifier(regEmail.trim())
+      setIdentifier(cleanEmail)
       setPassword(regPassword)
-      setRegStaffPasscode('')
     } catch (err) {
       setErrorMsg(err.message || 'Registration failed. Please check inputs.')
     } finally {
@@ -441,66 +444,28 @@ export default function LoginScreen({ onLoginSuccess }) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Role</label>
-                  <select
-                    value={regRole}
-                    onChange={(e) => setRegRole(e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] text-xs focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
-                  >
-                    <option value="student">Student</option>
-                    <option value="lab_staff">Faculty / Lab Staff</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Department</label>
-                  <select
-                    value={regDepartment}
-                    onChange={(e) => setRegDepartment(e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] text-xs focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
-                  >
-                    <option value="Computer Science and Engineering">CSE</option>
-                    <option value="Mechanical Engineering">Mechanical</option>
-                    <option value="Civil Engineering">Civil</option>
-                    <option value="Electrical and Electronics Engineering">EEE</option>
-                    <option value="Instrumentation and Control Engineering">IC</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Department / Branch</label>
+                <select
+                  value={regDepartment}
+                  onChange={(e) => setRegDepartment(e.target.value)}
+                  className="w-full px-2.5 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] text-xs focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none cursor-pointer"
+                >
+                  <option value="Computer Science and Engineering">Computer Science &amp; Engineering (CSE)</option>
+                  <option value="Electronics and Communication Engineering">Electronics &amp; Communication (ECE)</option>
+                  <option value="Electrical and Electronics Engineering">Electrical &amp; Electronics (EEE)</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering (ME)</option>
+                  <option value="Civil Engineering">Civil Engineering (CE)</option>
+                  <option value="Instrumentation and Control Engineering">Instrumentation &amp; Control (ICE)</option>
+                </select>
               </div>
-
-              {/* Department Verification Passcode for Faculty and Admin accounts */}
-              {regRole !== 'student' && (
-                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                      <Key className="w-3.5 h-3.5 text-amber-400" />
-                      {regRole === 'lab_staff' ? 'Faculty Staff Verification Passcode *' : 'Administrator Security Passcode *'}
-                    </label>
-                    <span className="text-[10px] font-mono text-amber-300 font-bold bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30">
-                      Verification Key Required
-                    </span>
-                  </div>
-                  <input
-                    type="password"
-                    value={regStaffPasscode}
-                    onChange={(e) => setRegStaffPasscode(e.target.value)}
-                    required
-                    placeholder="Enter staff passcode"
-                    className="w-full px-3 py-2 rounded-xl border border-amber-500/40 bg-[#141414] text-[#EDEDED] text-xs font-mono tracking-wider focus:ring-1 focus:ring-amber-400 focus:outline-none"
-                  />
-                  <p className="text-[11px] text-amber-300/80 leading-tight">
-                    🔒 Restricted: Prevents students from self-assigning faculty or lab triage privileges.
-                  </p>
-                </div>
-              )}
 
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Creating Supabase Account...' : 'Complete Registration'}
+                {loading ? 'Creating Campus Account...' : 'Complete Registration'}
               </button>
             </form>
           )}

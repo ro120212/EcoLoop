@@ -1,5 +1,11 @@
 import { supabase } from './supabaseClient'
 
+export const isNssceEmail = (email) => {
+  if (!email) return false
+  const clean = email.trim().toLowerCase()
+  return clean.endsWith('@nssce.ac.in') || clean === 'student@ecoloop.nssce.ac.in' || clean === 'student'
+}
+
 export const PRESET_ACCOUNTS = {
   student: {
     username: 'student',
@@ -8,50 +14,35 @@ export const PRESET_ACCOUNTS = {
     role: 'student',
     full_name: 'Rahul M (S6 CSE)',
     department: 'Computer Science and Engineering',
-    description: 'Student Hub: Peer-to-peer hardware reuse, project parts, repair tickets'
-  },
-  faculty: {
-    username: 'faculty',
-    email: 'faculty@ecoloop.nssce.ac.in',
-    password: 'faculty@123',
-    role: 'lab_staff',
-    full_name: 'Prof. Haridasan K (Lab In-Charge)',
-    department: 'Computer Science and Engineering',
-    description: 'Faculty / Lab Staff: Department workshop helpdesk, audit triage, scrap adoption'
+    description: 'NSSCE Student Hub: Peer-to-peer hardware reuse, project parts, public repair clinic'
   }
 }
 
 export const mapUsernameToEmail = (usernameOrEmail) => {
   const clean = (usernameOrEmail || '').trim().toLowerCase()
   if (clean === 'student') return PRESET_ACCOUNTS.student.email
-  if (clean === 'faculty' || clean === 'lab_staff' || clean === 'staff' || clean === 'admin') return PRESET_ACCOUNTS.faculty.email
   if (clean.includes('@')) return clean
-  return `${clean}@ecoloop.nssce.ac.in`
+  return `${clean}@nssce.ac.in`
 }
 
-export const getUserRole = (user) => {
-  if (!user) return 'student'
-  const metaRole = user.user_metadata?.role
-  if (metaRole === 'lab_staff' || metaRole === 'faculty') return 'lab_staff'
-  if (metaRole === 'admin') return 'lab_staff' // Admin consolidated into faculty / developer control
-  const email = (user.email || '').toLowerCase()
-  if (email.startsWith('faculty') || email.includes('staff') || email.includes('lab') || email.startsWith('admin')) return 'lab_staff'
+export const getUserRole = (_user) => {
   return 'student'
 }
 
 export const isProfileComplete = (user) => {
   if (!user) return false
-  return Boolean(user.user_metadata?.role)
-}
-
-export const STAFF_PASSCODES = {
-  lab_staff: 'NSSCE-LAB-2026'
+  return Boolean(user.user_metadata?.department)
 }
 
 export const authService = {
   async signIn(usernameOrEmail, password) {
     const email = mapUsernameToEmail(usernameOrEmail)
     const cleanUser = (usernameOrEmail || '').trim().toLowerCase()
+
+    // Enforce NSSCE domain check
+    if (!isNssceEmail(email)) {
+      throw new Error('Access restricted: Only NSS College of Engineering accounts (@nssce.ac.in) are permitted.')
+    }
 
     // Try standard Supabase authentication
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -60,24 +51,21 @@ export const authService = {
     })
 
     if (!error && data?.user) {
-      return { user: data.user, session: data.session, role: getUserRole(data.user) }
+      return { user: data.user, session: data.session, role: 'student' }
     }
 
     // If account doesn't exist yet in this Supabase instance and matches preset, auto-register it
     if (error && (error.message.includes('Invalid login credentials') || error.message.includes('User not found'))) {
-      const presetKey = cleanUser === 'student' || email === PRESET_ACCOUNTS.student.email ? 'student'
-        : cleanUser === 'faculty' || email === PRESET_ACCOUNTS.faculty.email ? 'faculty'
-        : cleanUser === 'admin' || email === PRESET_ACCOUNTS.admin.email ? 'admin'
-        : null
+      const isStudentPreset = cleanUser === 'student' || email === PRESET_ACCOUNTS.student.email
 
-      if (presetKey) {
-        const preset = PRESET_ACCOUNTS[presetKey]
+      if (isStudentPreset) {
+        const preset = PRESET_ACCOUNTS.student
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: preset.email,
           password: preset.password,
           options: {
             data: {
-              role: preset.role,
+              role: 'student',
               full_name: preset.full_name,
               department: preset.department
             }
@@ -86,7 +74,7 @@ export const authService = {
 
         if (!signUpError && signUpData?.user) {
           if (signUpData.session) {
-            return { user: signUpData.user, session: signUpData.session, role: preset.role }
+            return { user: signUpData.user, session: signUpData.session, role: 'student' }
           }
           // Retry sign in after registration
           const retry = await supabase.auth.signInWithPassword({
@@ -94,54 +82,45 @@ export const authService = {
             password: preset.password
           })
           if (!retry.error && retry.data?.user) {
-            return { user: retry.data.user, session: retry.data.session, role: preset.role }
+            return { user: retry.data.user, session: retry.data.session, role: 'student' }
           }
         }
       }
     }
 
     // Local fallback for offline / mock testing if Supabase network fails
-    const presetKey = cleanUser === 'student' || email === PRESET_ACCOUNTS.student.email ? 'student'
-      : cleanUser === 'faculty' || email === PRESET_ACCOUNTS.faculty.email ? 'faculty'
-      : cleanUser === 'admin' || email === PRESET_ACCOUNTS.admin.email ? 'admin'
-      : null
-
-    if (presetKey && PRESET_ACCOUNTS[presetKey].password === password) {
-      const preset = PRESET_ACCOUNTS[presetKey]
-      const mockUser = {
-        id: `user-${presetKey}`,
-        email: preset.email,
-        user_metadata: {
-          role: preset.role,
-          full_name: preset.full_name,
-          department: preset.department
+    if (cleanUser === 'student' || email === PRESET_ACCOUNTS.student.email) {
+      if (PRESET_ACCOUNTS.student.password === password) {
+        const preset = PRESET_ACCOUNTS.student
+        const mockUser = {
+          id: 'user-student',
+          email: preset.email,
+          user_metadata: {
+            role: 'student',
+            full_name: preset.full_name,
+            department: preset.department
+          }
         }
+        return { user: mockUser, session: null, role: 'student' }
       }
-      return { user: mockUser, session: null, role: preset.role }
     }
 
     throw new Error(error?.message || 'Invalid username or password')
   },
 
-  async signUp({ email, password, role, fullName, department, staffPasscode }) {
-    // Security verification: Block students from registering with faculty/admin privileges
-    if (role === 'lab_staff') {
-      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.lab_staff) {
-        throw new Error('Invalid Faculty / Lab Staff Passcode. Contact your Department Lab In-Charge.')
-      }
-    } else if (role === 'admin') {
-      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.admin) {
-        throw new Error('Invalid Administrator Passcode. Authorization denied.')
-      }
+  async signUp({ email, password, fullName, department }) {
+    const cleanEmail = (email || '').trim().toLowerCase()
+    if (!isNssceEmail(cleanEmail)) {
+      throw new Error('Access restricted: Registration is exclusively for NSSCE students with @nssce.ac.in email addresses.')
     }
 
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: cleanEmail,
       password,
       options: {
         data: {
-          role: role || 'student',
-          full_name: fullName || email.split('@')[0],
+          role: 'student',
+          full_name: fullName || cleanEmail.split('@')[0],
           department: department || 'Computer Science and Engineering'
         }
       }
@@ -162,20 +141,10 @@ export const authService = {
     return data
   },
 
-  async completeOnboarding({ role, department, fullName, staffPasscode }) {
-    if (role === 'lab_staff') {
-      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.lab_staff) {
-        throw new Error('Invalid Faculty / Lab Staff Passcode. Contact your Department Lab In-Charge.')
-      }
-    } else if (role === 'admin') {
-      if ((staffPasscode || '').trim().toUpperCase() !== STAFF_PASSCODES.admin) {
-        throw new Error('Invalid Administrator Passcode. Authorization denied.')
-      }
-    }
-
+  async completeOnboarding({ department, fullName }) {
     const { data, error } = await supabase.auth.updateUser({
       data: {
-        role: role || 'student',
+        role: 'student',
         department: department || 'Computer Science and Engineering',
         full_name: fullName,
         onboarded: true

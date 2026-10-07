@@ -3,25 +3,23 @@ import Navbar from './components/Navbar'
 import LoginScreen from './components/LoginScreen'
 import OnboardingModal from './components/OnboardingModal'
 import StudentDashboard from './components/StudentDashboard'
-import LabStaffDashboard from './components/LabStaffDashboard'
 import MarketplaceCircular from './components/MarketplaceCircular'
 import AIWasteClassifier from './components/AIWasteClassifier'
 import RepairPlatform from './components/RepairPlatform'
 import { api } from './services/api'
 import { supabase } from './services/supabaseClient'
-import { getUserRole, authService } from './services/authService'
+import { isNssceEmail, authService } from './services/authService'
 import LiveWallpaper from './components/LiveWallpaper'
 import EcoLoopLogo from './components/EcoLoopLogo'
 import { RefreshCw } from 'lucide-react'
-
 import CustomCursor from './components/CustomCursor'
 
 export default function App() {
   const [user, setUser] = useState(null)
-  const [currentRole, setCurrentRole] = useState('student') // 'student' | 'lab_staff'
   const [activeView, setActiveView] = useState('student_hub')
   const [stats, setStats] = useState(null)
   const [loadingSession, setLoadingSession] = useState(true)
+  const [domainError, setDomainError] = useState('')
 
   // Fetch global metrics
   const fetchStats = async () => {
@@ -33,37 +31,37 @@ export default function App() {
     }
   }
 
-  // Set role and default view based on authenticated user
-  const syncUserRole = (authenticatedUser) => {
+  // Verify domain and sync authenticated user
+  const syncUser = async (authenticatedUser) => {
     if (!authenticatedUser) {
       setUser(null)
-      setCurrentRole('student')
       return
     }
 
-    setUser(authenticatedUser)
-    const detectedRole = getUserRole(authenticatedUser)
-    setCurrentRole(detectedRole)
-
-    if (detectedRole === 'lab_staff') {
-      setActiveView('lab_staff_hub')
-    } else {
-      setActiveView('student_hub')
+    const email = authenticatedUser.email || ''
+    if (!isNssceEmail(email)) {
+      await authService.signOut()
+      setUser(null)
+      setDomainError('Access Denied: EcoLoop is strictly restricted to NSS College of Engineering accounts. Please sign in with your official @nssce.ac.in Google email.')
+      return
     }
+
+    setDomainError('')
+    setUser(authenticatedUser)
   }
 
   // Load user session from Supabase on mount
   useEffect(() => {
     fetchStats()
     supabase.auth.getSession().then(({ data: { session } }) => {
-      syncUserRole(session?.user ?? null)
+      syncUser(session?.user ?? null)
       setLoadingSession(false)
     }).catch(() => {
       setLoadingSession(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      syncUserRole(session?.user ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      await syncUser(session?.user ?? null)
     })
 
     return () => subscription.unsubscribe()
@@ -72,23 +70,19 @@ export default function App() {
   const handleLogout = async () => {
     await authService.signOut()
     setUser(null)
-    setCurrentRole('student')
     setActiveView('student_hub')
+    setDomainError('')
   }
 
-  const handleLoginSuccess = (authenticatedUser, role) => {
+  const handleLoginSuccess = (authenticatedUser) => {
     setUser(authenticatedUser)
-    const assignedRole = role || getUserRole(authenticatedUser)
-    setCurrentRole(assignedRole)
-    if (assignedRole === 'lab_staff') setActiveView('lab_staff_hub')
-    else setActiveView('student_hub')
+    setActiveView('student_hub')
+    setDomainError('')
   }
 
-  const handleOnboardingComplete = (updatedUser, role) => {
+  const handleOnboardingComplete = (updatedUser) => {
     setUser(updatedUser)
-    setCurrentRole(role)
-    if (role === 'lab_staff') setActiveView('lab_staff_hub')
-    else setActiveView('student_hub')
+    setActiveView('student_hub')
   }
 
   // Initial session check spinner
@@ -109,13 +103,16 @@ export default function App() {
     return (
       <>
         <CustomCursor />
-        <LoginScreen onLoginSuccess={handleLoginSuccess} />
+        <LoginScreen 
+          onLoginSuccess={handleLoginSuccess} 
+          externalError={domainError}
+        />
       </>
     )
   }
 
-  // If logged in via Google OAuth but role/department metadata not yet completed
-  if (!user.user_metadata?.role) {
+  // If logged in via Google OAuth but department metadata not yet completed
+  if (!user.user_metadata?.department) {
     return (
       <>
         <CustomCursor />
@@ -139,7 +136,6 @@ export default function App() {
       {/* Top Navigation */}
       <div className="relative z-40">
         <Navbar
-          currentRole={currentRole}
           activeView={activeView}
           setActiveView={setActiveView}
           user={user}
@@ -149,7 +145,7 @@ export default function App() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
-        {/* STUDENT ROLE HUB */}
+        {/* STUDENT HUB (DASHBOARD, LISTINGS, PIN HANDOFFS) */}
         {activeView === 'student_hub' && (
           <StudentDashboard 
             user={user} 
@@ -157,21 +153,11 @@ export default function App() {
           />
         )}
 
-        {/* LAB STAFF ROLE HUB */}
-        {activeView === 'lab_staff_hub' && (
-          <LabStaffDashboard 
-            onNavigateToMarketplace={() => setActiveView('marketplace')} 
-          />
-        )}
-
         {/* CIRCULAR MARKETPLACE & COMPONENT SPLITTING */}
         {activeView === 'marketplace' && (
           <MarketplaceCircular 
             user={user} 
-            onGoToPortfolio={() => {
-              if (currentRole === 'student') setActiveView('student_hub')
-              else setActiveView('lab_staff_hub')
-            }} 
+            onGoToPortfolio={() => setActiveView('student_hub')} 
           />
         )}
 
@@ -183,7 +169,7 @@ export default function App() {
           />
         )}
 
-        {/* REPAIR BEFORE REPLACE PLATFORM */}
+        {/* PUBLIC PEER REPAIR PLATFORM */}
         {activeView === 'repair' && (
           <RepairPlatform user={user} />
         )}
@@ -198,6 +184,9 @@ export default function App() {
               <span className="font-semibold text-[#EDEDED] block tracking-tight">EcoLoop Circular Campus Platform</span>
               <span className="text-[11px] text-zinc-500">NSS College of Engineering, Palakkad</span>
             </div>
+          </div>
+          <div className="text-right">
+            <span className="text-[11px] text-[#3ECF8E] font-mono font-semibold">Peer-to-Peer Zero Landfill Campus</span>
           </div>
         </div>
       </footer>

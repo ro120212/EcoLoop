@@ -24,9 +24,10 @@ import { api } from '../services/api'
 const DEPARTMENTS = [
   'All',
   'Computer Science and Engineering',
+  'Electronics and Communication Engineering',
+  'Electrical and Electronics Engineering',
   'Mechanical Engineering',
   'Civil Engineering',
-  'Electrical and Electronics Engineering',
   'Instrumentation and Control Engineering'
 ]
 
@@ -603,9 +604,10 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                     className="w-full px-3 py-2 rounded-xl border border-slate-200"
                   >
                     <option value="Computer Science and Engineering">CSE</option>
+                    <option value="Electronics and Communication Engineering">ECE</option>
+                    <option value="Electrical and Electronics Engineering">EEE</option>
                     <option value="Mechanical Engineering">Mechanical</option>
                     <option value="Civil Engineering">Civil</option>
-                    <option value="Electrical and Electronics Engineering">EEE</option>
                     <option value="Instrumentation and Control Engineering">Instrumentation (IC)</option>
                   </select>
                 </div>
