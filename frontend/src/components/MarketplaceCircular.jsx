@@ -428,6 +428,24 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                     >
                       Claim / Buy for Project
                     </button>
+                  ) : item.status === 'reserved' && (item.buyer_id === studentId || item.buyer_name === studentName) ? (
+                    <button
+                      onClick={() => {
+                        setClaimingItem(item)
+                        setClaimedComponent(item.claimed_component || 'All')
+                        setClaimingSuccess({
+                          item_id: item.id,
+                          handoff_pin: item.handoff_pin || 'Pending',
+                          meeting_point: item.meeting_point || 'Campus Meeting Point',
+                          claimed_component: item.claimed_component || 'All'
+                        })
+                        setClaimingError('')
+                      }}
+                      className="w-full py-2 rounded-xl bg-[#3ECF8E]/20 text-[#3ECF8E] border border-[#3ECF8E]/40 text-center font-semibold text-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-[#3ECF8E]/30 transition"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Reserved by You • View PIN</span>
+                    </button>
                   ) : (
                     <div className="w-full py-2 rounded-xl bg-slate-100 text-slate-500 text-center font-semibold text-xs flex items-center justify-center gap-1.5">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />

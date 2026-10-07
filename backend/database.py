@@ -422,19 +422,82 @@ class DatabaseManager:
 
         if self.supabase:
             try:
-                self.supabase.table("circular_items").update({
-                    "status": "reserved",
-                    "buyer_id": buyer_id,
-                    "buyer_name": buyer_name,
-                    "meeting_point": meeting_point,
-                    "handoff_pin": pin,
-                    "claimed_component": claimed_component
-                }).eq("id", item_id).execute()
+                res = self.supabase.table("circular_items").select("*").eq("id", item_id).execute()
+                if res.data and len(res.data) > 0:
+                    item = res.data[0]
+                    # Check if already reserved
+                    if item.get("status") == "reserved":
+                        # If already reserved by this same student, return their existing PIN successfully
+                        if item.get("buyer_id") == buyer_id or item.get("buyer_name") == buyer_name:
+                            return {
+                                "status": "success",
+                                "item_id": item_id,
+                                "handoff_pin": item.get("handoff_pin") or pin,
+                                "meeting_point": item.get("meeting_point") or meeting_point,
+                                "claimed_component": item.get("claimed_component") or claimed_component
+                            }
+                        return {"status": "error", "message": "Item already reserved by another student."}
+                    elif item.get("status") == "handoff_completed":
+                        return {"status": "error", "message": "Item already completed."}
+
+                    # Update status to reserved in Supabase
+                    self.supabase.table("circular_items").update({
+                        "status": "reserved",
+                        "buyer_id": buyer_id,
+                        "buyer_name": buyer_name,
+                        "meeting_point": meeting_point,
+                        "handoff_pin": pin,
+                        "claimed_component": claimed_component
+                    }).eq("id", item_id).execute()
+
+                    # Best-effort mirror to SQLite if row exists
+                    try:
+                        with self.get_sqlite() as conn:
+                            cursor = conn.cursor()
+                            cursor.execute("""
+                                UPDATE circular_items
+                                SET status = 'reserved',
+                                    buyer_id = ?,
+                                    buyer_name = ?,
+                                    meeting_point = ?,
+                                    handoff_pin = ?,
+                                    claimed_component = ?
+                                WHERE id = ?
+                            """, (buyer_id, buyer_name, meeting_point, pin, claimed_component, item_id))
+                            conn.commit()
+                    except Exception:
+                        pass
+
+                    return {
+                        "status": "success",
+                        "item_id": item_id,
+                        "handoff_pin": pin,
+                        "meeting_point": meeting_point,
+                        "claimed_component": claimed_component
+                    }
             except Exception as e:
                 print(f"Notice: Supabase claim sync: {e}")
 
+        # Local SQLite fallback
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
+            cursor.execute("SELECT * FROM circular_items WHERE id = ?", (item_id,))
+            row = cursor.fetchone()
+            if row:
+                item = dict(row)
+                if item.get("status") == "reserved":
+                    if item.get("buyer_id") == buyer_id or item.get("buyer_name") == buyer_name:
+                        return {
+                            "status": "success",
+                            "item_id": item_id,
+                            "handoff_pin": item.get("handoff_pin") or pin,
+                            "meeting_point": item.get("meeting_point") or meeting_point,
+                            "claimed_component": item.get("claimed_component") or claimed_component
+                        }
+                    return {"status": "error", "message": "Item already reserved by another student."}
+                elif item.get("status") == "handoff_completed":
+                    return {"status": "error", "message": "Item already completed."}
+
             cursor.execute("""
                 UPDATE circular_items
                 SET status = 'reserved',
@@ -459,6 +522,58 @@ class DatabaseManager:
 
     def verify_handoff_pin(self, item_id: str, entered_pin: str) -> Dict[str, Any]:
         """Seller enters the buyer's PIN to complete the handoff and log carbon credits."""
+        now_iso = datetime.datetime.utcnow().isoformat()
+
+        if self.supabase:
+            try:
+                res = self.supabase.table("circular_items").select("*").eq("id", item_id).execute()
+                if res.data and len(res.data) > 0:
+                    item = res.data[0]
+                    if item.get("status") == "handoff_completed":
+                        return {"status": "error", "message": "Handoff already completed."}
+                    
+                    if str(item.get("handoff_pin")).strip() != str(entered_pin).strip():
+                        return {"status": "error", "message": "Incorrect PIN. Please re-check with buyer."}
+                    
+                    co2 = float(item.get("carbon_saved_kg") or 8.5)
+                    trees = round(co2 / 21.77, 1)
+
+                    self.supabase.table("circular_items").update({
+                        "status": "handoff_completed",
+                        "completed_at": now_iso
+                    }).eq("id", item_id).execute()
+
+                    try:
+                        self.supabase.table("impact_logs").insert({
+                            "id": str(uuid.uuid4()),
+                            "user_id": item.get("buyer_id") or item.get("seller_id"),
+                            "user_name": item.get("buyer_name") or item.get("seller_name"),
+                            "item_title": item.get("title", "Hardware Item"),
+                            "item_summary": item.get("title", "Hardware Item"),
+                            "co2_saved_kg": co2,
+                            "trees_equivalent": trees
+                        }).execute()
+                    except Exception as e:
+                        print(f"Notice: Supabase impact log sync: {e}")
+
+                    # Best-effort mirror to SQLite
+                    try:
+                        with self.get_sqlite() as conn:
+                            cursor = conn.cursor()
+                            cursor.execute("UPDATE circular_items SET status = 'handoff_completed', completed_at = ? WHERE id = ?", (now_iso, item_id))
+                            conn.commit()
+                    except Exception:
+                        pass
+
+                    return {
+                        "status": "success",
+                        "message": "Handoff verified successfully! Lifespan extended.",
+                        "co2_saved_kg": co2
+                    }
+            except Exception as e:
+                print(f"Notice: Supabase verify sync: {e}")
+
+        # Local SQLite fallback
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM circular_items WHERE id = ?", (item_id,))
@@ -473,31 +588,15 @@ class DatabaseManager:
             if str(item.get("handoff_pin")).strip() != str(entered_pin).strip():
                 return {"status": "error", "message": "Incorrect PIN. Please re-check with buyer."}
             
-            now_iso = datetime.datetime.utcnow().isoformat()
+            co2 = float(item.get("carbon_saved_kg") or 8.5)
+            trees = round(co2 / 21.77, 1)
+
             cursor.execute("""
                 UPDATE circular_items
                 SET status = 'handoff_completed',
                     completed_at = ?
                 WHERE id = ?
             """, (now_iso, item_id))
-
-            if self.supabase:
-                try:
-                    self.supabase.table("circular_items").update({
-                        "status": "handoff_completed",
-                        "completed_at": now_iso
-                    }).eq("id", item_id).execute()
-
-                    self.supabase.table("impact_logs").insert({
-                        "user_id": item.get("buyer_id"),
-                        "user_name": item.get("buyer_name"),
-                        "item_title": item.get("title"),
-                        "item_summary": item.get("title", "Hardware Item"),
-                        "co2_saved_kg": co2,
-                        "trees_equivalent": trees
-                    }).execute()
-                except Exception as e:
-                    print(f"Notice: Supabase verify sync: {e}")
 
             conn.commit()
             return {
@@ -508,6 +607,26 @@ class DatabaseManager:
 
     def get_user_portfolio(self, user_id: str) -> Dict[str, Any]:
         """Returns student's active listings, incoming claims, and claimed components."""
+        if self.supabase:
+            try:
+                list_res = self.supabase.table("circular_items").select("*").eq("seller_id", user_id).order("created_at", desc=True).execute()
+                my_listings = list_res.data or []
+
+                claim_res = self.supabase.table("circular_items").select("*").eq("buyer_id", user_id).order("created_at", desc=True).execute()
+                my_claims = claim_res.data or []
+
+                total_co2 = sum(float(r.get("carbon_saved_kg") or 0) for r in my_listings if r.get("status") == "handoff_completed")
+                total_co2 += sum(float(r.get("carbon_saved_kg") or 0) for r in my_claims if r.get("status") == "handoff_completed")
+
+                return {
+                    "my_listings": my_listings,
+                    "my_claims": my_claims,
+                    "total_co2_saved_kg": round(total_co2, 1),
+                    "items_diverted_count": len([r for r in my_listings if r.get("status") == "handoff_completed"]) + len([r for r in my_claims if r.get("status") == "handoff_completed"])
+                }
+            except Exception as e:
+                print(f"Notice: Supabase portfolio query error: {e}")
+
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
             # Items listed by this student
@@ -620,6 +739,28 @@ class DatabaseManager:
 
     # --- Global Platform Metrics ---
     def get_global_metrics(self) -> Dict[str, Any]:
+        if self.supabase:
+            try:
+                active_res = self.supabase.table("circular_items").select("id", count="exact").eq("status", "available").execute()
+                active_listings = active_res.count if active_res.count is not None else 0
+
+                comp_res = self.supabase.table("circular_items").select("carbon_saved_kg").eq("status", "handoff_completed").execute()
+                completed_count = len(comp_res.data) if comp_res.data else 0
+                co2_sum = sum(float(r.get("carbon_saved_kg") or 0) for r in (comp_res.data or []))
+                co2_saved = round(co2_sum + 120.5, 1)
+                trees = round(co2_saved / 21.77, 1)
+
+                return {
+                    "active_listings_count": active_listings,
+                    "reused_devices_count": completed_count + 18,
+                    "co2_saved_kg": co2_saved,
+                    "trees_equivalent": trees,
+                    "audited_labs_count": 6,
+                    "departments": DEPARTMENTS
+                }
+            except Exception as e:
+                print(f"Notice: Supabase global metrics query: {e}")
+
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM circular_items WHERE status = 'available'")
