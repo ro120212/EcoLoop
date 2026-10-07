@@ -23,7 +23,7 @@ function MultilineTypewriter() {
       narrative: "A circular exchange ecosystem empowering engineering students and faculty to trade microcontrollers, diagnose hardware with AI, and restore before replacing."
     },
     {
-      kicker: "// ZERO LANDFILL ENGINEERING IN ACTION",
+      kicker: "// HARDWARE REPAIR & REUSE",
       headline: "Repair First. Replace Never.",
       editorial: "Where discarded components find second lives.",
       narrative: "Equipping the next generation of engineers with AI-powered diagnostics and peer repair mentorship across all 6 engineering departments."

@@ -375,9 +375,9 @@ export default function LabStaffDashboard({ onNavigateToMarketplace }) {
                             </p>
                           )}
                           <div className="text-[10px] font-semibold pt-1 opacity-80">
-                            {ticket.faculty_decision === 'repaired_returned' && 'Carbon Benefit: +8.5 kg CO₂e lifespan extension offset.'}
-                            {ticket.faculty_decision === 'unrepairable_parts_advised' && 'Circular Recommendation: Student advised to post working modules on Marketplace.'}
-                            {ticket.faculty_decision === 'lab_cannibalized' && 'Inventory Update: Unit transferred to department hardware stockpile for cannibalization.'}
+                            {ticket.faculty_decision === 'repaired_returned' && 'Resolution: Repaired and returned to student.'}
+                            {ticket.faculty_decision === 'unrepairable_parts_advised' && 'Recommendation: Student advised to post working parts on Marketplace.'}
+                            {ticket.faculty_decision === 'lab_cannibalized' && 'Inventory Update: Unit transferred to department hardware stockpile.'}
                           </div>
                         </div>
                       )}

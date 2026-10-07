@@ -192,13 +192,13 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
             <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-[#EDEDED]">Smart AI Waste &amp; Component Classifier</h1>
+            <h1 className="text-xl font-bold text-[#EDEDED]">Scanner</h1>
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 font-mono">
-              AI Vision Classifier
+              Vision
             </span>
           </div>
           <p className="text-xs text-zinc-400 mt-1">
-            Identify e-waste materials, component specifications, toxicity hazards, and recovery routes instantly with automated AI vision.
+            Scan hardware to identify components, specifications, and potential hazards.
           </p>
         </div>
       </div>
@@ -231,7 +231,7 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
           <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-[#2e2e2e] shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-[#EDEDED] flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#3ECF8E]" />
-              <span>Scan or Upload E-Waste Item</span>
+              <span>Scan or Upload Item</span>
             </h3>
 
             <div className="border-2 border-dashed border-[#2e2e2e] hover:border-[#3ECF8E]/50 rounded-2xl p-6 text-center transition bg-[#141414]">
@@ -270,12 +270,12 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                 {loading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin text-[#121212]" />
-                    <span>Analyzing image...</span>
+                    <span>Analyzing...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    <span>Classify Waste &amp; Materials</span>
+                    <span>Scan Item</span>
                   </>
                 )}
               </button>
@@ -294,7 +294,7 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
               <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-mono">
-                    Automated Multimodal AI Analysis
+                    AI Analysis
                   </span>
                   <h3 className="text-base font-bold text-[#EDEDED] mt-0.5">{result.item_name}</h3>
                 </div>
@@ -302,7 +302,7 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                 <div className="flex items-center gap-2">
                   {result.cached && (
                     <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 font-mono">
-                      ⚡ Instant Cache Hit
+                      ⚡ Instant
                     </span>
                   )}
                   <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#232323] text-zinc-300 border border-[#2e2e2e]">
@@ -345,7 +345,6 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                     <CheckCircle2 className="w-4 h-4" />
                     Recommended Route: {result.recommended_action}
                   </strong>
-                  <span className="font-mono text-xs text-[#3ECF8E]">Est. {result.carbon_savings_if_diverted_kg} kg CO₂</span>
                 </div>
                 <p className="text-zinc-300 text-[11px] leading-relaxed">
                   {result.campus_disposal_advice}
@@ -359,14 +358,14 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                   className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-2 cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
                 >
                   <ShoppingBag className="w-4 h-4" />
-                  <span>List on Circular Marketplace</span>
+                  <span>List Item</span>
                 </button>
                 <button
                   onClick={() => setShowTicketModal(true)}
                   className="px-4 py-2.5 rounded-xl bg-[#232323] border border-[#2e2e2e] hover:bg-[#282828] text-[#EDEDED] font-semibold text-xs transition flex items-center gap-2 cursor-pointer"
                 >
                   <Wrench className="w-4 h-4 text-[#3ECF8E]" />
-                  <span>Diagnose in Repair Clinic</span>
+                  <span>Request Repair</span>
                 </button>
               </div>
             </div>
@@ -384,8 +383,8 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                   <ShoppingBag className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-[#EDEDED]">Approve Marketplace Listing</h2>
-                  <p className="text-xs text-zinc-400">All AI-extracted details are pre-filled below</p>
+                  <h2 className="text-base font-bold text-[#EDEDED]">List Item</h2>
+                  <p className="text-xs text-zinc-400">Review details before publishing to marketplace</p>
                 </div>
               </div>
               <button 
@@ -422,20 +421,20 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                 </div>
                 <div>
                   <span className="text-zinc-500 font-mono text-[10px] block">Price:</span>
-                  <span className="text-[#3ECF8E] font-semibold">🎁 Free Campus Gift</span>
-                </div>
-                <div>
-                  <span className="text-zinc-500 font-mono text-[10px] block">Carbon Diverted:</span>
-                  <span className="text-[#3ECF8E] font-semibold font-mono">+{result.carbon_savings_if_diverted_kg} kg CO₂</span>
+                  <span className="text-[#3ECF8E] font-semibold">Free</span>
                 </div>
                 <div>
                   <span className="text-zinc-500 font-mono text-[10px] block">Components:</span>
-                  <span className="text-zinc-300 font-semibold">{result.materials_detected?.length || 0} harvestable parts</span>
+                  <span className="text-zinc-300 font-semibold">{result.materials_detected?.length || 0} parts detected</span>
+                </div>
+                <div>
+                  <span className="text-zinc-500 font-mono text-[10px] block">Hazard:</span>
+                  <span className="text-zinc-300 font-semibold">{result.hazard_level || 'Low'}</span>
                 </div>
               </div>
 
               <div>
-                <span className="text-zinc-500 font-mono text-[10px] block mb-1">Listing Description:</span>
+                <span className="text-zinc-500 font-mono text-[10px] block mb-1">Description:</span>
                 <p className="p-2 rounded-xl bg-[#181818] border border-[#2e2e2e] text-zinc-300 text-[11px] leading-relaxed">
                   {result.campus_disposal_advice}
                 </p>
@@ -443,7 +442,7 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
             </div>
 
             <p className="text-[11px] text-zinc-400">
-              Only your approval is required. By approving, this item will immediately go live on the Circular Marketplace for student and lab reuse.
+              By confirming, this item will immediately be listed on the marketplace.
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-1">
@@ -461,7 +460,7 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                 className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>{submittingAction ? 'Publishing...' : 'Approve & Post to Marketplace'}</span>
+                <span>{submittingAction ? 'Listing...' : 'Confirm & List'}</span>
               </button>
             </div>
           </div>
@@ -478,8 +477,8 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                   <Wrench className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-[#EDEDED]">Approve Repair Helpdesk Ticket</h2>
-                  <p className="text-xs text-zinc-400">Pre-filled diagnosis ready to route to department lab</p>
+                  <h2 className="text-base font-bold text-[#EDEDED]">Repair Request</h2>
+                  <p className="text-xs text-zinc-400">Review diagnosis before submitting to repair board</p>
                 </div>
               </div>
               <button 
@@ -505,15 +504,15 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                 <span className="font-bold text-amber-300 font-mono">{result.hazard_level || 'Low'} Hazard</span>
               </div>
               <div>
-                <span className="text-zinc-400 font-mono text-[11px] block mb-1">Reported Malfunction / Reason:</span>
+                <span className="text-zinc-400 font-mono text-[11px] block mb-1">Issue / Symptom:</span>
                 <p className="p-2 rounded-xl bg-[#181818] border border-[#2e2e2e] text-zinc-300 text-xs">
-                  {result.hazard_reason || 'Equipment diagnosed by AI scanner requiring faculty workbench evaluation.'}
+                  {result.hazard_reason || 'Hardware malfunction requiring workshop evaluation.'}
                 </p>
               </div>
             </div>
 
             <p className="text-[11px] text-zinc-400">
-              Only your approval is required. By approving, this ticket will be submitted directly to the {studentDept.split(' ')[0]} laboratory workshop.
+              By confirming, this request will be submitted to the campus repair board.
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-1">
@@ -531,7 +530,7 @@ export default function AIWasteClassifier({ user, onNavigateModule }) {
                 className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>{submittingAction ? 'Submitting...' : 'Approve & Submit Repair Ticket'}</span>
+                <span>{submittingAction ? 'Submitting...' : 'Confirm & Submit'}</span>
               </button>
             </div>
           </div>

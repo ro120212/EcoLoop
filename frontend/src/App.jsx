@@ -198,7 +198,7 @@ export default function App() {
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[11px] text-[#3ECF8E] font-mono font-semibold">Peer-to-Peer Zero Landfill Campus</span>
+            <span className="text-[11px] text-zinc-500 font-mono">NSS College of Engineering</span>
           </div>
         </div>
       </footer>

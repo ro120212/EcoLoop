@@ -27,10 +27,10 @@ export default function Navbar({
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold tracking-tight text-[#EDEDED] group-hover:text-white transition">EcoLoop</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25">
-                Circular Campus
+                NSSCE
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400">Peer-to-Peer E-Waste Reuse &amp; Component Exchange</p>
+            <p className="text-[11px] text-zinc-400">Hardware &amp; Component Exchange</p>
           </div>
         </div>
 
@@ -47,13 +47,13 @@ export default function Navbar({
                     {user.user_metadata?.department ? user.user_metadata.department.split(' ')[0] : 'NSSCE'}
                   </span>
                   <span className="text-[10px] text-zinc-500">•</span>
-                  <span className="text-[10px] text-zinc-400 font-mono">Peer Member</span>
+                  <span className="text-[10px] text-zinc-400 font-mono">Student</span>
                 </div>
               </div>
               <button
                 onClick={onLogout}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-semibold transition cursor-pointer"
-                title="Sign out of EcoLoop"
+                title="Sign out"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Sign Out</span>
@@ -79,7 +79,7 @@ export default function Navbar({
             }`}
           >
             <GraduationCap className={`w-3.5 h-3.5 ${activeView === 'student_hub' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-            <span>Student Dashboard &amp; PINs</span>
+            <span>Dashboard</span>
           </button>
 
           <button
@@ -91,7 +91,7 @@ export default function Navbar({
             }`}
           >
             <ShoppingBag className={`w-3.5 h-3.5 ${activeView === 'marketplace' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-            <span>Browse Marketplace &amp; Split Parts</span>
+            <span>Marketplace</span>
           </button>
 
           <button
@@ -103,7 +103,7 @@ export default function Navbar({
             }`}
           >
             <Sparkles className={`w-3.5 h-3.5 ${activeView === 'ai_scanner' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-            <span>AI Component Scanner</span>
+            <span>Scanner</span>
           </button>
 
           <button
@@ -115,7 +115,7 @@ export default function Navbar({
             }`}
           >
             <Wrench className={`w-3.5 h-3.5 ${activeView === 'repair' ? 'text-[#121212]' : 'text-[#3ECF8E]'}`} />
-            <span>Community Peer Repair</span>
+            <span>Repairs</span>
           </button>
         </nav>
       </div>

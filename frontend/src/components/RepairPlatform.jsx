@@ -183,7 +183,7 @@ export default function RepairPlatform({ user }) {
         tools_needed: diagnosis?.tools_and_materials_needed?.join(', ') || ''
       })
       setShowApprovalModal(false)
-      toast.success('Community Repair Ticket Created!', `AI troubleshooting steps for "${devName}" are now live.`)
+      toast.success('Repair Request Created', `Troubleshooting steps for "${devName}" are now live.`)
       await loadTickets()
     } catch (err) {
       toast.error('Failed to Save Ticket', err.message)
@@ -205,7 +205,7 @@ export default function RepairPlatform({ user }) {
         resolved_by: resolveForm.helper_name || studentName || 'NSSCE Peer Helper'
       })
       setResolvingTicket(null)
-      toast.celebrate('Repair Solved & Logged! 🛠️', `"${devName}" saved from e-waste (+8.5kg CO₂e offset logged).`)
+      toast.celebrate('Repair Resolved!', `"${devName}" has been successfully marked as fixed.`)
       await loadTickets()
     } catch (err) {
       toast.error('Resolution Error', err.message)
@@ -256,13 +256,13 @@ export default function RepairPlatform({ user }) {
             <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
               <Wrench className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-[#EDEDED]">Community Peer Repair Platform</h1>
+            <h1 className="text-xl font-bold text-[#EDEDED]">Repairs</h1>
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 font-mono">
-              Public NSSCE Clinic
+              Campus Clinic
             </span>
           </div>
           <p className="text-xs text-zinc-400 mt-1 max-w-2xl">
-            A collaborative repair café for all 6 NSSCE engineering departments. Inspect faulty equipment with AI, request peer help, or lend your diagnostic expertise to fix hardware before replacing it.
+            Troubleshoot faulty devices with AI assistance or ask fellow students for repair help.
           </p>
         </div>
 
@@ -271,7 +271,7 @@ export default function RepairPlatform({ user }) {
           className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-md shadow-[#3ECF8E]/20 transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Post Repair Request</span>
+          <span>+ New Request</span>
         </button>
       </div>
 
@@ -282,46 +282,46 @@ export default function RepairPlatform({ user }) {
           <div className="bg-[#1c1c1c] p-6 rounded-3xl border border-[#2e2e2e] shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-[#EDEDED] flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#3ECF8E]" />
-              <span>AI Fault Diagnostic Assistant</span>
+              <span>Diagnostics</span>
             </h3>
 
             <form onSubmit={handleDiagnose} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">Faulty Device Name *</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Device Name *</label>
                 <input
                   type="text"
                   value={deviceName}
                   onChange={(e) => setDeviceName(e.target.value)}
-                  placeholder="e.g. Logitech MX Master Mouse, Arduino Mega, Soldering Iron"
+                  placeholder="e.g. Logitech Mouse, Arduino Mega, Soldering Iron"
                   className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] placeholder-zinc-500 focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">Device Category</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none cursor-pointer"
                 >
-                  <option value="Peripherals & Input">Peripherals &amp; Input (Keyboards, Mice)</option>
-                  <option value="Microcontrollers & Embedded">Microcontrollers &amp; Embedded (Arduino, ESP32, Pi)</option>
-                  <option value="Laptops & Computers">Laptops, PCs &amp; Motherboards</option>
+                  <option value="Peripherals & Input">Peripherals &amp; Input</option>
+                  <option value="Microcontrollers & Embedded">Microcontrollers &amp; Embedded</option>
+                  <option value="Laptops & Computers">Laptops &amp; PCs</option>
                   <option value="Power Supplies & Adapters">Power Supplies &amp; Adapters</option>
                   <option value="Sensors & Transducers">Sensors &amp; Transducers</option>
                   <option value="Displays & Monitors">Displays &amp; Monitors</option>
-                  <option value="Audio & Microphones">Audio, Headphones &amp; Microphones</option>
+                  <option value="Audio & Microphones">Audio &amp; Microphones</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">Describe Malfunction / Symptoms *</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Symptoms / Issue *</label>
                 <textarea
                   rows="3"
                   value={symptom}
                   onChange={(e) => setSymptom(e.target.value)}
-                  placeholder="e.g. Left button double-clicks erratically; status LED blinks red twice then turns off"
+                  placeholder="e.g. Double clicks erratically, LED blinks red then shuts off"
                   className="w-full px-3 py-2 rounded-xl border border-[#2e2e2e] bg-[#141414] text-[#EDEDED] placeholder-zinc-500 focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] focus:outline-none"
                   required
                 ></textarea>
@@ -335,12 +335,12 @@ export default function RepairPlatform({ user }) {
                 {diagnosing ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin text-[#121212]" />
-                    <span>Analyzing Circuitry &amp; Faults...</span>
+                    <span>Analyzing...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 text-[#121212]" />
-                    <span>Generate AI Diagnostic Protocol</span>
+                    <span>Run Diagnostics</span>
                   </>
                 )}
               </button>
@@ -355,7 +355,7 @@ export default function RepairPlatform({ user }) {
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25">
-                    DIAGNOSTIC PROTOCOL GENERATED
+                    DIAGNOSTIC PROTOCOL
                   </span>
                   <h3 className="text-base font-bold text-[#EDEDED] mt-1">{deviceName}</h3>
                 </div>
@@ -369,7 +369,7 @@ export default function RepairPlatform({ user }) {
 
               {/* Likely Root Causes */}
               <div className="p-3 rounded-2xl bg-[#141414] border border-[#2e2e2e] space-y-1">
-                <span className="text-[11px] font-bold text-zinc-300 block">Identified Root Causes:</span>
+                <span className="text-[11px] font-bold text-zinc-300 block">Root Causes:</span>
                 <ul className="list-disc pl-4 text-xs text-zinc-400 space-y-0.5">
                   {diagnosis.likely_root_causes?.map((cause, idx) => (
                     <li key={idx}>{cause}</li>
@@ -379,7 +379,7 @@ export default function RepairPlatform({ user }) {
 
               {/* Step-by-Step Troubleshooting */}
               <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                <span className="text-[11px] font-bold text-zinc-300 block">Step-by-Step Protocol:</span>
+                <span className="text-[11px] font-bold text-zinc-300 block">Steps:</span>
                 {diagnosis.step_by_step_troubleshooting?.map((step, idx) => (
                   <div key={idx} className="p-2.5 rounded-xl bg-[#181818] border border-[#2e2e2e] text-xs">
                     <span className="font-semibold text-[#3ECF8E]">Step {step.step}: {step.title}</span>
@@ -405,7 +405,7 @@ export default function RepairPlatform({ user }) {
                   }}
                   className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-md shadow-[#3ECF8E]/20 transition cursor-pointer"
                 >
-                  Publish to Community Board
+                  Post Request
                 </button>
               </div>
             </div>
@@ -414,9 +414,9 @@ export default function RepairPlatform({ user }) {
               <div className="w-12 h-12 rounded-2xl bg-[#232323] text-[#3ECF8E] border border-[#2e2e2e] flex items-center justify-center shadow-sm">
                 <Wrench className="w-6 h-6" />
               </div>
-              <h3 className="text-sm font-bold text-[#EDEDED]">Ready for Diagnostics &amp; Peer Collaboration</h3>
+              <h3 className="text-sm font-bold text-[#EDEDED]">Ready for Diagnostics</h3>
               <p className="text-xs text-zinc-400 max-w-sm">
-                Enter your device and symptom on the left. The AI diagnostic engine will generate a step-by-step DIY guide and allow you to publish it to fellow NSSCE student fixers.
+                Enter your device name and symptoms on the left to generate diagnostic steps or post for help.
               </p>
             </div>
           )}
@@ -429,13 +429,13 @@ export default function RepairPlatform({ user }) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#2e2e2e] pb-5">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-[#EDEDED]">Campus Hardware Repair Tickets</h3>
+              <h3 className="text-base font-bold text-[#EDEDED]">Repair Requests</h3>
               <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25">
                 {filteredTickets.length} Requests
               </span>
             </div>
             <p className="text-xs text-zinc-400 mt-0.5">
-              Browse hardware repair requests from fellow engineering students across all NSSCE departments
+              Browse requests from students across campus.
             </p>
           </div>
 
@@ -450,7 +450,7 @@ export default function RepairPlatform({ user }) {
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span>Public Community Feed</span>
+              <span>All Requests</span>
             </button>
             <button
               onClick={() => setActiveTab('my_requests')}
@@ -461,7 +461,7 @@ export default function RepairPlatform({ user }) {
               }`}
             >
               <User className="w-3.5 h-3.5" />
-              <span>My Submitted Requests</span>
+              <span>My Requests</span>
             </button>
           </div>
         </div>
@@ -487,7 +487,7 @@ export default function RepairPlatform({ user }) {
               onChange={(e) => setSelectedDept(e.target.value)}
               className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] cursor-pointer"
             >
-              <option value="All">All 6 Departments</option>
+              <option value="All">All Departments</option>
               {DEPARTMENTS.map(d => (
                 <option key={d} value={d}>{d}</option>
               ))}
@@ -501,9 +501,9 @@ export default function RepairPlatform({ user }) {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] cursor-pointer"
             >
-              <option value="all">All Statuses</option>
-              <option value="open">Open for Help</option>
-              <option value="resolved">Resolved / Fixed</option>
+              <option value="all">All</option>
+              <option value="open">Open</option>
+              <option value="resolved">Resolved</option>
             </select>
           </div>
         </div>
@@ -512,14 +512,14 @@ export default function RepairPlatform({ user }) {
         {loadingTickets ? (
           <div className="py-12 text-center text-xs text-zinc-500 flex items-center justify-center gap-2">
             <RefreshCw className="w-4 h-4 animate-spin text-[#3ECF8E]" />
-            <span>Loading community tickets...</span>
+            <span>Loading tickets...</span>
           </div>
         ) : filteredTickets.length === 0 ? (
           <div className="py-12 text-center text-xs text-zinc-500 border border-dashed border-[#2e2e2e] rounded-2xl space-y-2">
             <p>No repair tickets found matching your active filters.</p>
             <p className="text-[11px] text-zinc-600">
               {activeTab === 'my_requests' 
-                ? 'Click "Post Repair Request" above to request peer assistance with a malfunctioning device.' 
+                ? 'Click "+ New Request" above to request peer assistance with a malfunctioning device.' 
                 : 'All campus devices are running smoothly or no tickets posted yet.'}
             </p>
           </div>
@@ -550,12 +550,12 @@ export default function RepairPlatform({ user }) {
                     {isOpen ? (
                       <span className="px-2.5 py-1 rounded-full font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30 text-[10px] shrink-0 font-mono flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        <span>Open for Help</span>
+                        <span>Open</span>
                       </span>
                     ) : (
                       <span className="px-2.5 py-1 rounded-full font-bold bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/30 text-[10px] shrink-0 font-mono flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        <span>Resolved (+8.5kg CO₂e)</span>
+                        <span>Resolved</span>
                       </span>
                     )}
                   </div>
@@ -581,7 +581,7 @@ export default function RepairPlatform({ user }) {
                   {isResolved && (
                     <div className="p-3 rounded-xl bg-[#3ECF8E]/10 border border-[#3ECF8E]/25 text-xs space-y-1">
                       <div className="font-bold flex items-center justify-between text-[11px] text-[#3ECF8E]">
-                        <span>✅ Fixed &amp; Saved from E-Waste</span>
+                        <span>✅ Fixed</span>
                         {t.resolved_by && <span className="font-normal opacity-90">Fixed by {t.resolved_by}</span>}
                       </div>
                       {t.faculty_notes && (
@@ -611,7 +611,7 @@ export default function RepairPlatform({ user }) {
                         className="px-3 py-1.5 rounded-lg bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>I Helped Fix This</span>
+                        <span>Mark as Fixed</span>
                       </button>
                     )}
                   </div>
@@ -632,8 +632,8 @@ export default function RepairPlatform({ user }) {
                   <Award className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-[#EDEDED]">Record Peer Repair Resolution</h2>
-                  <p className="text-xs text-zinc-400">Award +8.5 kg CO₂e saved and mark ticket fixed</p>
+                  <h2 className="text-base font-bold text-[#EDEDED]">Resolve Ticket</h2>
+                  <p className="text-xs text-zinc-400">Mark ticket as resolved and record repair notes</p>
                 </div>
               </div>
               <button 
@@ -658,35 +658,35 @@ export default function RepairPlatform({ user }) {
 
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  Peer Helper / Repairer Name *
+                  Peer Helper Name *
                 </label>
                 <input
                   type="text"
                   required
                   value={resolveForm.helper_name}
                   onChange={(e) => setResolveForm({ ...resolveForm, helper_name: e.target.value })}
-                  placeholder="e.g. Rahul M (S6 CSE) &amp; Ananya R (S6 ICE)"
+                  placeholder="e.g. Rahul M (S6 CSE)"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E]"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  How was it repaired? (Resolution Notes) *
+                  Resolution Notes *
                 </label>
                 <textarea
                   required
                   rows={3}
                   value={resolveForm.notes}
                   onChange={(e) => setResolveForm({ ...resolveForm, notes: e.target.value })}
-                  placeholder="e.g., Resoldered broken microswitch lead in ECE lab; replaced worn potentiometer with spare from workshop."
+                  placeholder="e.g. Resoldered loose switch pin; replaced faulty resistor."
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] resize-none"
                 />
               </div>
 
               <div className="p-3 rounded-xl bg-[#3ECF8E]/10 border border-[#3ECF8E]/25 text-[11px] text-[#3ECF8E] flex items-center gap-2">
                 <Award className="w-4 h-4 shrink-0" />
-                <span>By confirming, both students earn +8.5 kg CO₂e carbon savings on their circular portfolio!</span>
+                <span>This ticket will be marked as resolved in the campus repair records.</span>
               </div>
 
               <div className="flex items-center justify-end gap-2.5 pt-2">
@@ -703,7 +703,7 @@ export default function RepairPlatform({ user }) {
                   className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{submittingResolve ? 'Saving Resolution...' : 'Confirm Ticket Resolved'}</span>
+                  <span>{submittingResolve ? 'Saving...' : 'Confirm Resolution'}</span>
                 </button>
               </div>
             </form>
@@ -721,8 +721,8 @@ export default function RepairPlatform({ user }) {
                   <Wrench className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-[#EDEDED]">Post Community Repair Request</h2>
-                  <p className="text-xs text-zinc-400">Describe the issue and broadcast to campus student fixers</p>
+                  <h2 className="text-base font-bold text-[#EDEDED]">New Repair Request</h2>
+                  <p className="text-xs text-zinc-400">Describe the issue and post for student help</p>
                 </div>
               </div>
               <button 
@@ -736,12 +736,12 @@ export default function RepairPlatform({ user }) {
             <form onSubmit={handleManualSubmit} className="space-y-4 pt-1">
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  Device / Equipment Name *
+                  Device Name *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g., Dell Latitude 5400, Arduino Mega, Oscilloscope Probe"
+                  placeholder="e.g. Dell Laptop, Arduino Mega, Soldering Iron"
                   value={manualForm.device_name}
                   onChange={(e) => setManualForm({ ...manualForm, device_name: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] transition"
@@ -776,7 +776,7 @@ export default function RepairPlatform({ user }) {
 
                 <div>
                   <label className="block text-xs font-medium text-zinc-300 mb-1">
-                    Preferred Lab / Workshop Location
+                    Preferred Lab
                   </label>
                   <select
                     value={manualForm.lab_name}
@@ -794,12 +794,12 @@ export default function RepairPlatform({ user }) {
 
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  Problem Description / Symptoms *
+                  Symptoms / Problem *
                 </label>
                 <textarea
                   required
                   rows={3}
-                  placeholder="Explain what is wrong (e.g., does not power on, display flickering, unusual clicking noise, broken connector)..."
+                  placeholder="Explain what is wrong (e.g., does not power on, display flickering, broken connector)..."
                   value={manualForm.symptom}
                   onChange={(e) => setManualForm({ ...manualForm, symptom: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:outline-none focus:border-[#3ECF8E] transition resize-none"
@@ -820,7 +820,7 @@ export default function RepairPlatform({ user }) {
                   className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{submittingTicket ? 'Broadcasting...' : 'Publish to Campus Fixers'}</span>
+                  <span>{submittingTicket ? 'Submitting...' : 'Post Request'}</span>
                 </button>
               </div>
             </form>
@@ -838,8 +838,8 @@ export default function RepairPlatform({ user }) {
                   <Wrench className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-[#EDEDED]">Publish Hardware Repair Ticket</h2>
-                  <p className="text-xs text-zinc-400">Pre-filled with AI diagnostic protocol for campus fixers</p>
+                  <h2 className="text-base font-bold text-[#EDEDED]">Post Repair Request</h2>
+                  <p className="text-xs text-zinc-400">Pre-filled with diagnostic steps for campus fixers</p>
                 </div>
               </div>
               <button 
@@ -895,7 +895,7 @@ export default function RepairPlatform({ user }) {
                   className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{submittingTicket ? 'Publishing Ticket...' : 'Confirm & Publish Request'}</span>
+                  <span>{submittingTicket ? 'Submitting...' : 'Post Request'}</span>
                 </button>
               </div>
             </form>

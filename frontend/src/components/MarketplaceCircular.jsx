@@ -231,7 +231,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         image_url: '',
         sub_components_list: ['Main Unit']
       })
-      toast.success('Hardware Listed for Campus Reuse!', `"${savedTitle}" is now live on the circular marketplace.`)
+      toast.success('Item Listed', `"${savedTitle}" is now live on the marketplace.`)
       await loadItems()
     } catch (err) {
       toast.error('Listing Failed', err.message)
@@ -264,10 +264,10 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
             <div className="w-8 h-8 rounded-lg bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center">
               <ShoppingBag className="w-4 h-4" />
             </div>
-            <h1 className="text-xl font-bold text-[#EDEDED]">Campus Circular Marketplace &amp; Component Exchange</h1>
+            <h1 className="text-xl font-bold text-[#EDEDED]">Marketplace</h1>
           </div>
           <p className="text-xs text-zinc-400 mt-1">
-            Exchange e-waste, surplus lab systems, and project materials across CSE, Mechanical, Civil, EEE, and IC.
+            Browse and exchange available components across campus.
           </p>
         </div>
 
@@ -276,7 +276,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
           className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Post Item / Split Parts</span>
+          <span>+ List Item</span>
         </button>
       </div>
 
@@ -311,7 +311,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   : 'text-zinc-400 hover:text-[#EDEDED]'
               }`}
             >
-              All Items
+              All
             </button>
             <button
               onClick={() => setPriceFilter('free')}
@@ -321,7 +321,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   : 'text-zinc-400 hover:text-[#EDEDED]'
               }`}
             >
-              🎁 Free Gifts
+              Free
             </button>
             <button
               onClick={() => setPriceFilter('priced')}
@@ -331,7 +331,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   : 'text-zinc-400 hover:text-[#EDEDED]'
               }`}
             >
-              💰 Student Price
+              Priced
             </button>
           </div>
         </div>
@@ -343,7 +343,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search electronics, lab surplus, microcontrollers, cables, or parts..."
+            placeholder="Search components, parts, or donors..."
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] placeholder-zinc-500 text-xs focus:outline-none focus:ring-1 focus:ring-[#3ECF8E] focus:border-[#3ECF8E] shadow-sm"
           />
         </div>
@@ -351,13 +351,13 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
       {/* Items Grid */}
       {loading ? (
-        <div className="p-12 text-center text-slate-400 text-xs">Loading circular marketplace items...</div>
+        <div className="p-12 text-center text-zinc-500 text-xs">Loading items...</div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white p-12 text-center rounded-2xl border border-slate-200 shadow-sm space-y-2">
-          <ShoppingBag className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-semibold text-slate-800">No items found</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            No items in this category yet. Have an unused device or spare parts in your room? Post it for other students!
+        <div className="bg-[#1c1c1c] p-12 text-center rounded-2xl border border-[#2e2e2e] shadow-sm space-y-2">
+          <ShoppingBag className="w-10 h-10 text-zinc-600 mx-auto" />
+          <h3 className="text-sm font-semibold text-[#EDEDED]">No items found</h3>
+          <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+            No items in this category yet. Have an unused device or spare parts? List it for others!
           </p>
         </div>
       ) : (
@@ -375,12 +375,12 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
             return (
               <div 
                 key={item.id}
-                className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition flex flex-col justify-between space-y-3"
+                className="bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] shadow-sm hover:border-[#3e3e3e] transition flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-2.5">
                   {/* Item Photo if provided */}
                   {item.image_url && (
-                    <div className="w-full h-40 rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-2 relative">
+                    <div className="w-full h-40 rounded-xl overflow-hidden bg-[#141414] border border-[#2e2e2e] mb-2 relative">
                       <img 
                         src={item.image_url} 
                         alt={item.title} 
@@ -391,34 +391,34 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   )}
 
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100 truncate max-w-[180px]">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#242424] text-[#3ECF8E] border border-[#2e2e2e] truncate max-w-[180px]">
                       {item.department.split(' ')[0]} • {item.category}
                     </span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      isFree ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-900 text-white'
+                      isFree ? 'bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/30' : 'bg-[#242424] text-[#EDEDED] border border-[#2e2e2e]'
                     }`}>
-                      {isFree ? 'FREE GIFT' : `₹${item.price}`}
+                      {isFree ? 'Free' : `₹${item.price}`}
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-bold text-slate-900 leading-snug line-clamp-1">
+                  <h3 className="text-sm font-bold text-[#EDEDED] leading-snug line-clamp-1">
                     {item.title}
                   </h3>
 
-                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                     {item.description || 'No description.'}
                   </p>
 
                   {/* Component Splitting Breakdown */}
                   {subParts.length > 0 && (
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block flex items-center gap-1">
-                        <Layers className="w-3 h-3 text-slate-500" />
-                        Salvageable Components:
+                    <div className="p-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] space-y-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block flex items-center gap-1">
+                        <Layers className="w-3 h-3 text-zinc-400" />
+                        Parts:
                       </span>
                       <div className="flex flex-wrap gap-1">
                         {subParts.map((sp, idx) => (
-                          <span key={idx} className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                          <span key={idx} className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#232323] border border-[#2e2e2e] text-zinc-300">
                             {sp.name}
                           </span>
                         ))}
@@ -427,10 +427,10 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   )}
                 </div>
 
-                <div className="space-y-3 pt-2 border-t border-slate-100 text-xs">
-                  <div className="flex items-center justify-between text-slate-500">
-                    <span>Donor: <strong className="text-slate-800">{item.seller_name}</strong></span>
-                    <span className="text-[11px] text-slate-400">{item.condition}</span>
+                <div className="space-y-3 pt-2 border-t border-[#242424] text-xs">
+                  <div className="flex items-center justify-between text-zinc-400">
+                    <span>Listed by: <strong className="text-zinc-200">{item.seller_name}</strong></span>
+                    <span className="text-[11px] text-zinc-500">{item.condition}</span>
                   </div>
 
                   {isAvailable ? (
@@ -444,7 +444,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                       }}
                       className="w-full py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs transition shadow-sm cursor-pointer"
                     >
-                      Claim / Buy for Project
+                      Claim
                     </button>
                   ) : item.status === 'reserved' && (
                     item.buyer_id === studentId || 
@@ -467,12 +467,12 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                       className="w-full py-2 rounded-xl bg-[#3ECF8E]/20 text-[#3ECF8E] border border-[#3ECF8E]/40 text-center font-semibold text-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-[#3ECF8E]/30 transition"
                     >
                       <KeyRound className="w-3.5 h-3.5" />
-                      <span>Reserved by You • View PIN</span>
+                      <span>Reserved • View PIN</span>
                     </button>
                   ) : (
-                    <div className="w-full py-2 rounded-xl bg-slate-100 text-slate-500 text-center font-semibold text-xs flex items-center justify-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>{item.status === 'handoff_completed' ? 'Reused in Project' : `Reserved by ${item.buyer_name || 'Student'}`}</span>
+                    <div className="w-full py-2 rounded-xl bg-[#242424] text-zinc-400 border border-[#2e2e2e] text-center font-semibold text-xs flex items-center justify-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#3ECF8E]" />
+                      <span>{item.status === 'handoff_completed' ? 'Completed' : `Reserved`}</span>
                     </div>
                   )}
                 </div>
@@ -484,16 +484,16 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
       {/* CLAIM MODAL WITH BUYER TYPED MEETING POINT */}
       {claimingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="bg-[#1c1c1c] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-[#2e2e2e] space-y-4 text-[#EDEDED]">
+            <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Claim / Request Hardware</h2>
-                <p className="text-xs text-slate-500">Peer-to-peer campus circular handoff</p>
+                <h2 className="text-base font-bold text-[#EDEDED]">Claim Item</h2>
+                <p className="text-xs text-zinc-400">Campus component handoff</p>
               </div>
               <button 
                 onClick={() => setClaimingItem(null)} 
-                className="text-slate-400 hover:text-slate-700 font-bold"
+                className="text-zinc-400 hover:text-[#EDEDED] font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -501,40 +501,40 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
             {claimingSuccess ? (
               <div className="space-y-4 text-center py-2 text-xs">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                <div className="w-12 h-12 rounded-2xl bg-[#3ECF8E]/10 text-[#3ECF8E] border border-[#3ECF8E]/25 flex items-center justify-center mx-auto">
                   <Check className="w-6 h-6" />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">Item Successfully Reserved!</h3>
-                <p className="text-slate-600">
-                  You requested: <strong>{claimingItem?.title}</strong>
+                <h3 className="text-sm font-bold text-[#EDEDED]">Item Reserved</h3>
+                <p className="text-zinc-400">
+                  Item: <strong className="text-zinc-200">{claimingItem?.title}</strong>
                 </p>
 
                 {/* Big PIN Box */}
-                <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2.5">
+                <div className="p-4 rounded-2xl bg-[#141414] border border-[#2e2e2e] text-white space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-300">
-                      Your 4-Digit Handoff PIN
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-[#3ECF8E] font-mono">
+                      Handoff PIN
                     </span>
                     <button
                       type="button"
                       onClick={() => handleCopyModalPin(claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492')}
-                      className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 font-mono text-[10px] flex items-center gap-1 cursor-pointer transition border border-slate-700"
+                      className="px-2 py-0.5 rounded bg-[#242424] hover:bg-[#2c2c2c] text-zinc-300 hover:text-[#3ECF8E] font-mono text-[10px] flex items-center gap-1 cursor-pointer transition border border-[#2e2e2e]"
                     >
                       <Copy className="w-3 h-3" />
                       <span>{copiedModalPin ? 'Copied!' : 'Copy'}</span>
                     </button>
                   </div>
-                  <div className="font-mono text-3xl font-extrabold tracking-widest text-emerald-400 select-all">
+                  <div className="font-mono text-3xl font-extrabold tracking-widest text-[#3ECF8E] select-all">
                     {claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492'}
                   </div>
-                  <div className="pt-1 text-[11px] text-slate-300 flex items-center justify-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Meeting Spot: <strong>{claimingSuccess?.meeting_point || claimingItem?.meeting_point || 'Campus Meeting Spot'}</strong></span>
+                  <div className="pt-1 text-[11px] text-zinc-400 flex items-center justify-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-[#3ECF8E]" />
+                    <span>Meeting Spot: <strong className="text-zinc-200">{claimingSuccess?.meeting_point || claimingItem?.meeting_point || 'Campus Meeting Spot'}</strong></span>
                   </div>
                 </div>
 
-                <p className="text-[11px] text-slate-400">
-                  Meet the seller at your typed spot and show this PIN or QR code to complete the transfer.
+                <p className="text-[11px] text-zinc-500">
+                  Meet the seller at your chosen location and share this PIN to complete the transfer.
                 </p>
 
                 <div className="pt-2">
@@ -545,31 +545,31 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                     }}
                     className="w-full py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs transition cursor-pointer shadow-md shadow-[#3ECF8E]/20 flex items-center justify-center gap-2"
                   >
-                    <span>View in My Dashboard &amp; Copy PIN</span>
+                    <span>View in Dashboard</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             ) : (
               <form onSubmit={handleClaimSubmit} className="space-y-4 text-xs">
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                  <strong className="text-slate-900 block">{claimingItem.title}</strong>
-                  <p className="text-slate-500">Seller: {claimingItem.seller_name} ({claimingItem.department.split(' ')[0]})</p>
+                <div className="p-3 rounded-xl bg-[#141414] border border-[#2e2e2e] space-y-1">
+                  <strong className="text-[#EDEDED] block">{claimingItem.title}</strong>
+                  <p className="text-zinc-400">Seller: {claimingItem.seller_name} ({claimingItem.department.split(' ')[0]})</p>
                 </div>
 
                 {/* Component Splitting Selection */}
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">What would you like to claim?</label>
+                  <label className="block font-semibold text-zinc-300 mb-1">Select Claim Option</label>
                   <select
                     value={claimedComponent}
                     onChange={(e) => setClaimedComponent(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
                   >
-                    <option value="All">Take Entire Device / Unit</option>
+                    <option value="All">Entire Item</option>
                     {(() => {
                       try {
                         return JSON.parse(claimingItem.sub_components || '[]').map((p, idx) => (
-                          <option key={idx} value={p.name}>Harvest Specific Part: {p.name}</option>
+                          <option key={idx} value={p.name}>Specific Part: {p.name}</option>
                         ))
                       } catch (e) {
                         return null
@@ -580,23 +580,24 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
                 {/* BUYER CUSTOM MEETING POINT TYPEBOX */}
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">
-                    📍 Where and when do you want to meet to hand off this item? *
+                  <label className="block font-semibold text-zinc-300 mb-1">
+                    📍 Pickup Location & Time *
                   </label>
                   <input
                     type="text"
                     value={meetingPointInput}
                     onChange={(e) => setMeetingPointInput(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
+                    placeholder="e.g. Outside CSE Lab 204, Canteen Table 4"
                     required
                   />
-                  <span className="text-[11px] text-slate-400 mt-1 block">
-                    Type any campus spot: e.g. "Outside CSE Lab 204", "Civil CAD Lab foyer", "Canteen Table 4".
+                  <span className="text-[11px] text-zinc-500 mt-1 block">
+                    Campus location where you want to meet the seller.
                   </span>
                 </div>
 
                 {claimingError && (
-                  <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-[11px]">
+                  <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px]">
                     {claimingError}
                   </div>
                 )}
@@ -605,7 +606,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   <button
                     type="button"
                     onClick={() => setClaimingItem(null)}
-                    className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 font-semibold text-slate-600 transition"
+                    className="px-4 py-2 rounded-xl border border-[#2e2e2e] hover:bg-[#242424] font-semibold text-zinc-400 hover:text-[#EDEDED] transition"
                   >
                     Cancel
                   </button>
@@ -614,7 +615,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                     disabled={claimingLoading}
                     className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 cursor-pointer"
                   >
-                    {claimingLoading ? 'Reserving...' : 'Confirm & Get Handoff PIN'}
+                    {claimingLoading ? 'Reserving...' : 'Confirm Reservation'}
                   </button>
                 </div>
               </form>
@@ -625,35 +626,35 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
       {/* POST ITEM MODAL WITH COMPONENT SPLITTING */}
       {showPostModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="bg-[#1c1c1c] rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#2e2e2e] space-y-4 text-[#EDEDED]">
+            <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Post E-Waste / Component for Campus Reuse</h2>
-                <p className="text-xs text-slate-500">Offer hardware or split components to other students</p>
+                <h2 className="text-base font-bold text-[#EDEDED]">List Item</h2>
+                <p className="text-xs text-zinc-400">Offer hardware or components to other students</p>
               </div>
-              <button onClick={() => setShowPostModal(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+              <button onClick={() => setShowPostModal(false)} className="text-zinc-400 hover:text-[#EDEDED] font-bold cursor-pointer">✕</button>
             </div>
 
             <form onSubmit={handlePostSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Item Title *</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Item Title *</label>
                 <input
                   type="text"
                   value={postForm.title}
                   onChange={(e) => setPostForm({...postForm, title: e.target.value})}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Department *</label>
+                  <label className="block font-semibold text-zinc-300 mb-1">Department *</label>
                   <select
                     value={postForm.department}
                     onChange={(e) => setPostForm({...postForm, department: e.target.value})}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none cursor-pointer"
                   >
                     <option value="Computer Science and Engineering">CSE</option>
                     <option value="Electronics and Communication Engineering">ECE</option>
@@ -665,87 +666,87 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Condition</label>
+                  <label className="block font-semibold text-zinc-300 mb-1">Condition</label>
                   <select
                     value={postForm.condition}
                     onChange={(e) => setPostForm({...postForm, condition: e.target.value})}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none cursor-pointer"
                   >
                     <option value="Functional/Tested">Functional / Tested</option>
                     <option value="Like New">Like New</option>
                     <option value="Needs Minor Repair">Needs Minor Repair</option>
-                    <option value="Scrap for Component Harvesting">Scrap for Parts Harvesting</option>
+                    <option value="Scrap for Component Harvesting">Scrap for Parts</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Price Type</label>
+                  <label className="block font-semibold text-zinc-300 mb-1">Price</label>
                   <select
                     value={postForm.price_type}
                     onChange={(e) => setPostForm({...postForm, price_type: e.target.value})}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none cursor-pointer"
                   >
-                    <option value="free">Free Gift (Giveaway)</option>
-                    <option value="priced">Student Nominal Price (₹)</option>
+                    <option value="free">Free</option>
+                    <option value="priced">Priced (₹)</option>
                   </select>
                 </div>
                 {postForm.price_type === 'priced' && (
                   <div>
-                    <label className="block font-semibold text-slate-700 mb-1">Price (₹)</label>
+                    <label className="block font-semibold text-zinc-300 mb-1">Amount (₹)</label>
                     <input
                       type="number"
                       min="1"
                       value={postForm.price}
                       onChange={(e) => setPostForm({...postForm, price: parseFloat(e.target.value) || 0})}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                      className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
                     />
                   </div>
                 )}
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Description & Known Defect/Status</label>
+                <label className="block font-semibold text-zinc-300 mb-1">Description</label>
                 <textarea
                   rows="2"
                   value={postForm.description}
                   onChange={(e) => setPostForm({...postForm, description: e.target.value})}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                  className="w-full px-3 py-2 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
                 ></textarea>
               </div>
 
               {/* Add Item Image */}
               <div className="space-y-1.5">
-                <label className="block font-semibold text-slate-700">
-                  Item Photo (Optional)
+                <label className="block font-semibold text-zinc-300">
+                  Photo (Optional)
                 </label>
                 {imagePreview ? (
-                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 p-2.5 flex items-center justify-between gap-3">
+                  <div className="relative rounded-2xl overflow-hidden border border-[#2e2e2e] bg-[#141414] p-2.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <img
                         src={imagePreview}
                         alt="Upload preview"
-                        className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
+                        className="w-14 h-14 rounded-xl object-cover border border-[#2e2e2e] shrink-0"
                       />
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-800 truncate">Photo Attached</p>
-                        <p className="text-[10px] text-emerald-600 font-semibold">Ready to display on ad</p>
+                        <p className="text-xs font-bold text-[#EDEDED] truncate">Photo Attached</p>
+                        <p className="text-[10px] text-[#3ECF8E] font-semibold">Ready to display</p>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={handleRemoveImage}
-                      className="px-2.5 py-1 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition"
+                      className="px-2.5 py-1 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold transition cursor-pointer"
                     >
                       Remove
                     </button>
                   </div>
                 ) : (
                   <div>
-                    <label className="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-dashed border-slate-200 hover:border-emerald-500 bg-slate-50/70 hover:bg-emerald-50/40 text-slate-600 hover:text-emerald-700 cursor-pointer transition text-xs font-semibold">
-                      <Camera className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>{imageUploading ? 'Processing Photo...' : 'Add / Upload Item Photo'}</span>
+                    <label className="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-dashed border-[#2e2e2e] hover:border-[#3ECF8E]/50 bg-[#141414] text-zinc-400 hover:text-[#3ECF8E] cursor-pointer transition text-xs font-semibold">
+                      <Camera className="w-4 h-4 text-[#3ECF8E] shrink-0" />
+                      <span>{imageUploading ? 'Processing Photo...' : 'Add Photo'}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -758,12 +759,12 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
               </div>
 
               {/* COMPONENT SPLITTING BUILDER */}
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <span className="font-semibold text-slate-800 block">
-                  ⚙️ Enable Component Splitting (List Salvageable Sub-Parts):
+              <div className="p-3 rounded-2xl bg-[#141414] border border-[#2e2e2e] space-y-2">
+                <span className="font-semibold text-zinc-300 block">
+                  Sub-Components (Optional)
                 </span>
-                <p className="text-[11px] text-slate-500">
-                  Allow other students to harvest specific parts if they don't need the whole item.
+                <p className="text-[11px] text-zinc-500">
+                  Allow other students to claim specific parts if they don't need the whole item.
                 </p>
 
                 <div className="flex gap-2">
@@ -771,25 +772,26 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                     type="text"
                     value={newSubPart}
                     onChange={(e) => setNewSubPart(e.target.value)}
-                    className="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 text-xs"
+                    placeholder="e.g. Power Supply, Keycaps, Screen"
+                    className="flex-1 px-3 py-1.5 rounded-xl bg-[#181818] border border-[#2e2e2e] text-[#EDEDED] text-xs focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={handleAddSubPart}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 text-white font-bold text-xs"
+                    className="px-3 py-1.5 rounded-xl bg-[#242424] hover:bg-[#2c2c2c] text-[#EDEDED] border border-[#2e2e2e] font-semibold text-xs cursor-pointer transition"
                   >
-                    + Add Part
+                    + Add
                   </button>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {postForm.sub_components_list.map((sp, idx) => (
-                    <span key={idx} className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700">
+                    <span key={idx} className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-[#242424] border border-[#2e2e2e] text-zinc-300">
                       <span>{sp}</span>
                       <button 
                         type="button" 
                         onClick={() => handleRemoveSubPart(idx)}
-                        className="text-slate-400 hover:text-rose-600 font-bold ml-1"
+                        className="text-zinc-500 hover:text-rose-400 font-bold ml-1 cursor-pointer"
                       >
                         ×
                       </button>
@@ -802,7 +804,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 <button
                   type="button"
                   onClick={() => setShowPostModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 font-semibold text-slate-600 transition"
+                  className="px-4 py-2 rounded-xl border border-[#2e2e2e] hover:bg-[#242424] font-semibold text-zinc-400 hover:text-[#EDEDED] transition cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -811,7 +813,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   disabled={postingLoading}
                   className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold shadow-md shadow-[#3ECF8E]/20 transition disabled:opacity-50 cursor-pointer"
                 >
-                  {postingLoading ? 'Publishing...' : 'Publish to Campus'}
+                  {postingLoading ? 'Listing...' : 'List Item'}
                 </button>
               </div>
             </form>
