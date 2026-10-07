@@ -331,12 +331,132 @@ class DatabaseManager:
                     (str(uuid.uuid4()), "demo-student", "Adarsh N", "Stepper Motors & Power Supply", 14.5, 0.7),
                     (str(uuid.uuid4()), "demo-student", "Ananya R", "RTD Sensor Probes & Op-Amp", 8.2, 0.4)
                 ]
+            # Seed Repair Tickets across engineering departments
+            cursor.execute("SELECT COUNT(*) FROM repair_tickets")
+            if cursor.fetchone()[0] == 0:
+                demo_tickets = [
+                    (
+                        "ticket-cse-1", "demo-student", "Rahul K (S7 CSE)",
+                        "Computer Science and Engineering", "Hardware & Systems Lab",
+                        "Mechanical Keyboard Spacebar Not Registering",
+                        "Cherry MX switch on spacebar feels sticky and does not register keystrokes.",
+                        "Dust ingress or sticky residue inside keycap switch leaf.",
+                        "1. Desolder switch from PCB\n2. Open housing with switch opener\n3. Clean contacts with isopropyl alcohol\n4. Re-lube stem and solder back",
+                        "Medium", "Soldering iron, desoldering pump, isopropyl alcohol",
+                        "open", "Campus Peer Community"
+                    ),
+                    (
+                        "ticket-ece-1", "demo-ece-user", "Aiswarya S (S6 ECE)",
+                        "Electronics and Communication Engineering", "VLSI & Embedded Systems Lab",
+                        "ESP32 Dev Board Overheating on 5V Pin",
+                        "Board gets hot near micro-USB connector and brownouts under WiFi load.",
+                        "Blown AMS1117 3.3V linear voltage regulator with high quiescent leakage.",
+                        "1. Measure resistance between 3V3 and GND\n2. Desolder faulty AMS1117 with hot air\n3. Solder replacement AMS1117-3.3\n4. Verify clean 3.3V power rail",
+                        "Medium", "Hot air rework station, multimeter, flux, replacement AMS1117 IC",
+                        "open", "Campus Peer Community"
+                    ),
+                    (
+                        "ticket-eee-1", "demo-eee-user", "Vishnu P (S8 EEE)",
+                        "Electrical and Electronics Engineering", "Circuits & Measurements Lab",
+                        "Dual Benchtop DC Power Supply Voltage Display Glitch",
+                        "Left voltage display panel flickers and reads 00.0V even when output is active 12V.",
+                        "Loose header ribbon cable between main regulator PCB and LED digital voltmeter module.",
+                        "1. Disconnect AC mains cord and discharge filter caps\n2. Reseat 10-pin ribbon connector\n3. Inspect solder joints on 7-segment display driver\n4. Calibrate with reference DMM",
+                        "Easy", "Phillips screwdriver, multimeter",
+                        "peer_repaired", "Campus Peer Community"
+                    ),
+                    (
+                        "ticket-mech-1", "demo-mech-user", "Adarsh N (S7 Mech)",
+                        "Mechanical Engineering", "Fab Lab & Mechatronics",
+                        "Creality 3D Printer Hotend Thermistor Wire Broken",
+                        "Printer throws MINTEMP thermal runaway error on startup and halts.",
+                        "Fragile glass bead thermistor lead wire snapped near heater block retaining screw.",
+                        "1. Remove hotend silicon sock and M3 thermistor retaining screw\n2. Extract damaged NTC 100K glass bead\n3. Insert replacement glass thermistor with fiberglass sleeve\n4. Tighten gently and run PID auto-tune",
+                        "Easy", "Hex keys, replacement 100K NTC thermistor, thermal paste",
+                        "open", "Campus Peer Community"
+                    ),
+                    (
+                        "ticket-ic-1", "demo-ic-user", "Ananya R (S6 IC)",
+                        "Instrumentation and Control Engineering", "Sensors & Transducers Lab",
+                        "LVDT Signal Conditioning Board Op-Amp Null Offset",
+                        "Differential output fails to reach zero at central core position, high harmonic distortion.",
+                        "Trimpot wiper oxidation causing unbalanced DC bridge excitation voltage.",
+                        "1. Measure secondary AC voltages at balance position\n2. Spray contact cleaner into multiturn potentiometer\n3. Adjust zero-offset null trimmer with plastic screwdriver",
+                        "Medium", "Oscilloscope, ceramic adjustment tool, contact cleaner",
+                        "open", "Campus Peer Community"
+                    )
+                ]
                 cursor.executemany("""
-                    INSERT INTO impact_logs (id, user_id, user_name, item_title, co2_saved_kg, trees_equivalent)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, demo_impact)
+                    INSERT INTO repair_tickets (
+                        id, user_id, user_name, department, lab_name, device_name, symptom,
+                        ai_diagnosis, ai_steps, difficulty, tools_needed, status, technician_name
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, demo_tickets)
 
             conn.commit()
+
+        # Seed Supabase repair_tickets if table is empty
+        if self.supabase:
+            try:
+                sb_check = self.supabase.table("repair_tickets").select("id", count="exact").limit(1).execute()
+                if (sb_check.count is not None and sb_check.count == 0) or not sb_check.data:
+                    sb_seed_batch = [
+                        {
+                            "id": "11111111-0000-0000-0000-000000000001",
+                            "user_id": "demo-student",
+                            "user_name": "Rahul K (S7 CSE)",
+                            "device_name": "Mechanical Keyboard Spacebar Not Registering",
+                            "symptom": "Cherry MX switch on spacebar feels sticky and does not register keystrokes.",
+                            "ai_diagnosis": "Dust ingress or sticky residue inside keycap switch leaf.",
+                            "ai_steps": "1. Desolder switch from PCB\n2. Open housing with switch opener\n3. Clean contacts with isopropyl alcohol\n4. Re-lube stem and solder back",
+                            "difficulty": "Medium",
+                            "tools_needed": "[DEPT:Computer Science and Engineering][LAB:Hardware & Systems Lab] Soldering iron, desoldering pump, isopropyl alcohol",
+                            "status": "diagnosed",
+                            "technician_name": "[Computer Science and Engineering] Hardware & Systems Lab | Campus Peer Community"
+                        },
+                        {
+                            "id": "11111111-0000-0000-0000-000000000002",
+                            "user_id": "demo-ece-user",
+                            "user_name": "Aiswarya S (S6 ECE)",
+                            "device_name": "ESP32 Dev Board Overheating on 5V Pin",
+                            "symptom": "Board gets hot near micro-USB connector and brownouts under WiFi load.",
+                            "ai_diagnosis": "Blown AMS1117 3.3V linear voltage regulator with high quiescent leakage.",
+                            "ai_steps": "1. Measure resistance between 3V3 and GND\n2. Desolder faulty AMS1117 with hot air\n3. Solder replacement AMS1117-3.3\n4. Verify clean 3.3V power rail",
+                            "difficulty": "Medium",
+                            "tools_needed": "[DEPT:Electronics and Communication Engineering][LAB:VLSI & Embedded Systems Lab] Hot air rework station, multimeter, replacement AMS1117 IC",
+                            "status": "diagnosed",
+                            "technician_name": "[Electronics and Communication Engineering] VLSI & Embedded Systems Lab | Campus Peer Community"
+                        },
+                        {
+                            "id": "11111111-0000-0000-0000-000000000003",
+                            "user_id": "demo-mech-user",
+                            "user_name": "Adarsh N (S7 Mech)",
+                            "device_name": "Creality 3D Printer Hotend Thermistor Wire Broken",
+                            "symptom": "Printer throws MINTEMP thermal runaway error on startup and halts.",
+                            "ai_diagnosis": "Fragile glass bead thermistor lead wire snapped near heater block retaining screw.",
+                            "ai_steps": "1. Remove hotend silicon sock and M3 screw\n2. Extract damaged NTC 100K glass bead\n3. Insert replacement glass thermistor with fiberglass sleeve\n4. Tighten gently and run PID auto-tune",
+                            "difficulty": "Easy",
+                            "tools_needed": "[DEPT:Mechanical Engineering][LAB:Fab Lab & Mechatronics] Hex keys, replacement 100K NTC thermistor, thermal paste",
+                            "status": "diagnosed",
+                            "technician_name": "[Mechanical Engineering] Fab Lab & Mechatronics | Campus Peer Community"
+                        },
+                        {
+                            "id": "11111111-0000-0000-0000-000000000004",
+                            "user_id": "demo-eee-user",
+                            "user_name": "Vishnu P (S8 EEE)",
+                            "device_name": "Dual Benchtop DC Power Supply Voltage Display Glitch",
+                            "symptom": "Left voltage display panel flickers and reads 00.0V even when output is active 12V.",
+                            "ai_diagnosis": "Loose header ribbon cable between main regulator PCB and LED digital voltmeter module.",
+                            "ai_steps": "1. Disconnect AC mains cord\n2. Reseat 10-pin ribbon connector\n3. Inspect solder joints\n4. Calibrate with reference DMM",
+                            "difficulty": "Easy",
+                            "tools_needed": "[DEPT:Electrical and Electronics Engineering][LAB:Circuits & Measurements Lab] Phillips screwdriver, multimeter",
+                            "status": "repaired",
+                            "technician_name": "[Electrical and Electronics Engineering] Circuits & Measurements Lab | Campus Peer Community"
+                        }
+                    ]
+                    self.supabase.table("repair_tickets").insert(sb_seed_batch).execute()
+            except Exception as e:
+                print(f"Notice: Supabase repair ticket initial seed: {e}")
 
     # --- Circular Marketplace Queries ---
     def get_circular_items(self, department: Optional[str] = None, category: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -817,92 +937,210 @@ class DatabaseManager:
             }
 
     # --- Department Workshop Helpdesk Tickets ---
+    # --- Department Workshop Helpdesk Tickets ---
     def get_repair_tickets(self, department: Optional[str] = None, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        tickets_map = {}
+
+        # 1. Fetch from Supabase
         if self.supabase:
             try:
-                q = self.supabase.table("repair_tickets").select("*")
-                if department and department != "All":
-                    q = q.eq("department", department)
-                if user_id:
-                    q = q.eq("user_id", user_id)
-                res = q.order("created_at", desc=True).execute()
-                if res.data is not None:
-                    return res.data
-            except Exception:
-                pass
+                res = self.supabase.table("repair_tickets").select("*").order("created_at", desc=True).execute()
+                if res.data:
+                    for row in res.data:
+                        t = dict(row)
+                        tools_raw = t.get("tools_needed") or ""
+                        tech_raw = t.get("technician_name") or ""
 
-        with self.get_sqlite() as conn:
-            cursor = conn.cursor()
-            query = "SELECT * FROM repair_tickets"
-            conditions = []
-            params = []
+                        # Extract department from column or metadata tags
+                        dept = t.get("department")
+                        if not dept or dept == "None":
+                            m_dept = re.search(r"\[DEPT:(.*?)\]", tools_raw)
+                            if m_dept:
+                                dept = m_dept.group(1).strip()
+                            else:
+                                m_tech = re.search(r"^\[(.*?)\]", tech_raw)
+                                if m_tech:
+                                    dept = m_tech.group(1).strip()
+                        if not dept:
+                            dept = "Computer Science and Engineering"
+                        t["department"] = dept
+
+                        # Extract lab_name from column or metadata tags
+                        lab = t.get("lab_name")
+                        if not lab or lab == "None":
+                            m_lab = re.search(r"\[LAB:(.*?)\]", tools_raw)
+                            if m_lab:
+                                lab = m_lab.group(1).strip()
+                            elif "|" in tech_raw:
+                                parts = tech_raw.split("|")[0]
+                                clean_parts = re.sub(r"^\[.*?\]\s*", "", parts).strip()
+                                if clean_parts:
+                                    lab = clean_parts
+                        if not lab:
+                            lab = f"{dept.split(' ')[0]} Systems Lab"
+                        t["lab_name"] = lab
+
+                        # Clean tools_needed display
+                        clean_tools = re.sub(r"\[DEPT:.*?\]", "", tools_raw)
+                        clean_tools = re.sub(r"\[LAB:.*?\]", "", clean_tools).strip()
+                        t["tools_needed"] = clean_tools or "Basic toolkit"
+
+                        # Clean technician_name display if it has metadata prefix
+                        if " | " in tech_raw:
+                            t["technician_name"] = tech_raw.split(" | ", 1)[1].strip()
+
+                        # Normalize status: 'diagnosed' in Supabase corresponds to 'open' in Community clinic
+                        raw_status = (t.get("status") or "open").lower()
+                        if raw_status in ["diagnosed", "open", "pending_lab_review"]:
+                            t["status"] = "open"
+                        elif raw_status in ["repaired", "peer_repaired"]:
+                            t["status"] = "peer_repaired"
+                        elif raw_status in ["cannibalized", "lab_cannibalized"]:
+                            t["status"] = "lab_cannibalized"
+
+                        tickets_map[t["id"]] = t
+            except Exception as e:
+                print(f"Notice: Supabase get_repair_tickets error: {e}")
+
+        # 2. Fetch from local SQLite and merge
+        try:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM repair_tickets ORDER BY created_at DESC")
+                for row in cursor.fetchall():
+                    item = dict(row)
+                    t_id = item.get("id")
+                    if not t_id:
+                        continue
+                    if t_id not in tickets_map:
+                        raw_status = (item.get("status") or "open").lower()
+                        if raw_status in ["diagnosed", "open", "pending_lab_review"]:
+                            item["status"] = "open"
+                        elif raw_status in ["repaired", "peer_repaired"]:
+                            item["status"] = "peer_repaired"
+                        elif raw_status in ["cannibalized", "lab_cannibalized"]:
+                            item["status"] = "lab_cannibalized"
+                        tickets_map[t_id] = item
+                    else:
+                        # Enrich with SQLite columns if missing in Supabase
+                        for col in ["department", "lab_name", "faculty_decision", "faculty_notes", "resolved_by", "resolved_at"]:
+                            if item.get(col) and not tickets_map[t_id].get(col):
+                                tickets_map[t_id][col] = item.get(col)
+        except Exception as e:
+            print(f"Notice: SQLite get_repair_tickets error: {e}")
+
+        all_tickets = list(tickets_map.values())
+        all_tickets.sort(key=lambda x: str(x.get("created_at") or ""), reverse=True)
+
+        # 3. Apply filters in Python
+        filtered = []
+        for t in all_tickets:
             if department and department != "All":
-                conditions.append("department = ?")
-                params.append(department)
+                if t.get("department") != department:
+                    continue
             if user_id:
-                conditions.append("user_id = ?")
-                params.append(user_id)
-            if conditions:
-                query += " WHERE " + " AND ".join(conditions)
-            query += " ORDER BY created_at DESC"
-            cursor.execute(query, params)
-            return [dict(row) for row in cursor.fetchall()]
+                uid = str(user_id).lower()
+                t_uid = str(t.get("user_id") or "").lower()
+                t_uname = str(t.get("user_name") or "").lower()
+                if uid not in t_uid and uid not in t_uname and t_uid != uid:
+                    continue
+            filtered.append(t)
+
+        return filtered
 
     def create_repair_ticket(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data["id"] = data.get("id") or str(uuid.uuid4())
-        data["status"] = data.get("status") or "pending_lab_review"
         dept = data.get("department") or "Computer Science and Engineering"
         lab = data.get("lab_name") or f"{dept.split(' ')[0]} Systems Lab"
+        clean_tools = data.get("tools_needed") or "Basic toolkit"
+        tech_name = data.get("technician_name") or "Campus Peer Community"
+        req_status = (data.get("status") or "open").lower()
 
+        # Map status to Supabase check constraint ('diagnosed', 'in_progress', 'repaired', 'cannibalized')
+        if req_status in ["pending_lab_review", "open", "diagnosed"]:
+            sb_status = "diagnosed"
+        elif "cannibal" in req_status:
+            sb_status = "cannibalized"
+        elif "repair" in req_status or req_status == "resolved":
+            sb_status = "repaired"
+        else:
+            sb_status = "in_progress"
+
+        encoded_tools = f"[DEPT:{dept}][LAB:{lab}] {clean_tools}"
+        encoded_tech = f"[{dept}] {lab} | {tech_name}"
+
+        # 1. Sync to Supabase with schema-compliant payload
         if self.supabase:
             try:
-                self.supabase.table("repair_tickets").insert({
+                sb_payload = {
                     "id": data["id"],
                     "user_id": data.get("user_id", "student-user"),
                     "user_name": data.get("user_name", "Campus Student"),
-                    "department": dept,
-                    "lab_name": lab,
                     "device_name": data.get("device_name", ""),
                     "symptom": data.get("symptom", ""),
                     "ai_diagnosis": data.get("ai_diagnosis", ""),
                     "ai_steps": data.get("ai_steps", ""),
                     "difficulty": data.get("difficulty", "Medium"),
-                    "tools_needed": data.get("tools_needed", "Basic toolkit"),
-                    "status": data["status"],
-                    "technician_name": data.get("technician_name", f"{dept.split(' ')[0]} Lab Staff")
-                }).execute()
+                    "tools_needed": encoded_tools,
+                    "status": sb_status,
+                    "technician_name": encoded_tech
+                }
+                self.supabase.table("repair_tickets").insert(sb_payload).execute()
             except Exception as e:
                 print(f"Notice: Supabase repair ticket insert sync: {e}")
 
-        with self.get_sqlite() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO repair_tickets (
-                    id, user_id, user_name, department, lab_name, device_name, symptom,
-                    ai_diagnosis, ai_steps, difficulty, tools_needed, status, technician_name
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                data["id"], data.get("user_id", "student-user"), data.get("user_name", "Campus Student"),
-                dept, lab, data.get("device_name", ""), data.get("symptom", ""),
-                data.get("ai_diagnosis", ""), data.get("ai_steps", ""),
-                data.get("difficulty", "Medium"), data.get("tools_needed", "Basic toolkit"),
-                data["status"], data.get("technician_name", f"{dept.split(' ')[0]} Lab Staff")
-            ))
-            conn.commit()
+        # 2. Sync to local SQLite
+        try:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT OR REPLACE INTO repair_tickets (
+                        id, user_id, user_name, department, lab_name, device_name, symptom,
+                        ai_diagnosis, ai_steps, difficulty, tools_needed, status, technician_name
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    data["id"], data.get("user_id", "student-user"), data.get("user_name", "Campus Student"),
+                    dept, lab, data.get("device_name", ""), data.get("symptom", ""),
+                    data.get("ai_diagnosis", ""), data.get("ai_steps", ""),
+                    data.get("difficulty", "Medium"), clean_tools,
+                    "open" if sb_status == "diagnosed" else sb_status, tech_name
+                ))
+                conn.commit()
+        except Exception as e:
+            print(f"Notice: SQLite repair ticket insert: {e}")
+
+        data["department"] = dept
+        data["lab_name"] = lab
+        data["status"] = "open" if sb_status == "diagnosed" else sb_status
         return data
 
     def resolve_repair_ticket(self, ticket_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Faculty Triage Outcomes:
-        1. 'repaired_returned' (Fixed and returned to student)
-        2. 'unrepairable_parts_advised' (Advised to split and give for parts on Marketplace)
-        3. 'lab_cannibalized' (Lab adopted and retained for departmental spares)
+        Resolution Outcomes:
+        1. 'peer_repaired' / 'repaired_returned' (Fixed and saved from e-waste)
+        2. 'unrepairable_parts_advised' (Advised to harvest parts on Marketplace)
+        3. 'lab_cannibalized' (Retained for departmental spares)
         """
-        decision = data.get("faculty_decision", "repaired_returned")
-        notes = data.get("faculty_notes", "Inspected by Faculty In-Charge")
-        resolved_by = data.get("resolved_by", "Prof. Faculty In-Charge")
+        decision = data.get("faculty_decision", "peer_repaired")
+        notes = data.get("faculty_notes", "Repaired through peer collaboration on campus.")
+        resolved_by = data.get("resolved_by", "Campus Peer Helper")
         now_iso = datetime.datetime.utcnow().isoformat()
 
+        sb_status = "repaired"
+        if "cannibal" in decision:
+            sb_status = "cannibalized"
+
+        # 1. Update Supabase with valid schema fields
+        if self.supabase:
+            try:
+                self.supabase.table("repair_tickets").update({
+                    "status": sb_status,
+                    "technician_name": f"Resolved by {resolved_by}: {notes}"[:150]
+                }).eq("id", ticket_id).execute()
+            except Exception as e:
+                print(f"Notice: Supabase ticket resolve sync: {e}")
+
+        # 2. Update SQLite
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
             cursor.execute("""
@@ -931,7 +1169,7 @@ class DatabaseManager:
                     f"Adopted by department lab for cannibalization: {notes}"
                 ))
 
-            # Option 1: Repaired & Returned / Peer Repaired -> Log extended lifespan carbon credit
+            # Option 1: Peer Repaired / Fixed -> Log extended lifespan carbon credit
             if decision in ["repaired_returned", "peer_repaired"]:
                 co2 = 8.5
                 trees = round(co2 / 21.77, 1)
@@ -939,24 +1177,18 @@ class DatabaseManager:
                     cursor.execute("""
                         INSERT INTO impact_logs (id, user_id, user_name, item_title, item_summary, co2_saved_kg, trees_equivalent)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
-                    """, (str(uuid.uuid4()), ticket.get("user_id"), ticket.get("user_name"), ticket.get("device_name", "Repaired Device"), f"Repair in {ticket.get('department')}", co2, trees))
+                    """, (
+                        str(uuid.uuid4()), 
+                        ticket.get("user_id") or "student-user", 
+                        ticket.get("user_name") or resolved_by, 
+                        ticket.get("device_name", "Repaired Device"), 
+                        f"Peer repair saved in {ticket.get('department', 'Engineering')}", 
+                        co2, trees
+                    ))
                 except Exception as log_err:
                     print(f"Notice: impact log entry skipped: {log_err}")
 
             conn.commit()
-
-        # Sync to Supabase
-        if self.supabase:
-            try:
-                self.supabase.table("repair_tickets").update({
-                    "status": decision,
-                    "faculty_decision": decision,
-                    "faculty_notes": notes,
-                    "resolved_by": resolved_by,
-                    "resolved_at": now_iso
-                }).eq("id", ticket_id).execute()
-            except Exception as e:
-                print(f"Notice: Supabase ticket resolve sync: {e}")
 
         return {
             "status": "success",

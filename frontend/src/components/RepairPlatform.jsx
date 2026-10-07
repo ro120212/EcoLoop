@@ -217,7 +217,10 @@ export default function RepairPlatform({ user }) {
   // Filter tickets for community view vs student's own
   const filteredTickets = tickets.filter(t => {
     if (activeTab === 'my_requests') {
-      const isOwner = t.user_id === studentId || t.user_name === studentName
+      const isOwner = t.user_id === studentId || 
+        t.user_name === studentName ||
+        (studentName && (t.user_name || '').toLowerCase().includes(studentName.toLowerCase())) ||
+        (studentId && (t.user_id || '').toLowerCase().includes(studentId.toLowerCase()))
       if (!isOwner) return false
     }
 
@@ -225,10 +228,12 @@ export default function RepairPlatform({ user }) {
       return false
     }
 
+    const isOpen = t.status === 'pending_lab_review' || t.status === 'open' || t.status === 'diagnosed' || t.status === 'in_progress'
+
     if (statusFilter === 'open') {
-      if (t.status !== 'pending_lab_review' && t.status !== 'open') return false
+      if (!isOpen) return false
     } else if (statusFilter === 'resolved') {
-      if (t.status === 'pending_lab_review' || t.status === 'open') return false
+      if (isOpen) return false
     }
 
     if (searchQuery.trim()) {
@@ -521,7 +526,7 @@ export default function RepairPlatform({ user }) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredTickets.map(t => {
-              const isOpen = t.status === 'pending_lab_review' || t.status === 'open'
+              const isOpen = t.status === 'pending_lab_review' || t.status === 'open' || t.status === 'diagnosed' || t.status === 'in_progress'
               const isResolved = !isOpen
 
               return (
@@ -647,7 +652,7 @@ export default function RepairPlatform({ user }) {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400">Owner:</span>
-                  <span className="text-zinc-300">{resolvingTicket.user_name} ({resolvingTicket.department.split(' ')[0]})</span>
+                  <span className="text-zinc-300">{resolvingTicket.user_name} ({(resolvingTicket.department || 'Campus').split(' ')[0]})</span>
                 </div>
               </div>
 
