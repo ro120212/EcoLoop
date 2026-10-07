@@ -17,6 +17,7 @@ import CustomCursor from './components/CustomCursor'
 export default function App() {
   const [user, setUser] = useState(null)
   const [activeView, setActiveView] = useState('student_hub')
+  const [dashboardTab, setDashboardTab] = useState('seller')
   const [stats, setStats] = useState(null)
   const [loadingSession, setLoadingSession] = useState(true)
   const [domainError, setDomainError] = useState('')
@@ -150,6 +151,8 @@ export default function App() {
           <StudentDashboard 
             user={user} 
             onNavigate={setActiveView} 
+            initialTab={dashboardTab}
+            onTabChange={setDashboardTab}
           />
         )}
 
@@ -157,7 +160,10 @@ export default function App() {
         {activeView === 'marketplace' && (
           <MarketplaceCircular 
             user={user} 
-            onGoToPortfolio={() => setActiveView('student_hub')} 
+            onGoToPortfolio={(tab = 'buyer') => {
+              setDashboardTab(tab)
+              setActiveView('student_hub')
+            }} 
           />
         )}
 

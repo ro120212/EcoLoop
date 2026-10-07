@@ -69,8 +69,12 @@ export const api = {
     }
     return data
   },
-  async getUserPortfolio(userId) {
-    const res = await fetch(`${API_BASE}/api/user/portfolio/${userId}`)
+  async getUserPortfolio(userId, email, name) {
+    const params = new URLSearchParams()
+    if (email) params.append('email', email)
+    if (name) params.append('name', name)
+    const qs = params.toString() ? `?${params.toString()}` : ''
+    const res = await fetch(`${API_BASE}/api/user/portfolio/${encodeURIComponent(userId)}${qs}`)
     return res.json()
   },
 

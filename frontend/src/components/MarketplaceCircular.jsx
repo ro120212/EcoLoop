@@ -119,8 +119,8 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
     setPostForm(prev => ({ ...prev, image_url: '' }))
   }
 
-  const studentId = user?.id || (user?.email ? user.email : 'campus-member')
-  const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Campus Member')
+  const studentId = user?.id || user?.email || 'student'
+  const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Student')
 
   const loadItems = async () => {
     try {
@@ -428,7 +428,12 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                     >
                       Claim / Buy for Project
                     </button>
-                  ) : item.status === 'reserved' && (item.buyer_id === studentId || item.buyer_name === studentName) ? (
+                  ) : item.status === 'reserved' && (
+                    item.buyer_id === studentId || 
+                    item.buyer_name === studentName || 
+                    (user?.email && (item.buyer_id === user.email || item.buyer_name === user.email)) ||
+                    (studentId === 'student' && (item.buyer_id === 'student' || item.buyer_id === 'demo-student' || item.buyer_id === 'campus-member'))
+                  ) ? (
                     <button
                       onClick={() => {
                         setClaimingItem(item)
@@ -508,11 +513,12 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   <button
                     onClick={() => {
                       setClaimingItem(null)
-                      if (onGoToPortfolio) onGoToPortfolio()
+                      if (onGoToPortfolio) onGoToPortfolio('buyer')
                     }}
-                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition"
+                    className="w-full py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs transition cursor-pointer shadow-md shadow-[#3ECF8E]/20 flex items-center justify-center gap-2"
                   >
-                    View in My Dashboard
+                    <span>View in My Dashboard &amp; Copy PIN</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>

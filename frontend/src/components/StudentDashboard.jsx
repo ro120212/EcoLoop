@@ -22,7 +22,8 @@ import {
   Tag,
   Camera,
   UploadCloud,
-  X
+  X,
+  Copy
 } from 'lucide-react'
 import { api } from '../services/api'
 
@@ -35,11 +36,27 @@ const DEPARTMENTS = [
   'Instrumentation and Control Engineering'
 ]
 
-export default function StudentDashboard({ user, onNavigate }) {
+export default function StudentDashboard({ user, onNavigate, initialTab = 'seller', onTabChange }) {
   const [portfolio, setPortfolio] = useState({ my_listings: [], my_claims: [], total_co2_saved_kg: 0, items_diverted_count: 0 })
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('seller') // 'seller' | 'buyer'
+  const [activeTab, setActiveTabState] = useState(initialTab || 'seller') // 'seller' | 'buyer'
   const [sellerStatusFilter, setSellerStatusFilter] = useState('all') // 'all', 'available', 'reserved', 'sold'
+  const [copiedPin, setCopiedPin] = useState({})
+
+  const setActiveTab = (tab) => {
+    setActiveTabState(tab)
+    if (onTabChange) onTabChange(tab)
+  }
+
+  const handleCopyPin = (itemId, pin) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(String(pin))
+    }
+    setCopiedPin(prev => ({ ...prev, [itemId]: true }))
+    setTimeout(() => {
+      setCopiedPin(prev => ({ ...prev, [itemId]: false }))
+    }, 2000)
+  }
   
   // PIN verification states
   const [verifyingId, setVerifyingId] = useState(null)
@@ -119,15 +136,21 @@ export default function StudentDashboard({ user, onNavigate }) {
     setNewItemForm(prev => ({ ...prev, image_url: '' }))
   }
 
-  const studentId = user?.id || (user?.email ? user.email : 'student')
+  const studentId = user?.id || user?.email || 'student'
   const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Student')
   const studentDept = user?.user_metadata?.department || 'Engineering Department'
 
   const loadPortfolio = async () => {
     try {
       setLoading(true)
-      const data = await api.getUserPortfolio(studentId)
+      const data = await api.getUserPortfolio(studentId, user?.email, studentName)
       setPortfolio(data)
+      const claims = data?.my_claims || []
+      const active = claims.filter(i => i.status === 'reserved')
+      const listings = data?.my_listings || []
+      if (initialTab === 'buyer' || (active.length > 0 && listings.length === 0)) {
+        setActiveTabState('buyer')
+      }
     } catch (e) {
       console.error('Failed to load portfolio:', e)
     } finally {
@@ -138,6 +161,12 @@ export default function StudentDashboard({ user, onNavigate }) {
   useEffect(() => {
     loadPortfolio()
   }, [])
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTabState(initialTab)
+    }
+  }, [initialTab])
 
   const handleVerifyPin = async (itemId) => {
     const pin = pinInputs[itemId]
@@ -250,7 +279,14 @@ export default function StudentDashboard({ user, onNavigate }) {
 
         {/* Nested Sub-Cards Grid */}
         <div className="pt-6 border-t border-[#282828] grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+          <div 
+            onClick={() => { setActiveTab('seller'); setSellerStatusFilter('all'); }}
+            className={`p-4 rounded-2xl border shadow-sm flex items-center gap-3 cursor-pointer transition ${
+              activeTab === 'seller' && sellerStatusFilter === 'all'
+                ? 'bg-[#181818] border-[#3ECF8E]/50'
+                : 'bg-[#141414] border-[#282828] hover:border-zinc-700'
+            }`}
+          >
             <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
               <Package className="w-5 h-5" />
             </div>
@@ -261,7 +297,14 @@ export default function StudentDashboard({ user, onNavigate }) {
             </div>
           </div>
 
-          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+          <div 
+            onClick={() => { setActiveTab('seller'); setSellerStatusFilter('reserved'); }}
+            className={`p-4 rounded-2xl border shadow-sm flex items-center gap-3 cursor-pointer transition ${
+              activeTab === 'seller' && sellerStatusFilter === 'reserved'
+                ? 'bg-[#181818] border-amber-500/50'
+                : 'bg-[#141414] border-[#282828] hover:border-zinc-700'
+            }`}
+          >
             <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-amber-400 flex items-center justify-center flex-shrink-0">
               <Clock className="w-5 h-5" />
             </div>
@@ -272,7 +315,14 @@ export default function StudentDashboard({ user, onNavigate }) {
             </div>
           </div>
 
-          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+          <div 
+            onClick={() => { setActiveTab('seller'); setSellerStatusFilter('sold'); }}
+            className={`p-4 rounded-2xl border shadow-sm flex items-center gap-3 cursor-pointer transition ${
+              activeTab === 'seller' && sellerStatusFilter === 'sold'
+                ? 'bg-[#181818] border-[#3ECF8E]/50'
+                : 'bg-[#141414] border-[#282828] hover:border-zinc-700'
+            }`}
+          >
             <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-[#3ECF8E] flex items-center justify-center flex-shrink-0">
               <CheckCircle2 className="w-5 h-5" />
             </div>
@@ -283,18 +333,65 @@ export default function StudentDashboard({ user, onNavigate }) {
             </div>
           </div>
 
-          <div className="bg-[#141414] p-4 rounded-2xl border border-[#282828] shadow-sm flex items-center gap-3">
+          <div 
+            onClick={() => setActiveTab('buyer')}
+            className={`p-4 rounded-2xl border shadow-sm flex items-center gap-3 cursor-pointer transition ${
+              activeTab === 'buyer'
+                ? 'bg-[#181818] border-[#3ECF8E]/60 ring-1 ring-[#3ECF8E]/25'
+                : 'bg-[#141414] border-[#282828] hover:border-[#3ECF8E]/40'
+            }`}
+          >
             <div className="w-10 h-10 rounded-xl bg-[#232323] border border-[#2e2e2e] text-zinc-300 flex items-center justify-center flex-shrink-0">
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-5 h-5 text-[#3ECF8E]" />
             </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Claimed by Me</span>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono">Claimed by Me</span>
+                {activeClaims.length > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 text-[9px] font-bold font-mono animate-pulse">
+                    READY
+                  </span>
+                )}
+              </div>
               <p className="text-xl font-bold text-zinc-200">{myClaims.length} Items</p>
-              <span className="text-[10px] text-zinc-400 font-medium">{activeClaims.length} ready for pickup</span>
+              <span className="text-[10px] text-[#3ECF8E] font-medium font-mono">{activeClaims.length} awaiting pickup PIN ➜</span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* HIGH PRIORITY BANNER: ACTIVE CLAIMED HARDWARE AWAITING MEETUP */}
+      {activeClaims.length > 0 && (
+        <div className="relative overflow-hidden p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-[#1c1c1c] to-[#1c1c1c] border border-amber-500/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+              <KeyRound className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  Pickup Ready
+                </span>
+                <h3 className="text-sm sm:text-base font-bold text-[#EDEDED]">
+                  You have {activeClaims.length} reserved item{activeClaims.length > 1 ? 's' : ''} awaiting meetup &amp; handoff!
+                </h3>
+              </div>
+              <p className="text-xs text-zinc-300 mt-0.5">
+                "{activeClaims[0]?.title}" • Meeting Point: <strong className="text-amber-300">{activeClaims[0]?.meeting_point || 'Campus'}</strong>
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setActiveTab('buyer')}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#3ECF8E]/25 shrink-0"
+          >
+            <QrCode className="w-4 h-4" />
+            <span>View 4-Digit PIN &amp; Location</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Dual Tab Switcher: Seller vs Buyer */}
       <div className="border-b border-[#2e2e2e]">
@@ -326,6 +423,11 @@ export default function StudentDashboard({ user, onNavigate }) {
           >
             <QrCode className="w-4 h-4 text-[#3ECF8E]" />
             <span>🎒 My Claimed Hardware &amp; Handoff PINs ({myClaims.length})</span>
+            {activeClaims.length > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-[#3ECF8E]/20 text-[#3ECF8E] border border-[#3ECF8E]/30 text-[10px] font-bold font-mono animate-pulse">
+                {activeClaims.length} Ready to Pickup
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -333,6 +435,23 @@ export default function StudentDashboard({ user, onNavigate }) {
       {/* ================= SELLER VIEW ================= */}
       {activeTab === 'seller' && (
         <div className="space-y-6">
+          {/* Helpful banner inside seller view if user has claimed items */}
+          {activeClaims.length > 0 && (
+            <div className="p-3.5 rounded-2xl bg-[#141414] border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <span className="text-zinc-300 flex items-center gap-2">
+                <ShoppingBag className="w-4 h-4 text-[#3ECF8E] shrink-0" />
+                <span>You have <strong>{activeClaims.length} claimed hardware item(s)</strong> awaiting pickup. Looking for your secret PIN?</span>
+              </span>
+              <button 
+                onClick={() => setActiveTab('buyer')}
+                className="text-[#3ECF8E] hover:underline font-bold text-xs cursor-pointer flex items-center gap-1 shrink-0"
+              >
+                <span>Switch to My Claimed Hardware</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* Status Filter Tabs */}
           <div className="flex flex-wrap items-center justify-between gap-3 bg-[#1c1c1c] p-3 rounded-2xl border border-[#2e2e2e] shadow-xs">
             <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-semibold">
@@ -651,8 +770,8 @@ export default function StudentDashboard({ user, onNavigate }) {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {activeClaims.map(item => (
-                      <div key={item.id} className="bg-[#1c1c1c] p-5 rounded-3xl border border-[#2e2e2e] shadow-sm space-y-3 text-xs flex flex-col justify-between">
-                        <div className="space-y-2">
+                      <div key={item.id} className="bg-[#1c1c1c] p-5 rounded-3xl border border-amber-500/30 hover:border-amber-500/50 shadow-md space-y-4 text-xs flex flex-col justify-between transition">
+                        <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#242424] text-zinc-300 border border-[#2e2e2e] font-mono">
                               {item.department}
@@ -661,26 +780,59 @@ export default function StudentDashboard({ user, onNavigate }) {
                               {item.price_type === 'free' ? 'FREE GIFT' : `₹${item.price}`}
                             </span>
                           </div>
-                          <h4 className="font-bold text-[#EDEDED] text-base">{item.title}</h4>
-                          <p className="text-zinc-400 text-xs">
-                            Seller: <strong className="text-zinc-200">{item.seller_name}</strong>
-                          </p>
+
+                          <div className="flex items-start gap-3">
+                            {item.image_url ? (
+                              <img 
+                                src={item.image_url} 
+                                alt={item.title} 
+                                className="w-14 h-14 rounded-2xl object-cover border border-[#2e2e2e] shrink-0" 
+                              />
+                            ) : (
+                              <div className="w-14 h-14 rounded-2xl bg-[#242424] border border-[#2e2e2e] flex items-center justify-center text-[#3ECF8E] shrink-0">
+                                <Package className="w-6 h-6" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-[#EDEDED] text-base leading-snug">{item.title}</h4>
+                              <p className="text-zinc-400 text-xs mt-0.5">
+                                Donor / Seller: <strong className="text-zinc-200">{item.seller_name}</strong>
+                              </p>
+                              {item.claimed_component && item.claimed_component !== 'All' && (
+                                <span className="inline-block mt-1 px-2 py-0.5 rounded bg-[#232323] text-amber-300 border border-amber-500/20 text-[10px] font-semibold">
+                                  Harvesting: {item.claimed_component}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
 
                         {/* PIN & QR Code Box */}
-                        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] space-y-2 text-center">
-                          <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400 font-mono">
-                            Your Secret 4-Digit Pickup PIN
-                          </span>
-                          <div className="font-mono text-3xl font-black tracking-widest text-[#3ECF8E]">
+                        <div className="p-4 rounded-2xl bg-[#141414] border border-[#2e2e2e] text-[#EDEDED] space-y-2.5 text-center">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400 font-mono">
+                              Your 4-Digit Pickup PIN
+                            </span>
+                            <button
+                              onClick={() => handleCopyPin(item.id, item.handoff_pin || '7492')}
+                              className="px-2 py-1 rounded-lg bg-[#242424] hover:bg-[#2e2e2e] text-zinc-300 hover:text-[#3ECF8E] font-mono text-[10px] flex items-center gap-1 cursor-pointer transition border border-[#2e2e2e]"
+                            >
+                              <Copy className="w-3 h-3" />
+                              <span>{copiedPin[item.id] ? 'Copied!' : 'Copy'}</span>
+                            </button>
+                          </div>
+
+                          <div className="font-mono text-3xl font-black tracking-widest text-[#3ECF8E] drop-shadow-sm select-all">
                             {item.handoff_pin || '7492'}
                           </div>
-                          <div className="pt-1 text-[11px] text-zinc-300 flex items-center justify-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-[#3ECF8E] flex-shrink-0" />
-                            <span>Meeting Spot: <strong className="text-amber-300">{item.meeting_point}</strong></span>
+
+                          <div className="p-2 rounded-xl bg-[#1c1c1c] border border-[#282828] text-[11px] text-zinc-300 flex items-center justify-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                            <span>Meeting Spot: <strong className="text-amber-300">{item.meeting_point || 'Campus Meeting Spot'}</strong></span>
                           </div>
-                          <p className="text-[10px] text-zinc-500 pt-1">
-                            Show this code to the seller when you meet in person.
+
+                          <p className="text-[10px] text-zinc-500">
+                            Show this secret code to the seller when you meet in person to confirm receipt.
                           </p>
                         </div>
                       </div>

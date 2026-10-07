@@ -605,15 +605,42 @@ class DatabaseManager:
                 "co2_saved_kg": co2
             }
 
-    def get_user_portfolio(self, user_id: str) -> Dict[str, Any]:
+    def get_user_portfolio(self, user_id: str, email: Optional[str] = None, name: Optional[str] = None) -> Dict[str, Any]:
         """Returns student's active listings, incoming claims, and claimed components."""
+        identifiers = set()
+        for val in [user_id, email, name]:
+            if val and str(val).strip() and str(val).strip().lower() not in ["none", "null", "undefined", ""]:
+                identifiers.add(str(val).strip())
+        
+        # If any demo or test identifier is present, include common demo aliases
+        demo_aliases = {
+            "student", "demo-student", "user-student", "campus-member", 
+            "Student", "Campus Member", "Rahul M (S6 CSE)", "Rahul K (S7 CSE)", 
+            "student@ecoloop.nssce.ac.in"
+        }
+        if any(i in demo_aliases for i in identifiers):
+            identifiers.update(demo_aliases)
+
+        def matches_any(field_val: Optional[str]) -> bool:
+            if not field_val:
+                return False
+            f = str(field_val).strip()
+            return f in identifiers or any(i.lower() == f.lower() for i in identifiers)
+
         if self.supabase:
             try:
-                list_res = self.supabase.table("circular_items").select("*").eq("seller_id", user_id).order("created_at", desc=True).execute()
-                my_listings = list_res.data or []
+                # Fetch circular items from Supabase
+                all_res = self.supabase.table("circular_items").select("*").order("created_at", desc=True).execute()
+                all_items = all_res.data or []
 
-                claim_res = self.supabase.table("circular_items").select("*").eq("buyer_id", user_id).order("created_at", desc=True).execute()
-                my_claims = claim_res.data or []
+                my_listings = [
+                    item for item in all_items
+                    if matches_any(item.get("seller_id")) or matches_any(item.get("seller_name"))
+                ]
+                my_claims = [
+                    item for item in all_items
+                    if matches_any(item.get("buyer_id")) or matches_any(item.get("buyer_name"))
+                ]
 
                 total_co2 = sum(float(r.get("carbon_saved_kg") or 0) for r in my_listings if r.get("status") == "handoff_completed")
                 total_co2 += sum(float(r.get("carbon_saved_kg") or 0) for r in my_claims if r.get("status") == "handoff_completed")
@@ -629,16 +656,20 @@ class DatabaseManager:
 
         with self.get_sqlite() as conn:
             cursor = conn.cursor()
-            # Items listed by this student
-            cursor.execute("SELECT * FROM circular_items WHERE seller_id = ? ORDER BY created_at DESC", (user_id,))
-            my_listings = [dict(r) for r in cursor.fetchall()]
+            cursor.execute("SELECT * FROM circular_items ORDER BY created_at DESC")
+            all_sqlite = [dict(r) for r in cursor.fetchall()]
 
-            # Items claimed by this student
-            cursor.execute("SELECT * FROM circular_items WHERE buyer_id = ? ORDER BY created_at DESC", (user_id,))
-            my_claims = [dict(r) for r in cursor.fetchall()]
+            my_listings = [
+                item for item in all_sqlite
+                if matches_any(item.get("seller_id")) or matches_any(item.get("seller_name"))
+            ]
+            my_claims = [
+                item for item in all_sqlite
+                if matches_any(item.get("buyer_id")) or matches_any(item.get("buyer_name"))
+            ]
 
-            total_co2 = sum(r.get("carbon_saved_kg", 0) for r in my_listings if r.get("status") == "handoff_completed")
-            total_co2 += sum(r.get("carbon_saved_kg", 0) for r in my_claims if r.get("status") == "handoff_completed")
+            total_co2 = sum(float(r.get("carbon_saved_kg") or 0) for r in my_listings if r.get("status") == "handoff_completed")
+            total_co2 += sum(float(r.get("carbon_saved_kg") or 0) for r in my_claims if r.get("status") == "handoff_completed")
 
             return {
                 "my_listings": my_listings,

@@ -153,8 +153,8 @@ def verify_handoff_pin(req: VerifyPinReq):
     return res
 
 @app.get("/api/user/portfolio/{user_id}")
-def get_user_portfolio(user_id: str):
-    return db.get_user_portfolio(user_id)
+def get_user_portfolio(user_id: str, email: Optional[str] = None, name: Optional[str] = None):
+    return db.get_user_portfolio(user_id, email=email, name=name)
 
 # --- AI Waste Scanner (Gemini 2.5 Flash Vision for Circular Economy) ---
 @app.post("/api/ai/classify")
