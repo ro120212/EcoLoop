@@ -90,7 +90,6 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
   // In-Browser Camera QR Scanner States
   const [scannerOpen, setScannerOpen] = useState(false)
   const [scannerItemId, setScannerItemId] = useState(null)
-  const [showSellerQr, setShowSellerQr] = useState({})
 
   const handleScanComplete = async (scannedPin, scannedItemId) => {
     const targetId = scannedItemId || scannerItemId
@@ -772,11 +771,11 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                         </div>
 
                         <p className="text-zinc-300 leading-relaxed">
-                          When you meet <strong className="text-[#EDEDED]">{item.buyer_name}</strong>, scan their screen to complete the exchange instantly, or display your QR code for them to scan:
+                          When you meet <strong className="text-[#EDEDED]">{item.buyer_name}</strong> and hand over the hardware, scan their QR code to verify instantly, or enter their 4-digit PIN below:
                         </p>
 
-                        {/* Primary Instant QR Scan Buttons */}
-                        <div className="flex flex-wrap items-center gap-2.5">
+                        {/* Primary Instant QR Scan Button */}
+                        <div>
                           <button
                             type="button"
                             onClick={() => {
@@ -788,35 +787,12 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                             <Camera className="w-4 h-4" />
                             <span>Scan Buyer's QR Code</span>
                           </button>
-
-                          <button
-                            type="button"
-                            onClick={() => setShowSellerQr(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
-                            className="px-4 py-2.5 rounded-xl bg-[#242424] hover:bg-[#2c2c2c] text-zinc-200 hover:text-[#3ECF8E] font-semibold text-xs flex items-center gap-2 cursor-pointer transition border border-[#2e2e2e]"
-                          >
-                            <QrCode className="w-3.5 h-3.5 text-[#3ECF8E]" />
-                            <span>{showSellerQr[item.id] ? 'Hide QR Code' : 'Show QR to Buyer'}</span>
-                          </button>
                         </div>
 
-                        {/* Expandable Seller QR Code Display */}
-                        {showSellerQr[item.id] && (
-                          <div className="pt-1">
-                            <QRCodeView
-                              pin={item.handoff_pin || '7492'}
-                              itemId={item.id}
-                              title="Seller Handoff Verification"
-                              subtitle="Present this QR code for the buyer to scan with their device camera."
-                              compact={false}
-                              onCopySuccess={(pin) => toast.info('PIN Copied!', `Code: "${pin}"`)}
-                            />
-                          </div>
-                        )}
-
-                        {/* Manual PIN Fallback (Always Available if Camera is Blocked) */}
+                        {/* Manual PIN Fallback */}
                         <div className="pt-3 border-t border-amber-500/20 space-y-2">
                           <span className="text-[11px] text-zinc-400 block font-medium">
-                            Camera unavailable or dim lighting? Type the 4-digit PIN manually:
+                            Camera unavailable or dim lighting? Type Buyer's 4-digit PIN:
                           </span>
                           <div className="flex flex-wrap items-center gap-2">
                             <input
@@ -833,7 +809,7 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                               className="px-4 py-2 rounded-xl bg-[#242424] hover:bg-[#2c2c2c] text-zinc-200 hover:text-[#3ECF8E] border border-[#2e2e2e] font-semibold text-xs shadow-sm transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                             >
                               <Check className="w-4 h-4" />
-                              <span>{verifyingId === item.id ? 'Verifying...' : 'Verify PIN Manually'}</span>
+                              <span>{verifyingId === item.id ? 'Verifying...' : 'Verify PIN'}</span>
                             </button>
                           </div>
                         </div>
@@ -932,7 +908,7 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                           pin={item.handoff_pin || '7492'}
                           itemId={item.id}
                           title="Pickup Passcode"
-                          subtitle="Present this QR code to the seller, or tap below to scan their screen."
+                          subtitle="Show this QR code or 4-digit PIN to the seller when collecting your hardware."
                           compact={true}
                           onCopySuccess={(pin) => handleCopyPin(item.id, pin)}
                         />
@@ -940,21 +916,6 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                         <div className="p-2.5 rounded-xl bg-[#141414] border border-[#282828] text-[11px] text-zinc-300 flex items-center justify-center gap-1.5">
                           <MapPin className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                           <span>Meeting Spot: <strong className="text-amber-300">{item.meeting_point || 'Campus Meeting Spot'}</strong></span>
-                        </div>
-
-                        {/* Instant In-Browser Scanner for Buyer */}
-                        <div className="pt-1">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setScannerItemId(item.id)
-                              setScannerOpen(true)
-                            }}
-                            className="w-full py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 flex items-center justify-center gap-2 cursor-pointer transition"
-                          >
-                            <Camera className="w-4 h-4" />
-                            <span>Scan Seller's QR Code</span>
-                          </button>
                         </div>
                       </div>
                     ))}
@@ -1242,11 +1203,11 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
         isOpen={scannerOpen}
         onClose={() => setScannerOpen(false)}
         expectedItemId={scannerItemId}
-        title="Scan Handoff QR Code"
+        title="Scan Buyer's QR Code"
         onScanSuccess={handleScanComplete}
         onManualFallback={() => {
           setScannerOpen(false)
-          toast.info('Manual PIN Mode', 'Enter the 4-digit PIN in the input box on your card.')
+          toast.info('Manual PIN Mode', 'Enter the buyer\'s 4-digit PIN in the input box on your card.')
         }}
       />
     </div>
