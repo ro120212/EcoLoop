@@ -56,6 +56,13 @@ export default function App() {
   // Load user session from Supabase on mount
   useEffect(() => {
     fetchStats()
+    
+    // Cold-start preventer: Ping /health immediately and then every 9 minutes so Render backend never sleeps
+    api.pingHealth()
+    const keepAliveInterval = setInterval(() => {
+      api.pingHealth()
+    }, 9 * 60 * 1000)
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       syncUser(session?.user ?? null)
       setLoadingSession(false)
@@ -67,7 +74,10 @@ export default function App() {
       await syncUser(session?.user ?? null)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      clearInterval(keepAliveInterval)
+      subscription.unsubscribe()
+    }
   }, [])
 
   const handleLogout = async () => {

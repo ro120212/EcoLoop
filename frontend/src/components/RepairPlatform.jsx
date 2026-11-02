@@ -20,6 +20,28 @@ import {
 import { api } from '../services/api'
 import { useToast } from '../context/ToastContext'
 
+function SkeletonTicket() {
+  return (
+    <div className="p-5 rounded-2xl border border-[#2e2e2e] space-y-3.5 bg-[#141414] shadow-sm animate-pulse">
+      <div className="flex items-start justify-between">
+        <div className="space-y-1.5 w-2/3">
+          <div className="flex gap-2">
+            <div className="w-16 h-4 rounded bg-[#242424]" />
+            <div className="w-24 h-4 rounded bg-[#242424]" />
+          </div>
+          <div className="w-3/4 h-5 rounded bg-[#282828]" />
+        </div>
+        <div className="w-16 h-6 rounded-full bg-[#242424]" />
+      </div>
+      <div className="h-16 rounded-xl bg-[#181818]" />
+      <div className="flex items-center justify-between pt-2 border-t border-[#242424]">
+        <div className="w-24 h-3 rounded bg-[#242424]" />
+        <div className="w-20 h-6 rounded-xl bg-[#282828]" />
+      </div>
+    </div>
+  )
+}
+
 const DEPARTMENTS = [
   'Computer Science and Engineering',
   'Electronics and Communication Engineering',
@@ -510,9 +532,10 @@ export default function RepairPlatform({ user }) {
 
         {/* Tickets Grid */}
         {loadingTickets ? (
-          <div className="py-12 text-center text-xs text-zinc-500 flex items-center justify-center gap-2">
-            <RefreshCw className="w-4 h-4 animate-spin text-[#3ECF8E]" />
-            <span>Loading tickets...</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <SkeletonTicket key={i} />
+            ))}
           </div>
         ) : filteredTickets.length === 0 ? (
           <div className="py-12 text-center text-xs text-zinc-500 border border-dashed border-[#2e2e2e] rounded-2xl space-y-2">

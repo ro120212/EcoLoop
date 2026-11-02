@@ -3,6 +3,7 @@ import sqlite3
 import uuid
 import random
 import datetime
+import time
 import json
 import re
 import hashlib
@@ -26,8 +27,42 @@ DEPARTMENTS = [
     "Instrumentation and Control Engineering"
 ]
 
+class SimpleTTLCache:
+    """Ultra-fast, thread-safe in-memory TTL cache to eliminate remote database lag."""
+    def __init__(self, default_ttl: float = 30.0):
+        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._default_ttl = default_ttl
+
+    def get(self, key: str) -> Optional[Any]:
+        if key in self._cache:
+            entry = self._cache[key]
+            if time.time() < entry["expires_at"]:
+                return entry["data"]
+            else:
+                del self._cache[key]
+        return None
+
+    def set(self, key: str, data: Any, ttl: Optional[float] = None):
+        t = ttl if ttl is not None else self._default_ttl
+        self._cache[key] = {
+            "data": data,
+            "expires_at": time.time() + t
+        }
+
+    def delete(self, key: str):
+        self._cache.pop(key, None)
+
+    def invalidate_prefix(self, prefix: str):
+        keys_to_del = [k for k in self._cache if k.startswith(prefix)]
+        for k in keys_to_del:
+            self._cache.pop(k, None)
+
+    def clear(self):
+        self._cache.clear()
+
 class DatabaseManager:
     def __init__(self):
+        self.cache = SimpleTTLCache(default_ttl=30.0)
         self.supabase: Optional[Client] = None
         if SUPABASE_URL and SUPABASE_KEY:
             try:
@@ -460,6 +495,12 @@ class DatabaseManager:
 
     # --- Circular Marketplace Queries ---
     def get_circular_items(self, department: Optional[str] = None, category: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
+        cache_key = f"items:{department or 'All'}:{category or 'All'}:{status or 'All'}"
+        cached = self.cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        items = None
         if self.supabase:
             try:
                 query = self.supabase.table("circular_items").select("*")
@@ -471,26 +512,30 @@ class DatabaseManager:
                     query = query.eq("status", status)
                 res = query.order("created_at", desc=True).execute()
                 if res.data and len(res.data) > 0:
-                    return res.data
+                    items = res.data
             except Exception:
                 pass
 
-        with self.get_sqlite() as conn:
-            cursor = conn.cursor()
-            query = "SELECT * FROM circular_items WHERE 1=1"
-            params = []
-            if department and department != "All":
-                query += " AND department = ?"
-                params.append(department)
-            if category and category != "All":
-                query += " AND category = ?"
-                params.append(category)
-            if status:
-                query += " AND status = ?"
-                params.append(status)
-            query += " ORDER BY created_at DESC"
-            cursor.execute(query, params)
-            return [dict(row) for row in cursor.fetchall()]
+        if items is None:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                query = "SELECT * FROM circular_items WHERE 1=1"
+                params = []
+                if department and department != "All":
+                    query += " AND department = ?"
+                    params.append(department)
+                if category and category != "All":
+                    query += " AND category = ?"
+                    params.append(category)
+                if status:
+                    query += " AND status = ?"
+                    params.append(status)
+                query += " ORDER BY created_at DESC"
+                cursor.execute(query, params)
+                items = [dict(row) for row in cursor.fetchall()]
+
+        self.cache.set(cache_key, items, ttl=30.0)
+        return items
 
     def create_circular_item(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data["id"] = str(uuid.uuid4())
@@ -534,6 +579,11 @@ class DatabaseManager:
                 data["status"], data["carbon_saved_kg"], data.get("image_url", "")
             ))
             conn.commit()
+
+        # Invalidate items, stats, and portfolio caches immediately
+        self.cache.invalidate_prefix("items:")
+        self.cache.invalidate_prefix("portfolio:")
+        self.cache.invalidate_prefix("stats:")
         return data
 
     def claim_item(self, item_id: str, buyer_id: str, buyer_name: str, meeting_point: str, claimed_component: Optional[str] = "All") -> Dict[str, Any]:
@@ -588,6 +638,9 @@ class DatabaseManager:
                     except Exception:
                         pass
 
+                    self.cache.invalidate_prefix("items:")
+                    self.cache.invalidate_prefix("portfolio:")
+                    self.cache.invalidate_prefix("stats:")
                     return {
                         "status": "success",
                         "item_id": item_id,
@@ -632,6 +685,9 @@ class DatabaseManager:
             if cursor.rowcount == 0:
                 return {"status": "error", "message": "Item already reserved or unavailable."}
             
+            self.cache.invalidate_prefix("items:")
+            self.cache.invalidate_prefix("portfolio:")
+            self.cache.invalidate_prefix("stats:")
             return {
                 "status": "success",
                 "item_id": item_id,
@@ -685,6 +741,9 @@ class DatabaseManager:
                     except Exception:
                         pass
 
+                    self.cache.invalidate_prefix("items:")
+                    self.cache.invalidate_prefix("portfolio:")
+                    self.cache.invalidate_prefix("stats:")
                     return {
                         "status": "success",
                         "message": "Handoff verified successfully! Lifespan extended.",
@@ -719,6 +778,9 @@ class DatabaseManager:
             """, (now_iso, item_id))
 
             conn.commit()
+            self.cache.invalidate_prefix("items:")
+            self.cache.invalidate_prefix("portfolio:")
+            self.cache.invalidate_prefix("stats:")
             return {
                 "status": "success",
                 "message": "Handoff verified successfully! Lifespan extended.",
@@ -727,6 +789,11 @@ class DatabaseManager:
 
     def get_user_portfolio(self, user_id: str, email: Optional[str] = None, name: Optional[str] = None) -> Dict[str, Any]:
         """Returns student's active listings, incoming claims, and claimed components."""
+        cache_key = f"portfolio:{user_id}:{email or ''}:{name or ''}"
+        cached = self.cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         identifiers = set()
         for val in [user_id, email, name]:
             if val and str(val).strip() and str(val).strip().lower() not in ["none", "null", "undefined", ""]:
@@ -747,6 +814,7 @@ class DatabaseManager:
             f = str(field_val).strip()
             return f in identifiers or any(i.lower() == f.lower() for i in identifiers)
 
+        res_portfolio = None
         if self.supabase:
             try:
                 # Fetch circular items from Supabase
@@ -765,7 +833,7 @@ class DatabaseManager:
                 total_co2 = sum(float(r.get("carbon_saved_kg") or 0) for r in my_listings if r.get("status") == "handoff_completed")
                 total_co2 += sum(float(r.get("carbon_saved_kg") or 0) for r in my_claims if r.get("status") == "handoff_completed")
 
-                return {
+                res_portfolio = {
                     "my_listings": my_listings,
                     "my_claims": my_claims,
                     "total_co2_saved_kg": round(total_co2, 1),
@@ -774,29 +842,33 @@ class DatabaseManager:
             except Exception as e:
                 print(f"Notice: Supabase portfolio query error: {e}")
 
-        with self.get_sqlite() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM circular_items ORDER BY created_at DESC")
-            all_sqlite = [dict(r) for r in cursor.fetchall()]
+        if res_portfolio is None:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM circular_items ORDER BY created_at DESC")
+                all_sqlite = [dict(r) for r in cursor.fetchall()]
 
-            my_listings = [
-                item for item in all_sqlite
-                if matches_any(item.get("seller_id")) or matches_any(item.get("seller_name"))
-            ]
-            my_claims = [
-                item for item in all_sqlite
-                if matches_any(item.get("buyer_id")) or matches_any(item.get("buyer_name"))
-            ]
+                my_listings = [
+                    item for item in all_sqlite
+                    if matches_any(item.get("seller_id")) or matches_any(item.get("seller_name"))
+                ]
+                my_claims = [
+                    item for item in all_sqlite
+                    if matches_any(item.get("buyer_id")) or matches_any(item.get("buyer_name"))
+                ]
 
-            total_co2 = sum(float(r.get("carbon_saved_kg") or 0) for r in my_listings if r.get("status") == "handoff_completed")
-            total_co2 += sum(float(r.get("carbon_saved_kg") or 0) for r in my_claims if r.get("status") == "handoff_completed")
+                total_co2 = sum(float(r.get("carbon_saved_kg") or 0) for r in my_listings if r.get("status") == "handoff_completed")
+                total_co2 += sum(float(r.get("carbon_saved_kg") or 0) for r in my_claims if r.get("status") == "handoff_completed")
 
-            return {
-                "my_listings": my_listings,
-                "my_claims": my_claims,
-                "total_co2_saved_kg": round(total_co2, 1),
-                "items_diverted_count": len([r for r in my_listings if r.get("status") == "handoff_completed"]) + len([r for r in my_claims if r.get("status") == "handoff_completed"])
-            }
+                res_portfolio = {
+                    "my_listings": my_listings,
+                    "my_claims": my_claims,
+                    "total_co2_saved_kg": round(total_co2, 1),
+                    "items_diverted_count": len([r for r in my_listings if r.get("status") == "handoff_completed"]) + len([r for r in my_claims if r.get("status") == "handoff_completed"])
+                }
+
+        self.cache.set(cache_key, res_portfolio, ttl=30.0)
+        return res_portfolio
 
     # --- Lab Audits ---
     def get_lab_audits(self) -> List[Dict[str, Any]]:
@@ -890,6 +962,12 @@ class DatabaseManager:
 
     # --- Global Platform Metrics ---
     def get_global_metrics(self) -> Dict[str, Any]:
+        cache_key = "stats:global"
+        cached = self.cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        metrics = None
         if self.supabase:
             try:
                 active_res = self.supabase.table("circular_items").select("id", count="exact").eq("status", "available").execute()
@@ -901,7 +979,7 @@ class DatabaseManager:
                 co2_saved = round(co2_sum + 120.5, 1)
                 trees = round(co2_saved / 21.77, 1)
 
-                return {
+                metrics = {
                     "active_listings_count": active_listings,
                     "reused_devices_count": completed_count + 18,
                     "co2_saved_kg": co2_saved,
@@ -912,33 +990,41 @@ class DatabaseManager:
             except Exception as e:
                 print(f"Notice: Supabase global metrics query: {e}")
 
-        with self.get_sqlite() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM circular_items WHERE status = 'available'")
-            active_listings = cursor.fetchone()[0]
+        if metrics is None:
+            with self.get_sqlite() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM circular_items WHERE status = 'available'")
+                active_listings = cursor.fetchone()[0]
 
-            cursor.execute("SELECT COUNT(*), COALESCE(SUM(carbon_saved_kg), 0) FROM circular_items WHERE status = 'handoff_completed'")
-            completed_row = cursor.fetchone()
-            completed_count = completed_row[0]
-            co2_saved = round(completed_row[1] + 120.5, 1)
+                cursor.execute("SELECT COUNT(*), COALESCE(SUM(carbon_saved_kg), 0) FROM circular_items WHERE status = 'handoff_completed'")
+                completed_row = cursor.fetchone()
+                completed_count = completed_row[0]
+                co2_saved = round(completed_row[1] + 120.5, 1)
 
-            cursor.execute("SELECT COUNT(*) FROM lab_audits")
-            audits_count = cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM lab_audits")
+                audits_count = cursor.fetchone()[0]
 
-            trees = round(co2_saved / 21.77, 1)
+                trees = round(co2_saved / 21.77, 1)
 
-            return {
-                "active_listings_count": active_listings,
-                "reused_devices_count": completed_count + 18,
-                "co2_saved_kg": co2_saved,
-                "trees_equivalent": trees,
-                "audited_labs_count": audits_count,
-                "departments": DEPARTMENTS
-            }
+                metrics = {
+                    "active_listings_count": active_listings,
+                    "reused_devices_count": completed_count + 18,
+                    "co2_saved_kg": co2_saved,
+                    "trees_equivalent": trees,
+                    "audited_labs_count": audits_count,
+                    "departments": DEPARTMENTS
+                }
 
-    # --- Department Workshop Helpdesk Tickets ---
+        self.cache.set(cache_key, metrics, ttl=30.0)
+        return metrics
+
     # --- Department Workshop Helpdesk Tickets ---
     def get_repair_tickets(self, department: Optional[str] = None, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        cache_key = f"tickets:{department or 'All'}:{user_id or 'All'}"
+        cached = self.cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         tickets_map = {}
 
         # 1. Fetch from Supabase
@@ -1046,6 +1132,7 @@ class DatabaseManager:
                     continue
             filtered.append(t)
 
+        self.cache.set(cache_key, filtered, ttl=30.0)
         return filtered
 
     def create_repair_ticket(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -1108,6 +1195,9 @@ class DatabaseManager:
                 conn.commit()
         except Exception as e:
             print(f"Notice: SQLite repair ticket insert: {e}")
+
+        self.cache.invalidate_prefix("tickets:")
+        self.cache.invalidate_prefix("stats:")
 
         data["department"] = dept
         data["lab_name"] = lab
@@ -1189,6 +1279,9 @@ class DatabaseManager:
                     print(f"Notice: impact log entry skipped: {log_err}")
 
             conn.commit()
+
+        self.cache.invalidate_prefix("tickets:")
+        self.cache.invalidate_prefix("stats:")
 
         return {
             "status": "success",

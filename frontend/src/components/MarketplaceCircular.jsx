@@ -23,6 +23,33 @@ import {
 } from 'lucide-react'
 import { api } from '../services/api'
 import { useToast } from '../context/ToastContext'
+import QRCodeView from './QRCodeView'
+
+function SkeletonCard() {
+  return (
+    <div className="bg-[#1c1c1c] p-5 rounded-2xl border border-[#2e2e2e] shadow-sm flex flex-col justify-between space-y-3 animate-pulse">
+      <div className="space-y-3">
+        <div className="w-full h-40 rounded-xl bg-[#232323] border border-[#2e2e2e]" />
+        <div className="flex items-center justify-between">
+          <div className="w-24 h-4 rounded-md bg-[#282828]" />
+          <div className="w-12 h-4 rounded-full bg-[#282828]" />
+        </div>
+        <div className="w-3/4 h-5 rounded-md bg-[#282828]" />
+        <div className="space-y-1.5">
+          <div className="w-full h-3 rounded bg-[#232323]" />
+          <div className="w-4/5 h-3 rounded bg-[#232323]" />
+        </div>
+      </div>
+      <div className="space-y-3 pt-2 border-t border-[#242424]">
+        <div className="flex items-center justify-between">
+          <div className="w-20 h-3 rounded bg-[#232323]" />
+          <div className="w-16 h-3 rounded bg-[#232323]" />
+        </div>
+        <div className="w-full h-8 rounded-xl bg-[#282828]" />
+      </div>
+    </div>
+  )
+}
 
 const DEPARTMENTS = [
   'All',
@@ -88,8 +115,8 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         const img = new Image()
         img.onload = () => {
           const canvas = document.createElement('canvas')
-          const MAX_WIDTH = 800
-          const MAX_HEIGHT = 800
+          const MAX_WIDTH = 640
+          const MAX_HEIGHT = 640
           let width = img.width
           let height = img.height
 
@@ -109,7 +136,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
           canvas.height = height
           const ctx = canvas.getContext('2d')
           ctx.drawImage(img, 0, 0, width, height)
-          const compressed = canvas.toDataURL('image/jpeg', 0.82)
+          const compressed = canvas.toDataURL('image/jpeg', 0.70)
           setImagePreview(compressed)
           setPostForm(prev => ({ ...prev, image_url: compressed }))
           setImageUploading(false)
@@ -136,13 +163,13 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
   const studentId = user?.id || user?.email || 'student'
   const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Student')
 
-  const loadItems = async () => {
+  const loadItems = async (force = false) => {
     try {
       setLoading(true)
-      const data = await api.getMarketplace(selectedDept)
-      setItems(data)
+      const data = await api.getMarketplace('All', null, null, { forceRefresh: force })
+      setItems(Array.isArray(data) ? data : [])
     } catch (e) {
-      console.error(e)
+      console.error('Failed to load marketplace items:', e)
     } finally {
       setLoading(false)
     }
@@ -150,7 +177,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
   useEffect(() => {
     loadItems()
-  }, [selectedDept])
+  }, [])
 
   const handleClaimSubmit = async (e) => {
     e.preventDefault()
@@ -240,7 +267,15 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
     }
   }
 
+  const deptCounts = items.reduce((acc, item) => {
+    if (item.department) {
+      acc[item.department] = (acc[item.department] || 0) + 1
+    }
+    return acc
+  }, {})
+
   const filtered = items.filter(item => {
+    const matchesDept = selectedDept === 'All' || item.department === selectedDept
     const matchesSearch = 
       (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -252,7 +287,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
       (priceFilter === 'free' && (item.price_type === 'free' || item.price == 0)) ||
       (priceFilter === 'priced' && item.price_type === 'priced' && item.price > 0)
 
-    return matchesSearch && matchesPrice
+    return matchesDept && matchesSearch && matchesPrice
   })
 
   return (
@@ -285,18 +320,31 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex flex-wrap gap-1.5">
             {DEPARTMENTS.map(d => {
-              const label = d === 'All' ? 'All Departments' : d.split(' ')[0]
+              const count = d === 'All' ? items.length : (deptCounts[d] || 0)
+              const shortName = d === 'All' ? 'All' : (
+                d.includes('Computer') ? 'CSE' :
+                d.includes('Electronics and Communication') ? 'ECE' :
+                d.includes('Electrical and Electronics') ? 'EEE' :
+                d.includes('Mechanical') ? 'Mech' :
+                d.includes('Civil') ? 'Civil' :
+                d.includes('Instrumentation') ? 'IC' : d.split(' ')[0]
+              )
               return (
                 <button
                   key={d}
                   onClick={() => setSelectedDept(d)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
                     selectedDept === d
                       ? 'bg-[#3ECF8E] text-[#121212] shadow-sm'
                       : 'bg-[#1c1c1c] border border-[#2e2e2e] text-zinc-400 hover:text-[#EDEDED] hover:bg-[#232323]'
                   }`}
                 >
-                  {label}
+                  <span>{shortName}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                    selectedDept === d ? 'bg-[#121212]/20 text-[#121212]' : 'bg-[#262626] text-zinc-400'
+                  }`}>
+                    {count}
+                  </span>
                 </button>
               )
             })}
@@ -351,7 +399,11 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
 
       {/* Items Grid */}
       {loading ? (
-        <div className="p-12 text-center text-zinc-500 text-xs">Loading items...</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[...Array(6)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <div className="bg-[#1c1c1c] p-12 text-center rounded-2xl border border-[#2e2e2e] shadow-sm space-y-2">
           <ShoppingBag className="w-10 h-10 text-zinc-600 mx-auto" />
@@ -509,28 +561,17 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                   Item: <strong className="text-zinc-200">{claimingItem?.title}</strong>
                 </p>
 
-                {/* Big PIN Box */}
-                <div className="p-4 rounded-2xl bg-[#141414] border border-[#2e2e2e] text-white space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-[#3ECF8E] font-mono">
-                      Handoff PIN
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyModalPin(claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492')}
-                      className="px-2 py-0.5 rounded bg-[#242424] hover:bg-[#2c2c2c] text-zinc-300 hover:text-[#3ECF8E] font-mono text-[10px] flex items-center gap-1 cursor-pointer transition border border-[#2e2e2e]"
-                    >
-                      <Copy className="w-3 h-3" />
-                      <span>{copiedModalPin ? 'Copied!' : 'Copy'}</span>
-                    </button>
-                  </div>
-                  <div className="font-mono text-3xl font-extrabold tracking-widest text-[#3ECF8E] select-all">
-                    {claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492'}
-                  </div>
-                  <div className="pt-1 text-[11px] text-zinc-400 flex items-center justify-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-[#3ECF8E]" />
-                    <span>Meeting Spot: <strong className="text-zinc-200">{claimingSuccess?.meeting_point || claimingItem?.meeting_point || 'Campus Meeting Spot'}</strong></span>
-                  </div>
+                {/* QR Code and PIN Handoff View */}
+                <QRCodeView
+                  pin={claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492'}
+                  title="Handoff Passcode"
+                  subtitle="Present this QR code or 4-digit PIN to the seller during your meetup to complete handoff."
+                  onCopySuccess={(pin) => handleCopyModalPin(pin)}
+                />
+
+                <div className="p-2.5 rounded-xl bg-[#141414] border border-[#2e2e2e] text-[11px] text-zinc-400 flex items-center justify-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#3ECF8E] shrink-0" />
+                  <span>Meeting Spot: <strong className="text-zinc-200">{claimingSuccess?.meeting_point || claimingItem?.meeting_point || 'Campus Meeting Spot'}</strong></span>
                 </div>
 
                 <p className="text-[11px] text-zinc-500">
