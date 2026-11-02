@@ -564,6 +564,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 {/* QR Code and PIN Handoff View */}
                 <QRCodeView
                   pin={claimingSuccess?.handoff_pin || claimingItem?.handoff_pin || '7492'}
+                  itemId={claimingSuccess?.item_id || claimingItem?.id}
                   title="Handoff Passcode"
                   subtitle="Present this QR code or 4-digit PIN to the seller during your meetup to complete handoff."
                   onCopySuccess={(pin) => handleCopyModalPin(pin)}

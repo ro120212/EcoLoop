@@ -28,6 +28,7 @@ import {
 import { api } from '../services/api'
 import { useToast } from '../context/ToastContext'
 import QRCodeView from './QRCodeView'
+import QRScannerModal from './QRScannerModal'
 
 function SkeletonListingCard() {
   return (
@@ -85,6 +86,36 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
   const [verifyingId, setVerifyingId] = useState(null)
   const [pinInputs, setPinInputs] = useState({})
   const [verifyMsg, setVerifyMsg] = useState({})
+
+  // In-Browser Camera QR Scanner States
+  const [scannerOpen, setScannerOpen] = useState(false)
+  const [scannerItemId, setScannerItemId] = useState(null)
+  const [showSellerQr, setShowSellerQr] = useState({})
+
+  const handleScanComplete = async (scannedPin, scannedItemId) => {
+    const targetId = scannedItemId || scannerItemId
+    setScannerOpen(false)
+    if (!targetId || !scannedPin) {
+      toast.error('Scan Error', 'Could not read a valid 4-digit PIN from the QR code.')
+      return
+    }
+    setPinInputs(prev => ({ ...prev, [targetId]: scannedPin }))
+    try {
+      setVerifyingId(targetId)
+      const res = await api.verifyHandoffPin(targetId, scannedPin)
+      setVerifyMsg(prev => ({
+        ...prev,
+        [targetId]: { success: true, text: res.message || 'Handoff verified successfully! Status updated to Sold.' }
+      }))
+      toast.celebrate('Handoff Verified! 🎉', 'Item marked as sold and verified.')
+      await loadPortfolio()
+    } catch (err) {
+      setVerifyMsg(prev => ({ ...prev, [targetId]: { success: false, text: err.message } }))
+      toast.error('Verification Failed', err.message || 'Incorrect PIN.')
+    } finally {
+      setVerifyingId(null)
+    }
+  }
 
   // Quick List Item Modal
   const [showListModal, setShowListModal] = useState(false)
@@ -727,33 +758,84 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                       </div>
                     )}
 
-                    {/* INLINE PIN VERIFICATION BOX (FOR RESERVED ITEMS ONLY) */}
+                    {/* INLINE QR SCANNING & PIN VERIFICATION BOX (FOR RESERVED ITEMS) */}
                     {item.status === 'reserved' && (
-                      <div className="mt-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3 text-xs">
-                        <div className="flex items-center gap-2">
-                          <KeyRound className="w-4 h-4 text-amber-400" />
-                          <h4 className="font-bold text-amber-300">Confirm In-Person Physical Handoff</h4>
+                      <div className="mt-4 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-4 text-xs">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <KeyRound className="w-4 h-4 text-amber-400" />
+                            <h4 className="font-bold text-amber-300">Confirm In-Person Physical Handoff</h4>
+                          </div>
+                          <span className="text-[10px] text-zinc-400 font-mono">
+                            Meetup: <strong className="text-amber-300">"{item.meeting_point}"</strong>
+                          </span>
                         </div>
+
                         <p className="text-zinc-300 leading-relaxed">
-                          When you meet <strong className="text-[#EDEDED]">{item.buyer_name}</strong> at <em className="text-amber-300">"{item.meeting_point}"</em>, ask them for the <strong className="text-[#EDEDED]">4-digit code</strong> generated on their phone. Enter it below to mark the item as sold:
+                          When you meet <strong className="text-[#EDEDED]">{item.buyer_name}</strong>, scan their screen to complete the exchange instantly, or display your QR code for them to scan:
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-2">
-                          <input
-                            type="text"
-                            maxLength="4"
-                            value={pinInputs[item.id] || ''}
-                            onChange={(e) => setPinInputs({ ...pinInputs, [item.id]: e.target.value })}
-                            className="w-32 px-3 py-2 text-center font-mono font-bold tracking-widest text-base rounded-xl border border-amber-500/40 bg-[#141414] text-[#EDEDED] focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
-                          />
+                        {/* Primary Instant QR Scan Buttons */}
+                        <div className="flex flex-wrap items-center gap-2.5">
                           <button
-                            onClick={() => handleVerifyPin(item.id)}
-                            disabled={verifyingId === item.id || !pinInputs[item.id]}
-                            className="px-5 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-sm transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                            type="button"
+                            onClick={() => {
+                              setScannerItemId(item.id)
+                              setScannerOpen(true)
+                            }}
+                            className="px-5 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 flex items-center gap-2 cursor-pointer transition"
                           >
-                            <Check className="w-4 h-4" />
-                            <span>{verifyingId === item.id ? 'Verifying PIN...' : 'Verify Code & Mark as Sold'}</span>
+                            <Camera className="w-4 h-4" />
+                            <span>Scan Buyer's QR Code</span>
                           </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setShowSellerQr(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
+                            className="px-4 py-2.5 rounded-xl bg-[#242424] hover:bg-[#2c2c2c] text-zinc-200 hover:text-[#3ECF8E] font-semibold text-xs flex items-center gap-2 cursor-pointer transition border border-[#2e2e2e]"
+                          >
+                            <QrCode className="w-3.5 h-3.5 text-[#3ECF8E]" />
+                            <span>{showSellerQr[item.id] ? 'Hide QR Code' : 'Show QR to Buyer'}</span>
+                          </button>
+                        </div>
+
+                        {/* Expandable Seller QR Code Display */}
+                        {showSellerQr[item.id] && (
+                          <div className="pt-1">
+                            <QRCodeView
+                              pin={item.handoff_pin || '7492'}
+                              itemId={item.id}
+                              title="Seller Handoff Verification"
+                              subtitle="Present this QR code for the buyer to scan with their device camera."
+                              compact={false}
+                              onCopySuccess={(pin) => toast.info('PIN Copied!', `Code: "${pin}"`)}
+                            />
+                          </div>
+                        )}
+
+                        {/* Manual PIN Fallback (Always Available if Camera is Blocked) */}
+                        <div className="pt-3 border-t border-amber-500/20 space-y-2">
+                          <span className="text-[11px] text-zinc-400 block font-medium">
+                            Camera unavailable or dim lighting? Type the 4-digit PIN manually:
+                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <input
+                              type="text"
+                              maxLength="4"
+                              placeholder="4-digit PIN"
+                              value={pinInputs[item.id] || ''}
+                              onChange={(e) => setPinInputs({ ...pinInputs, [item.id]: e.target.value })}
+                              className="w-32 px-3 py-2 text-center font-mono font-bold tracking-widest text-base rounded-xl border border-amber-500/40 bg-[#141414] text-[#EDEDED] placeholder-zinc-600 focus:ring-1 focus:ring-[#3ECF8E] focus:outline-none"
+                            />
+                            <button
+                              onClick={() => handleVerifyPin(item.id)}
+                              disabled={verifyingId === item.id || !pinInputs[item.id]}
+                              className="px-4 py-2 rounded-xl bg-[#242424] hover:bg-[#2c2c2c] text-zinc-200 hover:text-[#3ECF8E] border border-[#2e2e2e] font-semibold text-xs shadow-sm transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Check className="w-4 h-4" />
+                              <span>{verifyingId === item.id ? 'Verifying...' : 'Verify PIN Manually'}</span>
+                            </button>
+                          </div>
                         </div>
 
                         {verifyMsg[item.id] && (
@@ -848,8 +930,9 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                         {/* Interactive QR Code & Passcode View */}
                         <QRCodeView
                           pin={item.handoff_pin || '7492'}
+                          itemId={item.id}
                           title="Pickup Passcode"
-                          subtitle="Present this QR code or 4-digit PIN to the seller when you meet in person."
+                          subtitle="Present this QR code to the seller, or tap below to scan their screen."
                           compact={true}
                           onCopySuccess={(pin) => handleCopyPin(item.id, pin)}
                         />
@@ -857,6 +940,21 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                         <div className="p-2.5 rounded-xl bg-[#141414] border border-[#282828] text-[11px] text-zinc-300 flex items-center justify-center gap-1.5">
                           <MapPin className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                           <span>Meeting Spot: <strong className="text-amber-300">{item.meeting_point || 'Campus Meeting Spot'}</strong></span>
+                        </div>
+
+                        {/* Instant In-Browser Scanner for Buyer */}
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setScannerItemId(item.id)
+                              setScannerOpen(true)
+                            }}
+                            className="w-full py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs shadow-md shadow-[#3ECF8E]/20 flex items-center justify-center gap-2 cursor-pointer transition"
+                          >
+                            <Camera className="w-4 h-4" />
+                            <span>Scan Seller's QR Code</span>
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -1139,6 +1237,18 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
           </div>
         </div>
       )}
+      {/* IN-BROWSER CAMERA QR SCANNER MODAL */}
+      <QRScannerModal
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        expectedItemId={scannerItemId}
+        title="Scan Handoff QR Code"
+        onScanSuccess={handleScanComplete}
+        onManualFallback={() => {
+          setScannerOpen(false)
+          toast.info('Manual PIN Mode', 'Enter the 4-digit PIN in the input box on your card.')
+        }}
+      />
     </div>
   )
 }

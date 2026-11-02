@@ -4,6 +4,7 @@ import { QrCode, Copy, Check, ShieldCheck } from 'lucide-react'
 
 export default function QRCodeView({ 
   pin = '0000', 
+  itemId = null,
   title = 'Handoff Verification',
   subtitle = 'Show this QR code or 4-digit PIN to the seller to confirm physical pickup.',
   compact = false,
@@ -15,8 +16,10 @@ export default function QRCodeView({
 
   useEffect(() => {
     let isMounted = true
-    // Plain 4-digit PIN payload is instantly recognized by 100% of native phone cameras (iPhone, Google Lens, Samsung)
-    const payload = String(pin || '0000')
+    // Formatted payload encodes both item ID and PIN for 1-click in-browser camera verification
+    const payload = itemId 
+      ? JSON.stringify({ itemId: String(itemId), pin: String(pin) })
+      : String(pin || '0000')
     QRCode.toDataURL(payload, {
       width: 240,
       margin: 1,
