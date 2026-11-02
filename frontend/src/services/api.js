@@ -45,7 +45,7 @@ export const api = {
     try {
       const res = await fetch(`${API_BASE}/health`)
       return res.ok
-    } catch (_) {
+    } catch {
       return false
     }
   },

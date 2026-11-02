@@ -7,8 +7,7 @@ import {
   ArrowRight,
   AlertCircle,
   RefreshCw,
-  CheckCircle2,
-  Key
+  CheckCircle2
 } from 'lucide-react'
 import { authService } from '../services/authService'
 import LiveWallpaper from './LiveWallpaper'
@@ -280,7 +279,7 @@ export default function LoginScreen({ onLoginSuccess, externalError }) {
             </div>
 
         {/* Form Container */}
-        <div className="p-6 sm:p-8 space-y-5">
+        <div className="p-5 sm:p-8 space-y-4 sm:space-y-5">
           {/* Error Banner */}
           {errorMsg && (
             <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">

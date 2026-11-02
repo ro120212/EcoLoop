@@ -38,7 +38,7 @@ export default function QRCodeView({
     return () => {
       isMounted = false
     }
-  }, [pin])
+  }, [pin, itemId])
 
   const handleCopy = () => {
     if (navigator?.clipboard?.writeText) {

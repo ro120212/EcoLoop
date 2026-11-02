@@ -20,15 +20,13 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [activeView, setActiveView] = useState('student_hub')
   const [dashboardTab, setDashboardTab] = useState('seller')
-  const [stats, setStats] = useState(null)
   const [loadingSession, setLoadingSession] = useState(true)
   const [domainError, setDomainError] = useState('')
 
-  // Fetch global metrics
+  // Preload global metrics cache
   const fetchStats = async () => {
     try {
-      const data = await api.getStats()
-      setStats(data)
+      await api.getStats()
     } catch (err) {
       console.warn('Could not load global stats:', err)
     }

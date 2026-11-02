@@ -56,7 +56,7 @@ export default function QRScannerModal({
                 pin = String(parsed.pin || parsed.code || '')
                 if (parsed.itemId) scannedItemId = parsed.itemId
               }
-            } catch (_) {
+            } catch {
               // Not JSON - check if plain numeric or formatted string
               const match = decodedText.match(/\b\d{4}\b/)
               if (match) {
@@ -94,7 +94,7 @@ export default function QRScannerModal({
             )
           }
         })
-      } catch (err) {
+      } catch {
         if (isMounted) {
           setIsStarting(false)
           setCameraError('Failed to initialize camera scanner.')
@@ -111,11 +111,11 @@ export default function QRScannerModal({
             html5QrCode.clear()
           }).catch(() => {})
         } else {
-          try { html5QrCode.clear() } catch (_) {}
+          try { html5QrCode.clear() } catch {}
         }
       }
     }
-  }, [isOpen])
+  }, [isOpen, expectedItemId, onScanSuccess])
 
   if (!isOpen) return null
 

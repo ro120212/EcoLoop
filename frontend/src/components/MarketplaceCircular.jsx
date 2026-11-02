@@ -4,22 +4,12 @@ import {
   Search, 
   Plus, 
   MapPin, 
-  Tag, 
   CheckCircle2, 
-  Clock, 
-  Sparkles, 
-  QrCode, 
   KeyRound,
-  Filter,
   Layers,
-  Building2,
   Check,
   Camera,
-  UploadCloud,
-  X,
-  Image as ImageIcon,
-  ArrowRight,
-  Copy
+  ArrowRight
 } from 'lucide-react'
 import { api } from '../services/api'
 import { useToast } from '../context/ToastContext'
@@ -76,15 +66,12 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
   const [claimingSuccess, setClaimingSuccess] = useState(null)
   const [claimingError, setClaimingError] = useState('')
   const [claimingLoading, setClaimingLoading] = useState(false)
-  const [copiedModalPin, setCopiedModalPin] = useState(false)
 
   const handleCopyModalPin = (pin) => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(String(pin))
     }
-    setCopiedModalPin(true)
     toast.info('PIN Copied to Clipboard!', `Show code "${pin}" to the seller at your meeting spot.`)
-    setTimeout(() => setCopiedModalPin(false), 2000)
   }
 
   // Post modal state
@@ -420,7 +407,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
             let subParts = []
             try {
               subParts = JSON.parse(item.sub_components || '[]')
-            } catch (e) {
+            } catch {
               subParts = []
             }
 
@@ -613,7 +600,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                         return JSON.parse(claimingItem.sub_components || '[]').map((p, idx) => (
                           <option key={idx} value={p.name}>Specific Part: {p.name}</option>
                         ))
-                      } catch (e) {
+                      } catch {
                         return null
                       }
                     })()}
@@ -690,7 +677,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Department *</label>
                   <select
@@ -722,7 +709,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Price</label>
                   <select

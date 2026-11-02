@@ -30,7 +30,7 @@ export default function Navbar({
                 NSSCE
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400">Hardware &amp; Component Exchange</p>
+            <p className="text-[11px] text-zinc-400 truncate max-w-[160px] sm:max-w-none">Hardware &amp; Component Exchange</p>
           </div>
         </div>
 
@@ -52,7 +52,7 @@ export default function Navbar({
               </div>
               <button
                 onClick={onLogout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-semibold transition cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-semibold transition cursor-pointer"
                 title="Sign out"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -64,7 +64,7 @@ export default function Navbar({
       </div>
 
       {/* Pill-Shaped Floating Navigation Platform */}
-      <div className="w-full flex justify-center py-2 px-4 bg-[#141414]/50 border-t border-[#262626]">
+      <div className="w-full flex justify-center py-2 px-2 sm:px-4 bg-[#141414]/50 border-t border-[#262626]">
         <nav 
           role="navigation" 
           aria-label="Module Navigation"
@@ -72,7 +72,7 @@ export default function Navbar({
         >
           <button
             onClick={() => setActiveView('student_hub')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeView === 'student_hub' 
                 ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                 : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
@@ -84,7 +84,7 @@ export default function Navbar({
 
           <button
             onClick={() => setActiveView('marketplace')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeView === 'marketplace' 
                 ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                 : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
@@ -96,7 +96,7 @@ export default function Navbar({
 
           <button
             onClick={() => setActiveView('ai_scanner')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeView === 'ai_scanner' 
                 ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                 : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'
@@ -108,7 +108,7 @@ export default function Navbar({
 
           <button
             onClick={() => setActiveView('repair')}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeView === 'repair' 
                 ? 'bg-[#3ECF8E] text-[#121212] font-semibold shadow-[0_0_15px_rgba(62,207,142,0.3)] scale-[1.02]' 
                 : 'text-zinc-400 hover:text-[#EDEDED] hover:bg-[#282828]'

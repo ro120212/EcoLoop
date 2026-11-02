@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { 
   Wrench, 
   Sparkles, 
-  AlertTriangle, 
   CheckCircle2, 
   Clock, 
   User, 
-  HelpCircle, 
   Plus, 
   Search,
-  Filter,
   Users,
-  MessageSquare,
-  ArrowRight,
   RefreshCw,
   Award,
   Lightbulb

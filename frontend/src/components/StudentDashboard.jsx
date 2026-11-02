@@ -10,20 +10,10 @@ import {
   MapPin, 
   KeyRound, 
   QrCode, 
-  ShieldCheck, 
-  RefreshCw, 
   Plus,
   Package,
-  Layers,
-  Filter,
   Check,
-  AlertCircle,
-  HelpCircle,
-  Tag,
-  Camera,
-  UploadCloud,
-  X,
-  Copy
+  Camera
 } from 'lucide-react'
 import { api } from '../services/api'
 import { useToast } from '../context/ToastContext'
@@ -64,22 +54,17 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTabState] = useState(initialTab || 'seller') // 'seller' | 'buyer'
   const [sellerStatusFilter, setSellerStatusFilter] = useState('all') // 'all', 'available', 'reserved', 'sold'
-  const [copiedPin, setCopiedPin] = useState({})
 
   const setActiveTab = (tab) => {
     setActiveTabState(tab)
     if (onTabChange) onTabChange(tab)
   }
 
-  const handleCopyPin = (itemId, pin) => {
+  const handleCopyPin = (_itemId, pin) => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(String(pin))
     }
-    setCopiedPin(prev => ({ ...prev, [itemId]: true }))
     toast.info('Pickup PIN Copied!', `Show code "${pin}" to the seller at your meeting spot.`)
-    setTimeout(() => {
-      setCopiedPin(prev => ({ ...prev, [itemId]: false }))
-    }, 2000)
   }
   
   // PIN verification states

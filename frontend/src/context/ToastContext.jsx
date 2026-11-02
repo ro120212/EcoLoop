@@ -45,7 +45,6 @@ export function ToastProvider({ children }) {
           const isSuccess = t.type === 'success'
           const isError = t.type === 'error'
           const isCelebrate = t.type === 'celebrate'
-          const isInfo = t.type === 'info'
 
           return (
             <div
