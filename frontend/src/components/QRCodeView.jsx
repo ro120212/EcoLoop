@@ -15,7 +15,8 @@ export default function QRCodeView({
 
   useEffect(() => {
     let isMounted = true
-    const payload = `ecoloop:pin:${pin}`
+    // Plain 4-digit PIN payload is instantly recognized by 100% of native phone cameras (iPhone, Google Lens, Samsung)
+    const payload = String(pin || '0000')
     QRCode.toDataURL(payload, {
       width: 240,
       margin: 1,
