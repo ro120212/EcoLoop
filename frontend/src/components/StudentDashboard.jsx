@@ -300,7 +300,7 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
             className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-lg shadow-[#3ECF8E]/20 flex items-center justify-center gap-2 transition cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4" />
-            <span>+ List Item</span>
+            <span>List Item</span>
           </button>
         </div>
 
@@ -530,7 +530,7 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
               className="px-3.5 py-1.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-bold text-xs flex items-center gap-1.5 transition self-end sm:self-auto cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ List Item</span>
+              <span>List Item</span>
             </button>
           </div>
 
@@ -555,7 +555,7 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
                 onClick={() => setShowListModal(true)}
                 className="px-4 py-2 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs transition cursor-pointer shadow-sm shadow-[#3ECF8E]/20"
               >
-                + List an Item Now
+                List an Item Now
               </button>
             </div>
           ) : (

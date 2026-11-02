@@ -311,7 +311,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
           className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-sm transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>+ List Item</span>
+          <span>List Item</span>
         </button>
       </div>
 
@@ -821,7 +821,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
                     onClick={handleAddSubPart}
                     className="px-3 py-1.5 rounded-xl bg-[#242424] hover:bg-[#2c2c2c] text-[#EDEDED] border border-[#2e2e2e] font-semibold text-xs cursor-pointer transition"
                   >
-                    + Add
+                    Add
                   </button>
                 </div>
 

@@ -293,7 +293,7 @@ export default function RepairPlatform({ user }) {
           className="px-4 py-2.5 rounded-xl bg-[#3ECF8E] hover:bg-[#34B27B] text-[#121212] font-semibold text-xs shadow-md shadow-[#3ECF8E]/20 transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>+ New Request</span>
+          <span>New Request</span>
         </button>
       </div>
 
@@ -542,7 +542,7 @@ export default function RepairPlatform({ user }) {
             <p>No repair tickets found matching your active filters.</p>
             <p className="text-[11px] text-zinc-600">
               {activeTab === 'my_requests' 
-                ? 'Click "+ New Request" above to request peer assistance with a malfunctioning device.' 
+                ? 'Click "New Request" above to request peer assistance with a malfunctioning device.' 
                 : 'All campus devices are running smoothly or no tickets posted yet.'}
             </p>
           </div>
