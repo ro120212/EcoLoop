@@ -509,7 +509,11 @@ class DatabaseManager:
                 if category and category != "All":
                     query = query.eq("category", category)
                 if status:
-                    query = query.eq("status", status)
+                    if status != "all":
+                        query = query.eq("status", status)
+                else:
+                    # Public marketplace hides completed/sold items
+                    query = query.neq("status", "handoff_completed").neq("status", "sold")
                 res = query.order("created_at", desc=True).execute()
                 if res.data and len(res.data) > 0:
                     items = res.data
@@ -528,8 +532,11 @@ class DatabaseManager:
                     query += " AND category = ?"
                     params.append(category)
                 if status:
-                    query += " AND status = ?"
-                    params.append(status)
+                    if status != "all":
+                        query += " AND status = ?"
+                        params.append(status)
+                else:
+                    query += " AND status NOT IN ('handoff_completed', 'sold')"
                 query += " ORDER BY created_at DESC"
                 cursor.execute(query, params)
                 items = [dict(row) for row in cursor.fetchall()]

@@ -178,10 +178,10 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
   const studentName = user?.user_metadata?.full_name || (user?.email ? user.email.split('@')[0] : 'Student')
   const studentDept = user?.user_metadata?.department || 'Engineering Department'
 
-  const loadPortfolio = async () => {
+  const loadPortfolio = async (force = false) => {
     try {
       setLoading(true)
-      const data = await api.getUserPortfolio(studentId, user?.email, studentName)
+      const data = await api.getUserPortfolio(studentId, user?.email, studentName, { forceRefresh: force })
       setPortfolio(data)
       const claims = data?.my_claims || []
       const active = claims.filter(i => i.status === 'reserved')
@@ -264,9 +264,9 @@ export default function StudentDashboard({ user, onNavigate, initialTab = 'selle
         carbon_saved_kg: 6.5
       })
       toast.success('Listing Published!', `"${listedTitle}" is now live on your profile and marketplace.`)
-      await loadPortfolio()
+      await loadPortfolio(true)
       setActiveTab('seller')
-      setSellerStatusFilter('available')
+      setSellerStatusFilter('all')
     } catch (err) {
       toast.error('Listing Error', err.message)
     } finally {

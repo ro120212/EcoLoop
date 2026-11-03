@@ -185,7 +185,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
       )
       setClaimingSuccess(res)
       toast.success('Hardware Reserved!', `4-digit PIN generated for "${claimingItem.title}".`)
-      await loadItems()
+      await loadItems(true)
     } catch (err) {
       setClaimingError(err.message)
       toast.error('Reservation Failed', err.message)
@@ -217,7 +217,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
       const subCompJson = JSON.stringify(
         postForm.sub_components_list.map(name => ({ name, status: 'available' }))
       )
-      await api.createMarketItem({
+      const created = await api.createMarketItem({
         title: postForm.title,
         description: postForm.description,
         department: postForm.department,
@@ -246,7 +246,17 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         sub_components_list: ['Main Unit']
       })
       toast.success('Item Listed', `"${savedTitle}" is now live on the marketplace.`)
-      await loadItems()
+
+      // Immediately reset filters so new item is front-and-center
+      setSelectedDept('All')
+      setSearchTerm('')
+      setPriceFilter('all')
+
+      // Optimistically insert into local items feed
+      if (created && created.id) {
+        setItems(prev => [created, ...prev.filter(i => i.id !== created.id)])
+      }
+      await loadItems(true)
     } catch (err) {
       toast.error('Listing Failed', err.message)
     } finally {
@@ -254,14 +264,19 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
     }
   }
 
-  const deptCounts = items.reduce((acc, item) => {
+  // Sold/completed items immediately disappear from the active marketplace
+  const activeItems = items.filter(item => 
+    item.status !== 'handoff_completed' && item.status !== 'sold'
+  )
+
+  const deptCounts = activeItems.reduce((acc, item) => {
     if (item.department) {
       acc[item.department] = (acc[item.department] || 0) + 1
     }
     return acc
   }, {})
 
-  const filtered = items.filter(item => {
+  const filtered = activeItems.filter(item => {
     const matchesDept = selectedDept === 'All' || item.department === selectedDept
     const matchesSearch = 
       (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -307,7 +322,7 @@ export default function MarketplaceCircular({ user, onGoToPortfolio }) {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex flex-wrap gap-1.5">
             {DEPARTMENTS.map(d => {
-              const count = d === 'All' ? items.length : (deptCounts[d] || 0)
+              const count = d === 'All' ? activeItems.length : (deptCounts[d] || 0)
               const shortName = d === 'All' ? 'All' : (
                 d.includes('Computer') ? 'CSE' :
                 d.includes('Electronics and Communication') ? 'ECE' :
